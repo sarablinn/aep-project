@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
+#[UniqueEntity('email', 'username')]
 class User
 {
     #[ORM\Id]
@@ -14,11 +15,11 @@ class User
     #[ORM\Column]
     private ?int $user_id = null;
 
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $username = null;
+    #[ORM\Column(length: 255, unique: true)]
+    private ?string $email = null;
 
-    #[ORM\Column(length: 100, nullable: true)]
-    private ?string $password = null;
+    #[ORM\Column(length: 50, unique: true, nullable: true)]
+    private ?string $username = null;
 
     #[ORM\Column(length: 75, nullable: true)]
     private ?string $first_name = null;
@@ -31,9 +32,30 @@ class User
         nullable: false)]
     private ?Role $role = null;
 
-    public function getId(): ?int
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $background_color = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $foreground_color = null;
+
+    #TODO add AUTH0 User Authentication token
+
+
+    public function getUserId(): ?int
     {
         return $this->user_id;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
     }
 
     public function getUsername(): ?string
@@ -44,18 +66,6 @@ class User
     public function setUsername(?string $username): self
     {
         $this->username = $username;
-
-        return $this;
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(?string $password): self
-    {
-        $this->password = $password;
 
         return $this;
     }
@@ -95,4 +105,29 @@ class User
 
         return $this;
     }
+
+    public function getBackgroundColor(): ?string
+    {
+        return $this->background_color;
+    }
+
+    public function setBackgroundColor(?string $background_color): self
+    {
+        $this->background_color = $background_color;
+
+        return $this;
+    }
+
+    public function getForegroundColor(): ?string
+    {
+        return $this->foreground_color;
+    }
+
+    public function setForegroundColor(?string $foreground_color): self
+    {
+        $this->foreground_color = $foreground_color;
+
+        return $this;
+    }
+
 }
