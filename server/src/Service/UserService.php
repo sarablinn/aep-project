@@ -147,7 +147,7 @@ class UserService implements ObjectMapperInterface
             $existing_user->setForegroundColor($foregroundColor);
         }
 
-        $this->userRepository->save($existing_user);
+        $this->userRepository->save($existing_user, true);
 
         return $existing_user;
     }
