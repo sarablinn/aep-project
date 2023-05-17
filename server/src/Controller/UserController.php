@@ -166,7 +166,7 @@ class UserController extends ApiController
      * @param string $role_id
      * @return Response
      */
-    #[Route('/users//roles/{role_id}', methods: ['DELETE'])]
+    #[Route('/users/roles/{role_id}', methods: ['DELETE'])]
     public function deleteRole(string $role_id): Response
     {
         return $this->json($this->roleService->deleteRole(intval($role_id)));
