@@ -38,7 +38,8 @@ class User
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $foreground_color = null;
 
-    #TODO add AUTH0 User Authentication token
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $userToken = null;
 
 
     public function getUserId(): ?int
@@ -126,6 +127,18 @@ class User
     public function setForegroundColor(?string $foreground_color): self
     {
         $this->foreground_color = $foreground_color;
+
+        return $this;
+    }
+
+    public function getUserToken(): ?string
+    {
+        return $this->userToken;
+    }
+
+    public function setUserToken(?string $userToken): self
+    {
+        $this->userToken = $userToken;
 
         return $this;
     }
