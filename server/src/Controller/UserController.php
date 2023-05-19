@@ -12,7 +12,6 @@ use App\Serialization\SerializationService;
 use App\Service\RoleService;
 use App\Service\UserService;
 use JsonException;
-use phpDocumentor\Reflection\Types\This;
 use Symfony\Component\Config\Definition\Exception\DuplicateKeyException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -117,7 +116,7 @@ class UserController extends ApiController
      * @param string $role_id
      * @return Response
      */
-    #[Route('/users/roles/{role_id}', methods: ['GET'])]
+    #[Route('/roles/{role_id}', methods: ['GET'])]
     public function getRoleById(string $role_id): Response
     {
         $role = $this->roleService->getRole(intval($role_id));
@@ -128,7 +127,7 @@ class UserController extends ApiController
     /**
      * @return Response
      */
-    #[Route('/users/roles', methods: ('GET'))]
+    #[Route('/roles', methods: ('GET'))]
     public function getRoles(): Response
     {
         $roles = $this->roleService->getRoles();
@@ -139,7 +138,7 @@ class UserController extends ApiController
     /**
      * @throws InvalidRequestDataException|JsonException
      */
-    #[Route('/users/roles', methods: ('POST'))]
+    #[Route('/roles', methods: ('POST'))]
     public function createRole(Request $request): Response
     {
         /** @var CreateRoleDto $createRoleDto */
@@ -151,7 +150,7 @@ class UserController extends ApiController
     /**
      * @throws EntityNotFoundException|InvalidRequestDataException|JsonException
      */
-    #[Route('/users/roles/{role_id}', methods: ['PATCH', 'PUT'])]
+    #[Route('/roles/{role_id}', methods: ['PATCH', 'PUT'])]
     public function updateRole(string $role_id, Request $request): Response
     {
         /** @var UpdateRoleDto $updateRoleDto */
@@ -166,7 +165,7 @@ class UserController extends ApiController
      * @param string $role_id
      * @return Response
      */
-    #[Route('/users/roles/{role_id}', methods: ['DELETE'])]
+    #[Route('/roles/{role_id}', methods: ['DELETE'])]
     public function deleteRole(string $role_id): Response
     {
         return $this->json($this->roleService->deleteRole(intval($role_id)));
