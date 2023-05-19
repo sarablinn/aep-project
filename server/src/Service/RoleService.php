@@ -123,7 +123,7 @@ class RoleService implements ObjectMapperInterface
     {
         $roleDtos = [];
         foreach ($roles as $role) {
-            $roleDtos[] = $role;
+            $roleDtos[] = $this->mapToDto($role);
         }
 
         return $roleDtos;
