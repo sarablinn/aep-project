@@ -16,6 +16,9 @@ class CreateUserDto
     #[Type('string')]
     private string $email;
 
+    #[Type('string')]
+    private int $userToken;
+
     #[NotNull]
     #[Type('string')]
     private string $first_name;
@@ -64,6 +67,25 @@ class CreateUserDto
     public function setEmail(string $email): void
     {
         $this->email = $email;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUserToken(): ?string
+    {
+        return $this->userToken;
+    }
+
+    /**
+     * @param string|null $userToken
+     * @return $this
+     */
+    public function setUserToken(?string $userToken): self
+    {
+        $this->userToken = $userToken;
+
+        return $this;
     }
 
     /**

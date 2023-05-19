@@ -7,6 +7,7 @@ class UserDto
     #TODO should these UserDto fields have the option of being null?
     private int $user_id;
     private string $username;
+    private string $userToken;
     private string $first_name;
     private string $last_name;
     private string $email;
@@ -49,6 +50,25 @@ class UserDto
     public function setUsername(?string $username): void
     {
         $this->username = $username;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUserToken(): ?string
+    {
+        return $this->userToken;
+    }
+
+    /**
+     * @param string|null $userToken
+     * @return $this
+     */
+    public function setUserToken(?string $userToken): self
+    {
+        $this->userToken = $userToken;
+
+        return $this;
     }
 
     /**
