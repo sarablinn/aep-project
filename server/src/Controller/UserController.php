@@ -6,6 +6,7 @@ use App\Dto\incoming\CreateRoleDto;
 use App\Dto\incoming\CreateUserDto;
 use App\Dto\incoming\UpdateRoleDto;
 use App\Dto\incoming\UpdateUserDto;
+use App\Dto\outgoing\UserDto;
 use App\Exception\EntityNotFoundException;
 use App\Exception\InvalidRequestDataException;
 use App\Serialization\SerializationService;
@@ -45,6 +46,17 @@ class UserController extends ApiController
     }
 
     /**
+     * @param string $userToken
+     * @return Response
+     */
+    #[Route('/users/profile/{userToken}', methods: ['GET'])]
+    public function getUserByToken(string $userToken): Response
+    {
+        $user = $this->userService->getUserByToken($userToken);
+        return $this->json($this->userService->mapToDto($user));
+    }
+
+    /**
      * @return Response
      */
     #[Route('/users', methods: ('GET'))]
@@ -55,22 +67,40 @@ class UserController extends ApiController
         return $this->json($userDtos);
     }
 
+//    /**
+//     * @throws InvalidRequestDataException|JsonException
+//     */
+//    #[Route('/users', methods: ('POST'))]
+//    public function createUser(Request $request): Response
+//    {
+//        try {
+//            /** @var CreateUserDto $createUserDto */
+//            $createUserDto = $this->getValidatedDto($request, CreateUserDto::class);
+//            $user = $this->userService->createUser($createUserDto);
+//            $userDto = $this->userService->mapToDto($user);
+//        } catch (DuplicateKeyException $exception) {
+//            return $this->json("ERROR: Username or email already in use.",
+//                409);
+//        }
+//
+//        return $this->json($userDto);
+//    }
+
     /**
      * @throws InvalidRequestDataException|JsonException
      */
     #[Route('/users', methods: ('POST'))]
-    public function createUser(Request $request): Response
+    public function getOrCreateUser(Request $request): Response
     {
-        try {
-            /** @var CreateUserDto $createUserDto */
-            $createUserDto = $this->getValidatedDto($request, CreateUserDto::class);
+        /** @var CreateUserDto $createUserDto */
+        $createUserDto = $this->getValidatedDto($request, CreateUserDto::class);
+        $user = $this->userService->getUserByToken($createUserDto->getUserToken());
+
+        if (!$user) {
             $user = $this->userService->createUser($createUserDto);
-            $userDto = $this->userService->mapToDto($user);
-        } catch (DuplicateKeyException $exception) {
-            return $this->json("ERROR: Username or email already in use.",
-                409);
         }
 
+        $userDto = $this->userService->mapToDto($user);
         return $this->json($userDto);
     }
 

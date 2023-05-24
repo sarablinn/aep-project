@@ -9,10 +9,8 @@ use App\Entity\User;
 use App\Exception\EntityNotFoundException;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Config\Definition\Exception\DuplicateKeyException;
 
 class UserService implements ObjectMapperInterface
 {
@@ -43,6 +41,7 @@ class UserService implements ObjectMapperInterface
         #NOTE: EMAIL IS REQUIRED, it is unique too.
         $newUser = new User();
         $newUser->setUsername($createUserDto->getUsername());
+        $newUser->setUserToken($createUserDto->getUserToken());
         $newUser->setFirstName($createUserDto->getFirstName());
         $newUser->setLastName($createUserDto->getLastName());
         $newUser->setEmail($createUserDto->getEmail());
@@ -87,6 +86,15 @@ class UserService implements ObjectMapperInterface
     public function getUserByEmail(string $email): User
     {
         return $this->userRepository->findOneBy(['email' => $email]);
+    }
+
+    /**
+     * @param string $userToken
+     * @return User|null
+     */
+    public function getUserByToken(string $userToken): ?User
+    {
+        return $this->userRepository->findOneBy(['user_token' => $userToken]);
     }
 
     /**
@@ -183,6 +191,7 @@ class UserService implements ObjectMapperInterface
 
         $userDto->setUserId($object->getUserId() ?? null);
         $userDto->setEmail($object->getEmail() ?? null);
+        $userDto->setUserToken($object->getUserToken() ?? null);
         $userDto->setUsername($object->getUsername() ?? null);
         $userDto->setFirstName($object->getFirstName() ?? null);
         $userDto->setLastName($object->getLastName() ?? null);
