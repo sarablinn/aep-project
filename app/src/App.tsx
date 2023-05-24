@@ -17,13 +17,13 @@ const queryClient = new QueryClient();
 export default function App() {
   return (
     <div>
-      <nav id="navbar-main" className="container">
-        <h1 className="title-text text-3xl font-bold">WELCOME</h1>
-        <div className="navbar-btns container flex">
-          <Login />
-        </div>
-      </nav>
       <QueryClientProvider client={queryClient}>
+        <nav id="navbar-main" className="container">
+          <h1 className="title-text text-3xl font-bold">WELCOME</h1>
+          <div className="navbar-btns container flex">
+            <Login />
+          </div>
+        </nav>
         <RouterProvider router={router} />
       </QueryClientProvider>
     </div>
