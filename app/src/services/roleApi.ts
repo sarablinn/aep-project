@@ -1,12 +1,11 @@
-export interface roleData {
-  role_id: number;
-  role_name: string;
+export interface Role {
+  roleId: number;
+  roleName: string;
 }
 
-export async function createRole(role: {
-  role_name: string;
-}): Promise<roleData> {
-  const url = 'http://localhost:8000/users/roles';
+export async function createRole(role: { roleName: string }): Promise<Role> {
+  const url = 'http://localhost:8000/roles';
+  console.log('url');
   return await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -15,7 +14,7 @@ export async function createRole(role: {
     body: JSON.stringify(role),
   })
     .then(response => response.json())
-    .then((data: roleData) => {
+    .then((data: Role) => {
       console.log('Success:', data);
       return data;
     })
@@ -25,8 +24,8 @@ export async function createRole(role: {
     });
 }
 
-export async function getRole(role: { role_id: number }): Promise<roleData> {
-  const url = 'http://localhost:8000/users/roles' + role.role_id;
+export async function getRole(role: { roleId: number }): Promise<Role> {
+  const url = 'http://localhost:8000/roles' + role.roleId;
   return await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -34,7 +33,7 @@ export async function getRole(role: { role_id: number }): Promise<roleData> {
     method: 'GET',
   })
     .then(response => response.json())
-    .then((data: roleData) => {
+    .then((data: Role) => {
       console.log('Success:', data);
       return data;
     })
@@ -44,8 +43,8 @@ export async function getRole(role: { role_id: number }): Promise<roleData> {
     });
 }
 
-export async function getRoles(): Promise<roleData[]> {
-  const url = 'http://localhost:8000/users/roles';
+export async function getRoles(): Promise<Role[]> {
+  const url = 'http://localhost:8000/roles';
   return await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -53,7 +52,7 @@ export async function getRoles(): Promise<roleData[]> {
     method: 'GET',
   })
     .then(response => response.json())
-    .then((data: roleData[]) => {
+    .then((data: Role[]) => {
       console.log('Success:', data);
       return data;
     })
@@ -64,10 +63,10 @@ export async function getRoles(): Promise<roleData[]> {
 }
 
 export async function updateRole(role: {
-  role_id: number;
-  role_name: string;
-}): Promise<roleData> {
-  const url = 'http://localhost:8000/users/roles/' + role.role_id;
+  roleId: number;
+  roleName: string;
+}): Promise<Role> {
+  const url = 'http://localhost:8000/roles/' + role.roleId;
   return await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -76,7 +75,7 @@ export async function updateRole(role: {
     body: JSON.stringify(role),
   })
     .then(response => response.json())
-    .then((data: roleData) => {
+    .then((data: Role) => {
       console.log('Success:', data);
       return data;
     })
@@ -87,10 +86,10 @@ export async function updateRole(role: {
 }
 
 export async function deleteRole(role: {
-  role_id: number;
-  role_name: string;
-}): Promise<roleData> {
-  const url = 'http://localhost:8000/users/roles/' + role.role_id;
+  roleId: number;
+  roleName: string;
+}): Promise<Role> {
+  const url = 'http://localhost:8000/roles/' + role.roleId;
   return await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -99,7 +98,7 @@ export async function deleteRole(role: {
     body: JSON.stringify(role),
   })
     .then(response => response.json())
-    .then((data: roleData) => {
+    .then((data: Role) => {
       console.log('Success:', data);
       return data;
     })

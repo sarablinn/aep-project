@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  createRole,
-  getRole,
-  getRoles,
-  updateRole,
-  deleteRole,
-} from './../services/roleApi';
+import { createRole, getRoles } from './../services/roleApi';
 import Loading from './../utilities/Loading';
 import Error from './../utilities/Error';
 import { selectedRole } from './../services/Atoms';
@@ -13,7 +7,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
 
 const RolesPage = () => {
-  const [role_name, setRoleName] = useState('');
+  const [roleName, setRoleName] = useState('');
   const [role, setRole] = useAtom(selectedRole);
 
   const changeRoleName = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,10 +15,10 @@ const RolesPage = () => {
   };
 
   // a HOOK
-  const { data, mutate } = useMutation({
+  const { data } = useMutation({
     mutationFn: () =>
       createRole({
-        role_name: role_name,
+        roleName: roleName,
       }),
     onMutate: () => console.log('mutate'),
     onError: (err, variables, context) => {
@@ -33,18 +27,18 @@ const RolesPage = () => {
     onSettled: () => console.log('COMPLETE: role created.'),
   });
 
-  const deleteRole = useMutation({
-    mutationFn: () =>
-      deleteRole({
-        role_id: role.role_id,
-        role_name: role_name,
-      }),
-    onMutate: () => console.log('mutate'),
-    onError: (err, variables, context) => {
-      console.log(err, variables, context);
-    },
-    onSettled: () => console.log('COMPLETE: role deleted.'),
-  });
+  // const deleteRole = useMutation({
+  //   mutationFn: () =>
+  //     deleteRole({
+  //       role_id: role.role_id,
+  //       role_name: role_name,
+  //     }),
+  //   onMutate: () => console.log('mutate'),
+  //   onError: (err, variables, context) => {
+  //     console.log(err, variables, context);
+  //   },
+  //   onSettled: () => console.log('COMPLETE: role deleted.'),
+  // });
 
   const {
     isLoading: rolesAreLoading,
@@ -73,13 +67,14 @@ const RolesPage = () => {
   if (rolesError) return <Error />;
 
   if (rolesData) {
+    console.log(rolesData);
     return (
       <div className="m-3 p-3">
-        <div>Selected Role: {role.role_name}</div>
+        <div>Selected Role: {role.roleName}</div>
         {rolesData.map((role, index) => (
           <div key={index} className="border">
-            <div>Role id: {role.role_id}</div>
-            <div>Role Name: {role.role_name}</div>
+            <div>Role id: {role.roleId}</div>
+            <div>Role Name: {role.roleName}</div>
             <button className="bg-red-700" onClick={() => setRole(role)}>
               Select Role
             </button>

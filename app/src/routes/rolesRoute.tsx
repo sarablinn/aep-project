@@ -5,7 +5,7 @@ import RolesPage from './../components/RolesPage';
 
 const rolesRoute = new Route({
   getParentRoute: () => rootRoute,
-  path: '/users/roles',
+  path: '/roles',
   component: () => {
     return (
       <>
