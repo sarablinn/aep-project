@@ -17,7 +17,7 @@ class CreateUserDto
     private string $email;
 
     #[Type('string')]
-    private int $userToken;
+    private string $user_token;
 
     #[NotNull]
     #[Type('string')]
@@ -74,7 +74,7 @@ class CreateUserDto
      */
     public function getUserToken(): ?string
     {
-        return $this->userToken;
+        return $this->user_token;
     }
 
     /**
@@ -83,7 +83,7 @@ class CreateUserDto
      */
     public function setUserToken(?string $userToken): self
     {
-        $this->userToken = $userToken;
+        $this->user_token = $userToken;
 
         return $this;
     }

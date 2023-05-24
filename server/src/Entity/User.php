@@ -39,7 +39,7 @@ class User
     private ?string $foreground_color = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    private ?string $userToken = null;
+    private ?string $user_token = null;
 
 
     public function getUserId(): ?int
@@ -133,12 +133,12 @@ class User
 
     public function getUserToken(): ?string
     {
-        return $this->userToken;
+        return $this->user_token;
     }
 
     public function setUserToken(?string $userToken): self
     {
-        $this->userToken = $userToken;
+        $this->user_token = $userToken;
 
         return $this;
     }
