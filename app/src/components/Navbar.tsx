@@ -19,6 +19,9 @@ const Navbar = () => {
       <Link to={routes.ROLE} search={{}} params={{}}>
         Roles
       </Link>
+      <Link to={routes.PROFILE} search={{}} params={{}}>
+        User Profile
+      </Link>
     </div>
   );
 };
