@@ -1,22 +1,24 @@
 import { atom } from 'jotai';
-import { userResource } from './userApi';
-import { roleData } from './roleApi';
+import { UserResource } from './userApi';
+import { Role } from './roleApi';
 
 const defaultUser = {
-  user_id: 0,
+  userId: 0,
   username: 'guest',
   email: '',
-  // first_name: '',
-  // last_name: '',
-  // role_id: 3, // GUEST
+  userToken: '',
+  firstName: '',
+  lastName: '',
+  roleId: 3, // GUEST
   // foregroundColor: '000000',
   backgroundColor: 'FFFFFF',
+  foregroundColor: '000000',
 };
 
 const defaultRole = {
-  role_id: 3,
-  role_name: 'GUEST',
+  roleId: 3,
+  roleName: 'GUEST',
 };
 
-export const selectedUser = atom<userResource>(defaultUser);
-export const selectedRole = atom<roleData>(defaultRole);
+export const selectedUser = atom<UserResource>(defaultUser);
+export const selectedRole = atom<Role>(defaultRole);
