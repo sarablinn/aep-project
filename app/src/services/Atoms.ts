@@ -4,20 +4,20 @@ import { Role } from './roleApi';
 
 const defaultUser = {
   userId: 0,
-  username: 'guest',
+  username: '',
   email: '',
   userToken: '',
   firstName: '',
   lastName: '',
-  roleId: 3, // GUEST
+  roleId: 1, // USER
   // foregroundColor: '000000',
   backgroundColor: 'FFFFFF',
   foregroundColor: '000000',
 };
 
 const defaultRole = {
-  roleId: 3,
-  roleName: 'GUEST',
+  roleId: 1,
+  roleName: 'USER',
 };
 
 export const selectedUser = atom<UserResource>(defaultUser);
