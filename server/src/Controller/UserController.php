@@ -6,14 +6,12 @@ use App\Dto\incoming\CreateRoleDto;
 use App\Dto\incoming\CreateUserDto;
 use App\Dto\incoming\UpdateRoleDto;
 use App\Dto\incoming\UpdateUserDto;
-use App\Dto\outgoing\UserDto;
 use App\Exception\EntityNotFoundException;
 use App\Exception\InvalidRequestDataException;
 use App\Serialization\SerializationService;
 use App\Service\RoleService;
 use App\Service\UserService;
 use JsonException;
-use Symfony\Component\Config\Definition\Exception\DuplicateKeyException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -53,7 +51,12 @@ class UserController extends ApiController
     public function getUserByToken(string $userToken): Response
     {
         $user = $this->userService->getUserByToken($userToken);
-        return $this->json($this->userService->mapToDto($user));
+        $userDto = null;
+        if ($user) {
+            $userDto = $this->userService->mapToDto($user);
+        }
+
+        return $this->json($userDto);
     }
 
     /**
