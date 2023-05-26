@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
-import { getOrCreateUser, getUsers } from './../services/userApi';
+import { deleteUser, getOrCreateUser, getUsers } from './../services/userApi';
 import Loading from './../utilities/Loading';
 import Error from './../utilities/Error';
 import { selectedUser } from './../services/Atoms';
@@ -15,7 +15,9 @@ const UserPage = () => {
   const [userToken, setUserToken] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+
   const [user, setUser] = useAtom(selectedUser);
+  const [userId] = useState(user.userId);
   const [roleId, setRoleId] = useState(user.roleId);
 
   const changeUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +69,26 @@ const UserPage = () => {
     onSettled: () => console.log('COMPLETE: user created.'),
   });
 
-  // createMutate();
+  const { mutate: deleteUserMutation } = useMutation({
+    // put parameters in ()
+    mutationFn: () =>
+      deleteUser({
+        userId: userId,
+        username: username,
+        email: email,
+        userToken: userToken,
+        firstName: firstName,
+        lastName: lastName,
+        roleId: roleId,
+        backgroundColor: bgColor,
+        foregroundColor: '000000',
+      }),
+    onMutate: () => console.log('DELETEUSERMUTATION mutate'),
+    onError: (err, variables, context) => {
+      console.log(err, variables, context);
+    },
+    onSettled: () => console.log('COMPLETE: user deleted.'),
+  });
 
   const {
     isLoading: usersAreLoading,
@@ -171,7 +192,7 @@ const UserPage = () => {
               name="role-dropdown-input"
             >
               {rolesData?.map(role => (
-                <option value={role.roleId} onChange={changeRoleId}>
+                <option key={role.roleId} onChange={changeRoleId}>
                   {role.roleName}
                 </option>
               ))}
@@ -188,6 +209,8 @@ const UserPage = () => {
           <div className="m-3 p-3">
             <label>Background Color: </label>
             <PhotoshopPicker
+              className="user-profile-sketchpicker"
+              header="Background Color"
               color={bgColor}
               onChangeComplete={handleBackgroundChangeComplete}
             />
@@ -215,9 +238,21 @@ const UserPage = () => {
                   style={{ backgroundColor: user.backgroundColor }}
                 ></div>
               </div>
-              <button className="bg-red-700" onClick={() => setUser(user)}>
-                Select User
+              <button
+                className="mx-2 bg-red-700 px-2"
+                onClick={() => setUser(user)}
+              >
+                Select
               </button>
+              {/*<button*/}
+              {/*  className="mx-2 bg-red-700 px-2"*/}
+              {/*  onClick={() => {*/}
+              {/*    deleteUser(user);*/}
+              {/*    window.location.reload();*/}
+              {/*  }}*/}
+              {/*>*/}
+              {/*  Delete*/}
+              {/*</button>*/}
             </div>
           ))}
         </div>
