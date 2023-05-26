@@ -9,12 +9,19 @@ class UpdateUserDto
 {
 
     #[NotNull]
+    #[Type('int')]
+    private int $user_id;
+
+    #[NotNull]
     #[Type('string')]
     private string $username;
 
     #[NotNull]
     #[Type('string')]
     private string $email;
+
+    #[Type('string')]
+    private ?string $user_token;
 
     #[NotNull]
     #[Type('string')]
@@ -33,6 +40,23 @@ class UpdateUserDto
     #[Type('string')]
     private ?string $background_color;
 
+
+
+    /**
+     * @return int
+     */
+    public function getUserId(): int
+    {
+        return $this->user_id;
+    }
+
+    /**
+     * @param int $user_id
+     */
+    public function setUserId(int $user_id): void
+    {
+        $this->user_id = $user_id;
+    }
 
     /**
      * @return string
@@ -64,6 +88,22 @@ class UpdateUserDto
     public function setEmail(string $email): void
     {
         $this->email = $email;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUserToken(): ?string
+    {
+        return $this->user_token;
+    }
+
+    /**
+     * @param string|null $user_token
+     */
+    public function setUserToken(?string $user_token): void
+    {
+        $this->user_token = $user_token;
     }
 
     /**
