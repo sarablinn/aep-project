@@ -34,38 +34,6 @@ export interface UserRole {
   foregroundColor: string;
 }
 
-export interface getUser {
-  userId: number;
-}
-
-// export async function createUser(createUser: {
-//   username: string;
-//   email: string;
-//   userToken: string;
-//   firstName: string;
-//   lastName: string;
-//   roleId: number;
-//   backgroundColor: string;
-// }): Promise<UserResource> {
-//   const url = 'http://localhost:8000/users';
-//   return await fetch(url, {
-//     headers: {
-//       'Content-Type': 'application/json',
-//     },
-//     method: 'POST',
-//     body: JSON.stringify(createUser),
-//   })
-//     .then(response => response.json())
-//     .then((data: UserResource) => {
-//       console.log('Success:', data);
-//       return data;
-//     })
-//     .catch(error => {
-//       console.error('Error:', error);
-//       throw error;
-//     });
-// }
-
 export async function getUsers(): Promise<UserResource[]> {
   const url = 'http://localhost:8000/users';
   return await fetch(url, {
@@ -76,11 +44,11 @@ export async function getUsers(): Promise<UserResource[]> {
   })
     .then(response => response.json())
     .then((data: UserResource[]) => {
-      console.log('Success:', data);
+      console.log('Success getUsers():', data);
       return data;
     })
     .catch(error => {
-      console.error('Error:', error);
+      console.error('Error getUsers():', error);
       throw error;
     });
 }
@@ -97,19 +65,19 @@ export async function getUser(getUser: {
   })
     .then(response => response.json())
     .then((data: UserResource) => {
-      console.log('Success:', data);
+      console.log('Success getUser():', data);
       return data;
     })
     .catch(error => {
-      console.error('Error:', error);
+      console.error('Error getUser():', error);
       throw error;
     });
 }
 
-export async function getUserByToken(getUser: {
-  userToken: string;
-}): Promise<UserResource> {
-  const url = 'http://localhost:8000/users/profile/' + getUser.userToken;
+export async function getUserByToken(
+  userToken: string | undefined,
+): Promise<UserResource> {
+  const url = 'http://localhost:8000/users/profile/' + userToken;
   return await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -118,11 +86,11 @@ export async function getUserByToken(getUser: {
   })
     .then(response => response.json())
     .then((data: UserResource) => {
-      console.log('Success:', data);
+      console.log('Success getUserByToken():', data);
       return data;
     })
     .catch(error => {
-      console.error('Error:', error);
+      console.error('Error getUserByToken():', error);
       throw error;
     });
 }
@@ -143,11 +111,31 @@ export async function getOrCreateUser(userDto: UserDto): Promise<UserResource> {
       return response.json();
     })
     .then((data: UserResource) => {
-      console.log('Create User Success:', data);
+      console.log('Success getOrCreateUser():', data);
       return data;
     })
     .catch(error => {
-      console.error('Error:', error);
+      console.error('Error getOrCreateUser():', error);
+      throw error;
+    });
+}
+
+export async function deleteUser(userId: number): Promise<boolean> {
+  const url = 'http://localhost:8000/users/' + userId;
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'DELETE',
+    // body: JSON.stringify(role),
+  })
+    .then(response => response.json())
+    .then((data: boolean) => {
+      console.log('Success deleteUser():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('Error deleteUser():', error);
       throw error;
     });
 }
