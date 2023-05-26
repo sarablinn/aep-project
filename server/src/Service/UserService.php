@@ -119,6 +119,7 @@ class UserService implements ObjectMapperInterface
     {
         $email = $updateUserDto->getEmail();
         $username = $updateUserDto->getUsername() ?? null;
+        $userToken = $updateUserDto->getUserToken() ?? null;
         $firstName = $updateUserDto->getFirstName() ?? null;
         $lastName = $updateUserDto->getLastName() ?? null;
         $role_id = $updateUserDto->getRoleId() ?? null;
@@ -137,6 +138,9 @@ class UserService implements ObjectMapperInterface
         }
         if ($username) {
             $existing_user->setUsername($username);
+        }
+        if ($username) {
+            $existing_user->setUserToken($userToken);
         }
         if ($firstName) {
             $existing_user->setFirstName($firstName);
@@ -198,6 +202,7 @@ class UserService implements ObjectMapperInterface
         $userDto->setRoleId($object->getRole()->getRoleId() ?? null);
         $userDto->setBackgroundColor($object->getBackgroundColor() ?? null);
         $userDto->setForegroundColor($object->getForegroundColor() ?? null);
+
 
         return $userDto;
     }
