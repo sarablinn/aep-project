@@ -1,52 +1,92 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import '../styles/navbar.css';
 import { useMutation } from '@tanstack/react-query';
-import { UserDto, getOrCreateUser } from '../services/userApi';
+import {
+  UserDto,
+  createUser,
+  getOrCreateUser,
+  UserResource,
+  getUserByToken,
+} from '../services/userApi';
 import { useEffect } from 'react';
 import { ThreeDots } from 'react-loader-spinner';
+import { routes } from '../utilities/Constants';
+import UserInfoPopup from './UserInfoPopup';
+import UserProfile from './UserProfile';
 
 const Login = () => {
   const { user, isLoading, isAuthenticated, error, loginWithRedirect, logout } =
     useAuth0();
 
-  const { data: userResults, mutate: getOrCreateUserMutation } = useMutation({
-    mutationFn: (userDto: UserDto) => getOrCreateUser(userDto),
+  const { data: resultsFromGetUser, mutate: getUserMutation } = useMutation({
+    mutationFn: (userToken: string) => getUserByToken(userToken),
     onMutate: () => console.log('mutate'),
     onError: (err, variables, context) => {
       console.log(err, variables, context);
     },
-    onSettled: () => console.log('getOrCreateUserMutation Settled.'),
+    onSettled: () => console.log('getUserMutation Settled.'),
   });
+
+  const { data: resultsFromCreateUser, mutate: createUserMutation } =
+    useMutation({
+      mutationFn: (userDto: UserDto) => createUser(userDto),
+      onMutate: () => console.log('mutate'),
+      onError: (err, variables, context) => {
+        console.log(err, variables, context);
+      },
+      onSettled: () => console.log('createUserMutation Settled.'),
+    });
 
   useEffect(() => {
     if (isAuthenticated && user) {
+      const userToken = user.sub;
+      if (userToken) {
+        getUserMutation(userToken);
+      }
+    }
+  }, [isAuthenticated, user]);
+
+  useEffect(() => {
+    if (!resultsFromGetUser && user) {
+      console.log('CREATING USER NOW!!!!!!', resultsFromGetUser);
+      let username;
+      let firstName: string | null;
+      let lastName: string | null;
+
+      if (user.email) {
+        const emailSlice = user.email.split('@');
+        username = emailSlice[0];
+      }
+
+      if (
+        user.name === user.email ||
+        user.given_name == undefined ||
+        user.family_name == undefined
+      ) {
+        firstName = '';
+        lastName = '';
+      } else {
+        firstName = user.given_name;
+        lastName = user.family_name;
+      }
+
       const createUser = {
-        username: 'username' + user.email,
+        username: username,
         email: user.email,
         userToken: user.sub,
-        firstName: user.given_name,
-        lastName: user.family_name,
+        firstName: firstName,
+        lastName: lastName,
         roleId: 1,
         backgroundColor: 'FFFFFF',
         foregroundColor: '000000',
       };
 
-      if (createUser.firstName == undefined) {
-        createUser.firstName = '';
-      }
-      if (createUser.lastName == undefined) {
-        createUser.lastName = '';
-      }
-
-      getOrCreateUserMutation(createUser);
-
-      // if (userResults?.logins == 0) {
-      //   window.location.replace(
-      //     import.meta.env.VITE_AUTH0_BASE_URL + routes.PROFILE,
-      //   );
-      // }
+      createUserMutation(createUser);
+      window.location.replace(
+        import.meta.env.VITE_AUTH0_BASE_URL + routes.PROFILE,
+      );
     }
-  }, [isAuthenticated, user]);
+  }, [resultsFromGetUser]);
 
   if (isLoading) {
     return (

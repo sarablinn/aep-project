@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Exception\EntityNotFoundException;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -115,7 +116,7 @@ class UserService implements ObjectMapperInterface
      * @return User|null
      * @throws EntityNotFoundException
      */
-    public function updateUser(int $user_id, UpdateUserDto $updateUserDto): ?User
+    public function updateUserByUserId(int $user_id, UpdateUserDto $updateUserDto): ?User
     {
         $email = $updateUserDto->getEmail();
         $username = $updateUserDto->getUsername() ?? null;
@@ -139,8 +140,62 @@ class UserService implements ObjectMapperInterface
         if ($username) {
             $existing_user->setUsername($username);
         }
-        if ($username) {
+        if ($userToken) {
             $existing_user->setUserToken($userToken);
+        }
+        if ($firstName) {
+            $existing_user->setFirstName($firstName);
+        }
+        if ($lastName) {
+            $existing_user->setLastName($lastName);
+        }
+        if ($role_id) {
+            $role = $this->roleRepository->find($updateUserDto->getRoleId());
+            $existing_user->setRole($role);
+        }
+        if ($backgroundColor) {
+            $existing_user->setBackgroundColor($backgroundColor);
+        }
+        if ($foregroundColor) {
+            $existing_user->setForegroundColor($foregroundColor);
+        }
+
+        $this->userRepository->save($existing_user, true);
+
+        return $existing_user;
+    }
+
+    /**
+     * Updates a user, returns null if no user exists with the provided id.
+     *
+     * @param int $user_token
+     * @param UpdateUserDto $updateUserDto
+     * @return User|null
+     * @throws EntityNotFoundException
+     */
+    public function updateUserByUserToken(int $user_token, UpdateUserDto $updateUserDto): ?User
+    {
+        $email = $updateUserDto->getEmail();
+        $username = $updateUserDto->getUsername() ?? null;
+        $userToken = $updateUserDto->getUserToken() ?? null;
+        $firstName = $updateUserDto->getFirstName() ?? null;
+        $lastName = $updateUserDto->getLastName() ?? null;
+        $role_id = $updateUserDto->getRoleId() ?? null;
+        $backgroundColor = $updateUserDto->getBackgroundColor() ?? null;
+        $foregroundColor = $updateUserDto->getForegroundColor() ?? null;
+
+        $existing_user = $this->userRepository->findOneBy(['user_token' => $userToken]);
+        if (!$existing_user) {
+            throw new EntityNotFoundException(
+                "ERROR: Unable to update user. User token #"
+                . $user_token . " does not exist.");
+        }
+
+        if ($email) {
+            $existing_user->setEmail($email);
+        }
+        if ($username) {
+            $existing_user->setUsername($username);
         }
         if ($firstName) {
             $existing_user->setFirstName($firstName);

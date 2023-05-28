@@ -11,6 +11,7 @@ use App\Exception\InvalidRequestDataException;
 use App\Serialization\SerializationService;
 use App\Service\RoleService;
 use App\Service\UserService;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,23 +33,23 @@ class UserController extends ApiController
     }
 
 
-    /**
-     * @param string $user_id
-     * @return Response
-     */
-    #[Route('/users/{user_id}', methods: ['GET'])]
-    public function getInstance(string $user_id): Response
-    {
-        $user = $this->userService->getUserById($user_id);
-        return $this->json($this->userService->mapToDto($user));
-    }
+//    /**
+//     * @param string $user_id
+//     * @return Response
+//     */
+//    #[Route('/users/{user_id}', methods: ['GET'])]
+//    public function getUserById(string $user_id): Response
+//    {
+//        $user = $this->userService->getUserById($user_id);
+//        return $this->json($this->userService->mapToDto($user));
+//    }
 
     /**
      * @param string $userToken
      * @return Response
      */
-    #[Route('/users/profile/{userToken}', methods: ['GET'])]
-    public function getUserByToken(string $userToken): Response
+    #[Route('/users/{userToken}', methods: ['GET'])]
+    public function getInstance(string $userToken): Response
     {
         $user = $this->userService->getUserByToken($userToken);
         $userDto = null;
@@ -70,42 +71,63 @@ class UserController extends ApiController
         return $this->json($userDtos);
     }
 
-//    /**
-//     * @throws InvalidRequestDataException|JsonException
-//     */
+    /**
+     *
+     */
+    #[Route('/users', methods: ('POST'))]
+    public function createUser(Request $request): Response
+    {
+        try {
+            /** @var CreateUserDto $createUserDto */
+            $createUserDto = $this->getValidatedDto($request, CreateUserDto::class);
+            $user = $this->userService->createUser($createUserDto);
+            $userDto = $this->userService->mapToDto($user);
+        } catch (InvalidRequestDataException $exception) {
+            return $this->json("ERROR: Invalid request: " . $exception->getMessage()
+                . " " . $exception->getTraceAsString(),
+                409);
+        } catch (JsonException $jsonException) {
+            return $this->json("ERROR: JsonException: " . $jsonException->getMessage()
+                . " " . $jsonException->getTraceAsString(),
+                409);
+        } catch (UniqueConstraintViolationException $constraintViolationException) {
+            return $this->json("ERROR: UniqueConstraintViolationException: "
+                . $constraintViolationException->getMessage()
+                . " " . $constraintViolationException->getTraceAsString(),
+                409);
+        }
+
+        return $this->json($userDto);
+    }
+
+    /**
+     *
+     */
 //    #[Route('/users', methods: ('POST'))]
-//    public function createUser(Request $request): Response
+//    public function getOrCreateUser(Request $request): Response
 //    {
 //        try {
 //            /** @var CreateUserDto $createUserDto */
 //            $createUserDto = $this->getValidatedDto($request, CreateUserDto::class);
-//            $user = $this->userService->createUser($createUserDto);
-//            $userDto = $this->userService->mapToDto($user);
-//        } catch (DuplicateKeyException $exception) {
-//            return $this->json("ERROR: Username or email already in use.",
-//                409);
-//        }
+//            $user = $this->userService->getUserByToken($createUserDto->getUserToken());
 //
+//            if (!$user) {
+//                $user = $this->userService->createUser($createUserDto);
+//            }
+//
+//            $userDto = $this->userService->mapToDto($user);
+//
+//        } catch (InvalidRequestDataException $exception) {
+//            return $this->json("ERROR: Invalid request: " . $exception->getMessage()
+//                    . " " . $exception->getTraceAsString(),
+//                    409);
+//        } catch (JsonException $jsonException) {
+//            return $this->json("ERROR: JsonException: " . $jsonException->getMessage()
+//                    . " " . $jsonException->getTraceAsString(),
+//                    409);
+//        }
 //        return $this->json($userDto);
 //    }
-
-    /**
-     * @throws InvalidRequestDataException|JsonException
-     */
-    #[Route('/users', methods: ('POST'))]
-    public function getOrCreateUser(Request $request): Response
-    {
-        /** @var CreateUserDto $createUserDto */
-        $createUserDto = $this->getValidatedDto($request, CreateUserDto::class);
-        $user = $this->userService->getUserByToken($createUserDto->getUserToken());
-
-        if (!$user) {
-            $user = $this->userService->createUser($createUserDto);
-        }
-
-        $userDto = $this->userService->mapToDto($user);
-        return $this->json($userDto);
-    }
 
 
     /**
@@ -115,13 +137,13 @@ class UserController extends ApiController
      *
      * @throws InvalidRequestDataException|JsonException
      */
-    #[Route('/users/{user_id}', methods: ['PATCH', 'PUT'])]
-    public function updateUser(string $user_id, Request $request): Response
+    #[Route('/users/{user_token}', methods: ['PATCH', 'PUT'])]
+    public function updateUserByUserToken(string $user_token, Request $request): Response
     {
         try {
             /** @var UpdateUserDto $updateUserDto */
             $updateUserDto = $this->getValidatedDto($request, UpdateUserDto::class);
-            $user = $this->userService->updateUser(intval($user_id), $updateUserDto);
+            $user = $this->userService->updateUserByUserToken(intval($user_token), $updateUserDto);
             $userDto = $this->userService->mapToDto($user);
 
             return $this->json($userDto);

@@ -16,8 +16,8 @@ export interface UserDto {
   username: string | undefined;
   email: string | undefined;
   userToken: string | undefined;
-  firstName: string | undefined;
-  lastName: string | undefined;
+  firstName: string | undefined | null;
+  lastName: string | undefined | null;
   roleId: number | undefined;
   backgroundColor: string | undefined;
   foregroundColor: string | undefined;
@@ -74,10 +74,8 @@ export async function getUser(getUser: {
     });
 }
 
-export async function getUserByToken(
-  userToken: string | undefined,
-): Promise<UserResource> {
-  const url = 'http://localhost:8000/users/profile/' + userToken;
+export async function getUserByToken(userToken: string): Promise<UserResource> {
+  const url = 'http://localhost:8000/users/' + userToken;
   return await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -95,9 +93,8 @@ export async function getUserByToken(
     });
 }
 
-export async function getOrCreateUser(userDto: UserDto): Promise<UserResource> {
+export async function createUser(userDto: UserDto): Promise<UserResource> {
   const url = 'http://localhost:8000/users';
-  console.log('GETORCREATE REACHED');
   return await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -111,11 +108,63 @@ export async function getOrCreateUser(userDto: UserDto): Promise<UserResource> {
       return response.json();
     })
     .then((data: UserResource) => {
-      console.log('Success getOrCreateUser():', data);
+      console.log('Success createUser():', data);
       return data;
     })
     .catch(error => {
-      console.error('Error getOrCreateUser():', error);
+      console.error('Error createUser():', error);
+      throw error;
+    });
+}
+
+// export async function getOrCreateUser(userDto: UserDto): Promise<UserResource> {
+//   const url = 'http://localhost:8000/users';
+//   console.log('GETORCREATE REACHED');
+//   return await fetch(url, {
+//     headers: {
+//       'Content-Type': 'application/json',
+//     },
+//     method: 'POST',
+//     body: JSON.stringify(userDto),
+//   })
+//     // .then(response => console.log('RESPONSE', response))
+//     .then(response => {
+//       console.log('RESPONSE', response);
+//       return response.json();
+//     })
+//     .then((data: UserResource) => {
+//       console.log('Success getOrCreateUser():', data);
+//       return data;
+//     })
+//     .catch(error => {
+//       console.error('Error getOrCreateUser():', error);
+//       throw error;
+//     });
+// }
+
+export async function updateUser(
+  userResource: UserResource,
+): Promise<UserResource> {
+  const url = 'http://localhost:8000/users/' + userResource.userId;
+  console.log('UPDATE USER REACHED');
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(userResource),
+  })
+    // .then(response => console.log('RESPONSE', response))
+    .then(response => {
+      console.log('RESPONSE', response);
+      return response.json();
+    })
+    .then((data: UserResource) => {
+      console.log('Success updateUser():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('Error updateUser():', error);
       throw error;
     });
 }
