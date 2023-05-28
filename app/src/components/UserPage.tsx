@@ -1,11 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
-import {
-  deleteUser,
-  getOrCreateUser,
-  getUser,
-  getUsers,
-} from './../services/userApi';
+import { deleteUser, getUser, getUsers } from './../services/userApi';
 import Loading from './../utilities/Loading';
 import Error from './../utilities/Error';
 import { selectedUser } from './../services/Atoms';

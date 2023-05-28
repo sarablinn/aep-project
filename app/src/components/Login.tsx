@@ -1,18 +1,10 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import '../styles/navbar.css';
 import { useMutation } from '@tanstack/react-query';
-import {
-  UserDto,
-  createUser,
-  getOrCreateUser,
-  UserResource,
-  getUserByToken,
-} from '../services/userApi';
+import { UserDto, createUser, getUserByToken } from '../services/userApi';
 import { useEffect } from 'react';
 import { ThreeDots } from 'react-loader-spinner';
 import { routes } from '../utilities/Constants';
-import UserInfoPopup from './UserInfoPopup';
-import UserProfile from './UserProfile';
 
 const Login = () => {
   const { user, isLoading, isAuthenticated, error, loginWithRedirect, logout } =
@@ -27,15 +19,14 @@ const Login = () => {
     onSettled: () => console.log('getUserMutation Settled.'),
   });
 
-  const { data: resultsFromCreateUser, mutate: createUserMutation } =
-    useMutation({
-      mutationFn: (userDto: UserDto) => createUser(userDto),
-      onMutate: () => console.log('mutate'),
-      onError: (err, variables, context) => {
-        console.log(err, variables, context);
-      },
-      onSettled: () => console.log('createUserMutation Settled.'),
-    });
+  const { mutate: createUserMutation } = useMutation({
+    mutationFn: (userDto: UserDto) => createUser(userDto),
+    onMutate: () => console.log('mutate'),
+    onError: (err, variables, context) => {
+      console.log(err, variables, context);
+    },
+    onSettled: () => console.log('createUserMutation Settled.'),
+  });
 
   useEffect(() => {
     if (isAuthenticated && user) {

@@ -4,6 +4,7 @@ import { PhotoshopPicker, SwatchesPicker } from 'react-color';
 import React, { useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { getUserByToken } from '../services/userApi';
+import UserInfoPopup from './UserInfoPopup';
 
 const UserProfile = () => {
   const { user, isLoading, isAuthenticated, error } = useAuth0();
@@ -152,6 +153,7 @@ const UserProfile = () => {
         <div className="w-25 h-25 m-3 p-3" style={{ backgroundColor: bgColor }}>
           Preview
         </div>
+        <UserInfoPopup />
       </div>
     );
   }

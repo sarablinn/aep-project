@@ -1,0 +1,75 @@
+import { useAuth0 } from '@auth0/auth0-react';
+import '../styles/navbar.css';
+import { useMutation } from '@tanstack/react-query';
+import { updateUser, UserResource } from '../services/userApi';
+import { useState } from 'react';
+import { ThreeDots } from 'react-loader-spinner';
+
+const UserInfoPopup = () => {
+  const { user, isLoading, error } = useAuth0();
+  const [showModal, setShowModal] = useState(false);
+
+  const { data: userResults, mutate: updateUserMutation } = useMutation({
+    mutationFn: (userResourceInput: UserResource) =>
+      updateUser(userResourceInput),
+    onMutate: () => console.log('mutate'),
+    onError: (err, variables, context) => {
+      console.log(err, variables, context);
+    },
+    onSettled: () => console.log('updateUserMutation Settled.'),
+  });
+
+  if (isLoading) {
+    return (
+      <div>
+        <ThreeDots height="30" width="30" color="white" ariaLabel="loading" />
+      </div>
+    );
+  }
+  if (error) {
+    return <div>ERROR: {error.message}</div>;
+  }
+
+  return (
+    <>
+      <button
+        className="mb-1 mr-1 rounded bg-pink-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-pink-600"
+        type="button"
+        onClick={() => setShowModal(true)}
+      >
+        Open regular modal
+      </button>
+      {showModal ? (
+        <>
+          <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
+            <div className="relative mx-auto my-6 w-auto max-w-3xl">
+              {/*content*/}
+              <div className="relative flex w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none focus:outline-none">
+                {/*header*/}
+                <div className="flex items-start">
+                  <button
+                    className="background-transparent mb-1 mr-1 px-6 py-2 text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear focus:outline-none"
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                  >
+                    Close
+                  </button>
+                  <button
+                    className="mb-1 mr-1 rounded bg-emerald-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-emerald-600"
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="fixed inset-0 z-40 bg-black opacity-25"></div>
+        </>
+      ) : null}
+    </>
+  );
+};
+
+export default UserInfoPopup;
