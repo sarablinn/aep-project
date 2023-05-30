@@ -5,13 +5,19 @@ import { updateUser, UserResource } from '../services/userApi';
 import React, { useEffect, useState } from 'react';
 import { ThreeDots } from 'react-loader-spinner';
 import PropTypes from 'prop-types';
+import { useAtom } from 'jotai/index';
+import { selectedUser } from '../services/Atoms';
+import { SwatchesPicker } from 'react-color';
 
 const UserInfoPopup = (
   { userResource }: { userResource: UserResource },
   { isVisible }: { isVisible: string },
 ) => {
   const { user, isLoading, error } = useAuth0();
+
   const [showModal, setShowModal] = useState(false);
+
+  const [currentUser, setCurrentUser] = useAtom(selectedUser);
 
   const [username, setUsername] = useState(userResource.username);
   const [email, setEmail] = useState(userResource.email);
@@ -48,15 +54,17 @@ const UserInfoPopup = (
     setLastName(event.target.value);
   };
 
-  const handleBackgroundChangeComplete = (event: any) => {
+  const handleBackgroundChange = (event: any) => {
+    userResource.backgroundColor = event.hex;
     setBackgroundColor(event.hex);
   };
-  const handleForegroundChangeComplete = (event: any) => {
+  const handleForegroundChange = (event: any) => {
+    userResource.foregroundColor = event.hex;
     setForegroundColor(event.hex);
   };
 
   const {
-    data: userResults,
+    data: resultsFromUpdateUser,
     mutate: updateUserMutation,
     error: updateUserError,
   } = useMutation({
@@ -96,6 +104,10 @@ const UserInfoPopup = (
       backgroundColor: bgColor,
       foregroundColor: fgColor,
     });
+
+    if (resultsFromUpdateUser) {
+      setCurrentUser(resultsFromUpdateUser);
+    }
     window.location.reload();
     setShowModal(false);
   }
@@ -173,6 +185,30 @@ const UserInfoPopup = (
                       ></input>
                     </div>
                   </form>
+                  <div className="m-3 flex p-3">
+                    <div>
+                      <p>Background Color</p>
+                      <SwatchesPicker
+                        className="user-profile-sketchpicker m-3 p-3"
+                        // header="Background Color"
+                        color={userResource?.backgroundColor}
+                        // onAccept={handleBackgroundChangeComplete}
+                        onChange={handleBackgroundChange}
+                        // onChangeComplete={}
+                      />
+                    </div>
+                    <div>
+                      <p>Foreground Color</p>
+                      <SwatchesPicker
+                        className="user-profile-sketchpicker m-3 p-3"
+                        // header="Foreground Color"
+                        color={userResource?.foregroundColor}
+                        // onAccept={handleForegroundChangeComplete}
+                        onChange={handleForegroundChange}
+                        // onChangeComplete={}
+                      />
+                    </div>
+                  </div>
                 </div>
                 <div className="flex items-start">
                   <button

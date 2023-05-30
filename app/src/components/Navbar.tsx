@@ -7,8 +7,8 @@ const Navbar = () => {
   const [user] = useAtom(selectedUser);
   return (
     <div
-      className={`flex justify-evenly border`}
-      style={{ backgroundColor: user.backgroundColor }}
+      className={`m-0 flex justify-evenly`}
+      style={{ backgroundColor: user.foregroundColor }}
     >
       <Link to={routes.BASE} search={{}} params={{}}>
         Home

@@ -5,10 +5,14 @@ import { UserDto, createUser, getUserByToken } from '../services/userApi';
 import { useEffect } from 'react';
 import { ThreeDots } from 'react-loader-spinner';
 import { routes } from '../utilities/Constants';
+import { useAtom } from 'jotai/index';
+import { selectedUser } from '../services/Atoms';
 
 const Login = () => {
   const { user, isLoading, isAuthenticated, error, loginWithRedirect, logout } =
     useAuth0();
+
+  const [currentUser, setCurrentUser] = useAtom(selectedUser);
 
   const { data: resultsFromGetUser, mutate: getUserMutation } = useMutation({
     mutationFn: (userToken: string) => getUserByToken(userToken),
@@ -19,27 +23,32 @@ const Login = () => {
     onSettled: () => console.log('getUserMutation Settled.'),
   });
 
-  const { mutate: createUserMutation } = useMutation({
-    mutationFn: (userDto: UserDto) => createUser(userDto),
-    onMutate: () => console.log('mutate'),
-    onError: (err, variables, context) => {
-      console.log(err, variables, context);
-    },
-    onSettled: () => console.log('createUserMutation Settled.'),
-  });
+  const { data: resultsFromCreateUser, mutate: createUserMutation } =
+    useMutation({
+      mutationFn: (userDto: UserDto) => createUser(userDto),
+      onMutate: () => console.log('mutate'),
+      onError: (err, variables, context) => {
+        console.log(err, variables, context);
+      },
+      onSettled: () => console.log('createUserMutation Settled.'),
+    });
 
   useEffect(() => {
     if (isAuthenticated && user) {
       const userToken = user.sub;
       if (userToken) {
         getUserMutation(userToken);
+
+        if (resultsFromGetUser) {
+          setCurrentUser(resultsFromGetUser);
+        }
       }
     }
   }, [isAuthenticated, user]);
 
   useEffect(() => {
     if (!resultsFromGetUser && user) {
-      console.log('CREATING USER NOW!!!!!!', resultsFromGetUser);
+      console.log('CREATING USER: ', resultsFromGetUser);
       let username;
       let firstName: string | null;
       let lastName: string | null;
@@ -73,6 +82,9 @@ const Login = () => {
       };
 
       createUserMutation(createUser);
+      if (resultsFromCreateUser) {
+        setCurrentUser(resultsFromCreateUser);
+      }
       window.location.replace(
         import.meta.env.VITE_AUTH0_BASE_URL + routes.PROFILE,
       );

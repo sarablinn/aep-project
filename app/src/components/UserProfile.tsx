@@ -1,13 +1,17 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { ThreeDots } from 'react-loader-spinner';
-import { PhotoshopPicker, SwatchesPicker } from 'react-color';
+import { SwatchesPicker } from 'react-color';
 import React, { useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { getUserByToken } from '../services/userApi';
+import { getUserByToken, updateUser, UserResource } from '../services/userApi';
 import UserInfoPopup from './UserInfoPopup';
+import { useAtom } from 'jotai/index';
+import { selectedUser } from '../services/Atoms';
 
 const UserProfile = () => {
   const { user, isLoading, isAuthenticated, error } = useAuth0();
+
+  const [currentUser, setCurrentUser] = useAtom(selectedUser);
 
   const [bgColor, setBackgroundColor] = useState('FFFFFF');
   const [fgColor, setForegroundColor] = useState('000000');
@@ -48,11 +52,31 @@ const UserProfile = () => {
     onSettled: () => console.log('getUserByTokenMutation Settled.'),
   });
 
+  const {
+    data: resultsFromUpdateUser,
+    mutate: updateUserMutation,
+    error: updateUserError,
+  } = useMutation({
+    mutationFn: (userResourceInput: UserResource) =>
+      updateUser(userResourceInput),
+    onMutate: () => console.log('mutate'),
+    onError: (err, variables, context) => {
+      console.log(err, variables, context);
+    },
+    onSettled: () => console.log('updateUserMutation Settled.'),
+  });
+
   useEffect(() => {
     if (isAuthenticated && user?.sub != null) {
       getUserByTokenMutation(user.sub);
     }
   }, [isAuthenticated, user]);
+
+  useEffect(() => {
+    if (userResource) {
+      setCurrentUser(userResource);
+    }
+  }, [userResource]);
 
   if (isLoading) {
     return (
@@ -64,9 +88,10 @@ const UserProfile = () => {
   if (error) {
     return <div>ERROR: {error.message}</div>;
   }
-  if (isAuthenticated) {
+  if (isAuthenticated && userResource) {
     return (
       <div className="container m-3 p-3">
+        <UserInfoPopup userResource={userResource} isVisible="INVISIBLE" />
         <div>
           <p>User token: {user?.sub}</p>
         </div>
@@ -76,66 +101,12 @@ const UserProfile = () => {
         <p>First Name: {userResource?.firstName}</p>
         <p>Last Name: {userResource?.lastName}</p>
 
-        <div className="m-3 p-3">
-          <div className="flex">
-            <div className="pr-3">
-              <label htmlFor="username-input">Username: </label>
-            </div>
-            <div>
-              <input
-                className="rounded-sm border border-black"
-                type="text"
-                name="username-input"
-                value={username}
-                onChange={changeUsername}
-              ></input>
-            </div>
-          </div>
-          <div className="flex">
-            <div className="pr-3">
-              <label>Email: </label>
-            </div>
-            <div>
-              <input
-                className="rounded-sm border border-black"
-                type="text"
-                value={email}
-                onChange={changeEmail}
-              ></input>
-            </div>
-          </div>
-          <div className="flex">
-            <div className="pr-3">
-              <label>First Name: </label>
-            </div>
-            <input
-              className="rounded-sm border border-black"
-              type="text"
-              value={firstName}
-              onChange={changeFirstName}
-            ></input>
-          </div>
-          <div className="flex">
-            <div className="pr-3">
-              <label>Last Name: </label>
-            </div>
-            <input
-              className="rounded-sm border border-black"
-              type="text"
-              value={lastName}
-              onChange={changeLastName}
-            ></input>
-          </div>
-        </div>
-
-        <div className="flex">
+        <div className="m-3 flex p-3">
           <div>
             <p>Background Color</p>
             <SwatchesPicker
               className="user-profile-sketchpicker m-3 p-3"
-              // header="Background Color"
               color={userResource?.backgroundColor}
-              // onAccept={handleBackgroundChangeComplete}
               onChangeComplete={handleBackgroundChangeComplete}
             />
           </div>
@@ -143,17 +114,15 @@ const UserProfile = () => {
             <p>Foreground Color</p>
             <SwatchesPicker
               className="user-profile-sketchpicker m-3 p-3"
-              // header="Foreground Color"
               color={userResource?.foregroundColor}
-              // onAccept={handleForegroundChangeComplete}
               onChangeComplete={handleForegroundChangeComplete}
             />
           </div>
         </div>
+
         <div className="w-25 h-25 m-3 p-3" style={{ backgroundColor: bgColor }}>
           Preview
         </div>
-        <UserInfoPopup />
       </div>
     );
   }
