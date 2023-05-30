@@ -145,13 +145,13 @@ export async function createUser(userDto: UserDto): Promise<UserResource> {
 export async function updateUser(
   userResource: UserResource,
 ): Promise<UserResource> {
-  const url = 'http://localhost:8000/users/' + userResource.userId;
+  const url = 'http://localhost:8000/users/' + userResource.userToken;
   console.log('UPDATE USER REACHED');
   return await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
     },
-    method: 'POST',
+    method: 'PUT',
     body: JSON.stringify(userResource),
   })
     // .then(response => console.log('RESPONSE', response))
