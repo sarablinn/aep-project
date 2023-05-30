@@ -4,13 +4,12 @@ import { Role } from './roleApi';
 
 const defaultUser = {
   userId: 0,
-  username: '',
+  username: 'guest',
   email: '',
   userToken: '',
   firstName: '',
   lastName: '',
   roleId: 1, // USER
-  // foregroundColor: '000000',
   backgroundColor: 'FFFFFF',
   foregroundColor: '000000',
 };
