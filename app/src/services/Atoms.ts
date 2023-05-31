@@ -10,8 +10,8 @@ const defaultUser = {
   firstName: '',
   lastName: '',
   roleId: 1, // USER
-  backgroundColor: 'FFFFFF',
-  foregroundColor: '000000',
+  backgroundColor: '#7986cb',
+  foregroundColor: 'FFFFFF',
 };
 
 const defaultRole = {
