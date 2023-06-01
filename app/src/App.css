@@ -1,6 +1,10 @@
 
-#user-icon {
+body {
+    min-height: 100%;
+    min-width: 100%
+}
 
+#user-icon {
     width: 100px;
     height: 100px;
     -moz-border-radius: 50%;
@@ -11,6 +15,6 @@
     font-size: 48px;
     text-align: center;
     font-weight: bold;
-
 }
+
 
