@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import { useAtom } from 'jotai/index';
 import { selectedUser } from '../services/Atoms';
 import { SwatchesPicker } from 'react-color';
+import useInput from '../hooks/useInput';
 
 const UserInfoPopup = (
   { userResource }: { userResource: UserResource },
@@ -25,6 +26,14 @@ const UserInfoPopup = (
   const [lastName, setLastName] = useState(userResource.lastName);
   const [bgColor, setBackgroundColor] = useState(userResource.backgroundColor);
   const [fgColor, setForegroundColor] = useState(userResource.foregroundColor);
+
+  // const {
+  //   value: usernameInput,
+  //   valueChangeHandler: setUsernameInput,
+  //   inputBlurHandler: usernameInputBlur,
+  //   hasError: usernameInputError,
+  //   isValid: usernameInputIsValid,
+  // } = useInput((value: string) => value.trim() !== '');
 
   useEffect(() => {
     if (isVisible == 'VISIBLE') {
@@ -128,7 +137,9 @@ const UserInfoPopup = (
               {/*content*/}
               <div className="relative flex w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none focus:outline-none">
                 {/*header*/}
-                <div></div>
+                <h2 className="mb-1 bg-pink-500 px-6 py-3 text-center text-sm font-bold uppercase text-white">
+                  Update User Profile
+                </h2>
                 <div className="m-3 p-3">
                   <form>
                     <div className="flex">
@@ -190,34 +201,28 @@ const UserInfoPopup = (
                       <p>Background Color</p>
                       <SwatchesPicker
                         className="user-profile-sketchpicker m-3 p-3"
-                        // header="Background Color"
                         color={userResource?.backgroundColor}
-                        // onAccept={handleBackgroundChangeComplete}
                         onChange={handleBackgroundChange}
-                        // onChangeComplete={}
                       />
                     </div>
                     <div>
                       <p>Foreground Color</p>
                       <SwatchesPicker
                         className="user-profile-sketchpicker m-3 p-3"
-                        // header="Foreground Color"
                         color={userResource?.foregroundColor}
-                        // onAccept={handleForegroundChangeComplete}
                         onChange={handleForegroundChange}
-                        // onChangeComplete={}
                       />
                     </div>
                   </div>
                 </div>
-                <div className="flex items-start">
-                  <button
-                    className="background-transparent mb-1 mr-1 px-6 py-2 text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear focus:outline-none"
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                  >
-                    Close
-                  </button>
+                <div className="flex self-center pb-3">
+                  {/*<button*/}
+                  {/*  className="background-transparent mb-1 mr-1 px-6 py-2 text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear focus:outline-none"*/}
+                  {/*  type="button"*/}
+                  {/*  onClick={() => setShowModal(false)}*/}
+                  {/*>*/}
+                  {/*  Close*/}
+                  {/*</button>*/}
                   <button
                     className="mb-1 mr-1 rounded bg-emerald-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-emerald-600"
                     type="button"

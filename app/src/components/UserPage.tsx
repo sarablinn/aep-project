@@ -62,7 +62,7 @@ const UserPage = () => {
         backgroundColor: bgColor,
         foregroundColor: '000000',
       }),
-    onMutate: () => console.log('mutate'),
+    onMutate: () => console.log('createUserMutation mutate'),
     onError: (err, variables, context) => {
       console.log(err, variables, context);
     },
@@ -72,7 +72,7 @@ const UserPage = () => {
   const { mutate: deleteUserMutation } = useMutation({
     // put parameters in ()
     mutationFn: (userId: number) => deleteUser(userId),
-    onMutate: () => console.log('DELETEUSERMUTATION mutate'),
+    onMutate: () => console.log('deleteUserMutation mutate'),
     onError: (err, variables, context) => {
       console.log(err, variables, context);
     },

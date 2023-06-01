@@ -14,34 +14,53 @@ const Login = () => {
 
   const [currentUser, setCurrentUser] = useAtom(selectedUser);
 
-  const { data: resultsFromGetUser, mutate: getUserMutation } = useMutation({
+  const {
+    data: resultsFromGetUser,
+    mutate: getUserMutation,
+    isLoading: loadingUser,
+  } = useMutation({
     mutationFn: (userToken: string) => getUserByToken(userToken),
-    onMutate: () => console.log('mutate'),
+    onMutate: () => console.log('mutate getUser'),
     onError: (err, variables, context) => {
       console.log(err, variables, context);
     },
-    onSettled: () => console.log('getUserMutation Settled.'),
+    onSettled: () => {
+      console.log('getUserMutation Settled.');
+    },
+    onSuccess: data => {
+      console.log('getUserMutation onSuccess REACHED!');
+      if (data) {
+        setCurrentUser(data);
+        console.log('THIS POINT HAS BEEN REACHED');
+      }
+    },
   });
 
-  const { data: resultsFromCreateUser, mutate: createUserMutation } =
-    useMutation({
-      mutationFn: (userDto: UserDto) => createUser(userDto),
-      onMutate: () => console.log('mutate'),
-      onError: (err, variables, context) => {
-        console.log(err, variables, context);
-      },
-      onSettled: () => console.log('createUserMutation Settled.'),
-    });
+  const {
+    data: resultsFromCreateUser,
+    mutate: createUserMutation,
+    isLoading: loadingCreateUser,
+  } = useMutation({
+    mutationFn: (userDto: UserDto) => createUser(userDto),
+    onMutate: () => console.log('mutate createUser'),
+    onError: (err, variables, context) => {
+      console.log(err, variables, context);
+    },
+    onSettled: () => {
+      console.log('createUserMutation Settled.');
+    },
+    onSuccess: data => {
+      if (data) {
+        setCurrentUser(data);
+      }
+    },
+  });
 
   useEffect(() => {
     if (isAuthenticated && user) {
       const userToken = user.sub;
       if (userToken) {
         getUserMutation(userToken);
-
-        if (resultsFromGetUser) {
-          setCurrentUser(resultsFromGetUser);
-        }
       }
     }
   }, [isAuthenticated, user]);
@@ -77,21 +96,19 @@ const Login = () => {
         firstName: firstName,
         lastName: lastName,
         roleId: 1,
-        backgroundColor: 'FFFFFF',
-        foregroundColor: '000000',
+        backgroundColor: currentUser.backgroundColor,
+        foregroundColor: currentUser.foregroundColor,
       };
 
       createUserMutation(createUser);
-      if (resultsFromCreateUser) {
-        setCurrentUser(resultsFromCreateUser);
-      }
+
       window.location.replace(
         import.meta.env.VITE_AUTH0_BASE_URL + routes.PROFILE,
       );
     }
   }, [resultsFromGetUser]);
 
-  if (isLoading) {
+  if (loadingUser || loadingCreateUser) {
     return (
       <div>
         <ThreeDots height="30" width="30" color="white" ariaLabel="loading" />
