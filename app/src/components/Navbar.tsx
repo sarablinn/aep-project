@@ -4,11 +4,12 @@ import { selectedUser } from './../services/Atoms';
 import { routes } from './../utilities/Constants';
 
 const Navbar = () => {
-  const [user] = useAtom(selectedUser);
+  const [currentUser] = useAtom(selectedUser);
+
   return (
     <div
-      className={`m-0 flex justify-evenly`}
-      style={{ backgroundColor: user.foregroundColor }}
+      className={`flex justify-evenly p-2 text-white`}
+      style={{ backgroundColor: currentUser.foregroundColor }}
     >
       <Link to={routes.BASE} search={{}} params={{}}>
         Home
