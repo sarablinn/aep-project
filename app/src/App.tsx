@@ -1,4 +1,5 @@
 import Login from './components/Login';
+import Footer from './components/Footer';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from '@tanstack/react-router';
 import { router } from './routes';
@@ -9,7 +10,6 @@ import { selectedUser } from './services/Atoms';
 import { useAuth0 } from '@auth0/auth0-react';
 import { routes } from './utilities/Constants';
 import { useEffect, useState } from 'react';
-import Loading from './utilities/Loading';
 
 //tanstack router boiler-plate
 declare module '@tanstack/react-router' {
@@ -22,28 +22,12 @@ const queryClient = new QueryClient();
 
 export default function App() {
   const [currentUser] = useAtom(selectedUser);
-  const { isLoading, isAuthenticated } = useAuth0();
+  const { isAuthenticated } = useAuth0();
   const [userInitials, setUserInitials] = useState('');
 
-  // const showPopup = () => {
-  //   if (isAuthenticated) {
-  //     console.log('IS AUTHENTICATED');
-  //     if (currentUser.firstName == '' || currentUser.lastName == '') {
-  //       console.log('EMPTY FIRSTNAME AND LASTNAME');
-  //
-  //       return (
-  //         <div>
-  //           <UserInfoPopup userResource={currentUser} isVisible="VISIBLE" />
-  //         </div>
-  //       );
-  //     }
-  //   }
-  //   return <></>;
-  // };
-
   useEffect(() => {
-    console.log('CURRENT USER ON MAIN LOGIN', currentUser);
-    if (currentUser.firstName && currentUser.lastName) {
+    // console.log('CURRENT USER ON MAIN LOGIN', currentUser);
+    if (isAuthenticated && currentUser.firstName && currentUser.lastName) {
       const firstInitial = currentUser.firstName.substring(0, 1);
       const lastInitial = currentUser.lastName.substring(0, 1);
       setUserInitials(firstInitial + lastInitial);
@@ -51,18 +35,14 @@ export default function App() {
       setUserInitials(currentUser.email.substring(0, 1));
     }
   }, [isAuthenticated, currentUser]);
-  //
-  // if (isLoading) {
-  //   return <Loading />;
-  // }
 
   return (
     <div>
-      {/*{showPopup()}*/}
       <div
-        className="container-fluid"
+        className="content-container container-fluid"
         style={{ backgroundColor: currentUser.backgroundColor }}
       >
+        {/*{showPopup()}*/}
         <QueryClientProvider client={queryClient}>
           <nav
             id="navbar-main"
@@ -89,9 +69,11 @@ export default function App() {
           </nav>
 
           <div className={`flex justify-evenly border`}></div>
+
           <RouterProvider router={router} />
         </QueryClientProvider>
       </div>
+      <Footer />
     </div>
   );
 }
