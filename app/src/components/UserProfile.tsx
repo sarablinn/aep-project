@@ -1,5 +1,4 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { ThreeDots } from 'react-loader-spinner';
 import { SwatchesPicker } from 'react-color';
 import React, { useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';

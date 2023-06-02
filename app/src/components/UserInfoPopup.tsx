@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import { useAtom } from 'jotai/index';
 import { selectedUser } from '../services/Atoms';
 import { SwatchesPicker } from 'react-color';
+import useEnteredInput from '../hooks/useEnteredInput';
 import useInput from '../hooks/useInput';
 
 const UserInfoPopup = (
@@ -21,19 +22,25 @@ const UserInfoPopup = (
   const [currentUser, setCurrentUser] = useAtom(selectedUser);
 
   const [username, setUsername] = useState(userResource.username);
-  const [email, setEmail] = useState(userResource.email);
+  const [email] = useState(userResource.email);
   const [firstName, setFirstName] = useState(userResource.firstName);
   const [lastName, setLastName] = useState(userResource.lastName);
   const [bgColor, setBackgroundColor] = useState(userResource.backgroundColor);
   const [fgColor, setForegroundColor] = useState(userResource.foregroundColor);
 
   // const {
-  //   value: usernameInput,
-  //   valueChangeHandler: setUsernameInput,
-  //   inputBlurHandler: usernameInputBlur,
-  //   hasError: usernameInputError,
-  //   isValid: usernameInputIsValid,
-  // } = useInput((value: string) => value.trim() !== '');
+  //   input: enteredValue,
+  //   onInputChange: onUsernameChange,
+  //   onIsFocused: onUsernameFocus,
+  //   hasError: hasUsernameError,
+  //   errorMessage: usernameErrMsg,
+  //   isValid: isValidUsername,
+  //   reset: resetUsernameInput,
+  // } = useInput((input: string) => input.trim() !== '');
+
+  // useEffect(() => {
+  //   setCurrentUser(userResource);
+  // }, [userResource]);
 
   useEffect(() => {
     if (isVisible == 'VISIBLE') {
@@ -49,10 +56,6 @@ const UserInfoPopup = (
 
   const changeUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
-  };
-
-  const changeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
   };
 
   const changeFirstName = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,14 +79,26 @@ const UserInfoPopup = (
     data: resultsFromUpdateUser,
     mutate: updateUserMutation,
     error: updateUserError,
+    isSuccess: updateUserSuccessful,
   } = useMutation({
     mutationFn: (userResourceInput: UserResource) =>
       updateUser(userResourceInput),
-    onMutate: () => console.log('mutate'),
-    onError: (err, variables, context) => {
-      console.log(err, variables, context);
+    onMutate: () => console.log('mutate updateUser'),
+    onError: (error, variables, context) => {
+      console.log(error, variables, context);
     },
-    onSettled: () => console.log('updateUserMutation Settled.'),
+    onSuccess: data => {
+      setCurrentUser(data);
+      setShowModal(false);
+      window.location.reload();
+    },
+    onSettled: () => {
+      console.log('updateUserMutation Settled.');
+      if (error) {
+        setShowModal(true);
+        console.log('THERE WAS AN ERROR');
+      }
+    },
   });
 
   if (isLoading) {
@@ -102,7 +117,7 @@ const UserInfoPopup = (
   // }
 
   function saveChangesAndReload() {
-    updateUserMutation({
+    const updatedUser = {
       userId: userResource.userId,
       username: username,
       email: email,
@@ -112,14 +127,12 @@ const UserInfoPopup = (
       roleId: userResource.roleId,
       backgroundColor: bgColor,
       foregroundColor: fgColor,
-    });
-
-    if (resultsFromUpdateUser) {
-      setCurrentUser(resultsFromUpdateUser);
-    }
-    window.location.reload();
-    setShowModal(false);
+    };
+    console.log('SAVE CHANGES AND RELOAD', updatedUser);
+    updateUserMutation(updatedUser);
   }
+
+  function validateUsername(username: string) {}
 
   return (
     <>
@@ -141,61 +154,45 @@ const UserInfoPopup = (
                   Update User Profile
                 </h2>
                 <div className="m-3 p-3">
-                  <form>
-                    <div className="flex">
-                      <div className="pr-3">
-                        <label htmlFor="username-input">Username: </label>
-                      </div>
-                      <div>
-                        <input
-                          className="rounded-sm border border-black"
-                          type="text"
-                          name="username-input"
-                          value={username}
-                          onChange={changeUsername}
-                          required
-                        ></input>
-                      </div>
+                  <div className="flex">
+                    <div className="pr-3">
+                      <label htmlFor="username-input">Username: </label>
                     </div>
-                    <div className="flex">
-                      <div className="pr-3">
-                        <label>Email: </label>
-                      </div>
-                      <div>
-                        <input
-                          className="rounded-sm border border-black"
-                          type="text"
-                          value={email}
-                          onChange={changeEmail}
-                          required
-                        ></input>
-                      </div>
-                    </div>
-                    <div className="flex">
-                      <div className="pr-3">
-                        <label>First Name: </label>
-                      </div>
+                    <div>
                       <input
                         className="rounded-sm border border-black"
                         type="text"
-                        value={firstName}
-                        onChange={changeFirstName}
+                        name="username-input"
+                        value={username}
+                        onChange={changeUsername}
                         required
                       ></input>
                     </div>
-                    <div className="flex">
-                      <div className="pr-3">
-                        <label>Last Name: </label>
-                      </div>
-                      <input
-                        className="rounded-sm border border-black"
-                        type="text"
-                        value={lastName}
-                        onChange={changeLastName}
-                        required
-                      ></input>
+                  </div>
+                  <div className="flex">
+                    <div className="pr-3">
+                      <label>First Name: </label>
                     </div>
-                  </form>
+                    <input
+                      className="rounded-sm border border-black"
+                      type="text"
+                      value={firstName}
+                      onChange={changeFirstName}
+                      required
+                    ></input>
+                  </div>
+                  <div className="flex">
+                    <div className="pr-3">
+                      <label>Last Name: </label>
+                    </div>
+                    <input
+                      className="rounded-sm border border-black"
+                      type="text"
+                      value={lastName}
+                      onChange={changeLastName}
+                      required
+                    ></input>
+                  </div>
                   <div className="m-3 flex p-3">
                     <div>
                       <p>Background Color</p>

@@ -1,7 +1,6 @@
 
 nav {
     min-width: 100%;
-    /*background-color: lightslategrey;*/
 }
 
 .navbar-main {
@@ -13,6 +12,8 @@ nav .title-text {
     text-align: center;
     font-size: 4em;
     color: white;
+    flex-direction: row;
+    align-items: center;
 }
 
 .navbar-btns {
