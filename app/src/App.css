@@ -1,7 +1,19 @@
 
 body {
     min-height: 100%;
-    min-width: 100%
+    min-width: 100%;
+}
+
+.content-container {
+    min-height: 100vh;
+}
+
+footer {
+    min-height: fit-content;
+    height: 100px;
+    position: relative;
+    left: 0;
+    bottom: 0;
 }
 
 #user-icon {
