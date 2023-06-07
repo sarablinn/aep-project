@@ -1,14 +1,13 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import '../styles/navbar.css';
-import { useMutation } from '@tanstack/react-query';
-import { updateUser, UserResource } from '../services/userApi';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { getUsers, updateUser, UserResource } from '../services/userApi';
 import React, { useEffect, useState } from 'react';
 import { ThreeDots } from 'react-loader-spinner';
 import PropTypes from 'prop-types';
 import { useAtom } from 'jotai/index';
 import { selectedUser } from '../services/Atoms';
 import { SwatchesPicker } from 'react-color';
-import useEnteredInput from '../hooks/useEnteredInput';
 import useInput from '../hooks/useInput';
 
 const UserInfoPopup = (
@@ -28,19 +27,112 @@ const UserInfoPopup = (
   const [bgColor, setBackgroundColor] = useState(userResource.backgroundColor);
   const [fgColor, setForegroundColor] = useState(userResource.foregroundColor);
 
-  // const {
-  //   input: enteredValue,
-  //   onInputChange: onUsernameChange,
-  //   onIsFocused: onUsernameFocus,
-  //   hasError: hasUsernameError,
-  //   errorMessage: usernameErrMsg,
-  //   isValid: isValidUsername,
-  //   reset: resetUsernameInput,
-  // } = useInput((input: string) => input.trim() !== '');
+  // 'hidden' or 'visible' error message div
+  const [usernameErrorState, setUsernameErrorState] = useState('hidden');
+  const [firstNameErrorState, setFirstNameErrorState] = useState('hidden');
+  const [lastNameErrorState, setLastNameErrorState] = useState('hidden');
 
-  // useEffect(() => {
-  //   setCurrentUser(userResource);
-  // }, [userResource]);
+  /**
+   * Validates username input and returns an error message string or an empty
+   * string if no error.
+   * @param initialValue
+   * @param username
+   */
+  const validateUsername = (initialValue: string, username: string) => {
+    console.log('VALIDATING: ' + username);
+    let errorMsg = '';
+    if (allUsersData) {
+      if (username.trim().length == 0) {
+        console.log('ValidateUser clause 1.');
+        return ' Username required.';
+      }
+
+      if (username.trim().length < 4) {
+        console.log('ValidateUser clause 2.');
+        return ' Username must be at least 4 characters.';
+      }
+
+      allUsersData.forEach(function (userData) {
+        console.log('ValidateUser clause 3: ' + userData.username);
+        if (userData.username == username) {
+          if (username != initialValue) {
+            console.log('ValidateUser DUPLICATE USERNAME FOUND.');
+            errorMsg = ' Username already in use.';
+          }
+        }
+      });
+      return errorMsg;
+    }
+  };
+
+  /**
+   * Validates first name and last name input -- checks that the input is not empty
+   * -- and returns an error message string or an empty string if no error.
+   * @param initialValue
+   * @param name
+   */
+  const validateName = (initialValue: string, name: string) => {
+    console.log('VALIDATING: ' + name);
+    if (name.trim().length == 0) {
+      return ' required.';
+    } else {
+      return '';
+    }
+  };
+
+  const {
+    input: usernameInput,
+    setStartValue: setInitialUsername,
+    handleInputChange: handleUsernameChange,
+    setIsFocused: setUsernameFocus,
+    errorMessage: usernameErrMsg,
+    isValid: isValidUsername,
+    reset: resetUsernameInput,
+  } = useInput(validateUsername, username);
+
+  useEffect(() => {
+    if (usernameErrMsg != '') {
+      setUsernameErrorState('visible');
+    } else {
+      setUsernameErrorState('hidden');
+    }
+  }, [usernameErrMsg]);
+
+  const {
+    input: firstNameInput,
+    setStartValue: setInitialFirstName,
+    handleInputChange: handleFirstNameChange,
+    setIsFocused: setFirstNameFocus,
+    errorMessage: firstNameErrMsg,
+    isValid: isValidFirstName,
+    reset: resetFirstNameInput,
+  } = useInput(validateName, firstName);
+
+  useEffect(() => {
+    if (firstNameErrMsg != '') {
+      setFirstNameErrorState('visible');
+    } else {
+      setFirstNameErrorState('hidden');
+    }
+  }, [firstNameErrMsg]);
+
+  const {
+    input: lastNameInput,
+    setStartValue: setInitialLastName,
+    handleInputChange: handleLastNameChange,
+    setIsFocused: setLastNameFocus,
+    errorMessage: lastNameErrMsg,
+    isValid: isValidLastName,
+    reset: resetLastNameInput,
+  } = useInput(validateName, lastName);
+
+  useEffect(() => {
+    if (lastNameErrMsg != '') {
+      setLastNameErrorState('visible');
+    } else {
+      setLastNameErrorState('hidden');
+    }
+  }, [lastNameErrMsg]);
 
   useEffect(() => {
     if (isVisible == 'VISIBLE') {
@@ -78,6 +170,7 @@ const UserInfoPopup = (
   const {
     data: resultsFromUpdateUser,
     mutate: updateUserMutation,
+    isLoading: updateUserLoading,
     error: updateUserError,
     isSuccess: updateUserSuccessful,
   } = useMutation({
@@ -101,6 +194,15 @@ const UserInfoPopup = (
     },
   });
 
+  const {
+    isLoading: usersLoading,
+    error: errorGettingUsers,
+    data: allUsersData,
+  } = useQuery({
+    queryKey: [`users`],
+    queryFn: () => getUsers(),
+  });
+
   if (isLoading) {
     return (
       <div>
@@ -112,27 +214,26 @@ const UserInfoPopup = (
     return <div>ERROR: {error.message}</div>;
   }
 
-  // if (updateUserError) {
-  //   return <div>ERROR: {updateUserError}</div>;
-  // }
-
+  /**
+   * Updates the user with the new changes.
+   */
   function saveChangesAndReload() {
-    const updatedUser = {
-      userId: userResource.userId,
-      username: username,
-      email: email,
-      userToken: userResource.userToken,
-      firstName: firstName,
-      lastName: lastName,
-      roleId: userResource.roleId,
-      backgroundColor: bgColor,
-      foregroundColor: fgColor,
-    };
-    console.log('SAVE CHANGES AND RELOAD', updatedUser);
-    updateUserMutation(updatedUser);
+    if (isValidUsername && isValidFirstName && isValidLastName) {
+      const updatedUser = {
+        userId: userResource.userId,
+        username: username,
+        email: email,
+        userToken: userResource.userToken,
+        firstName: firstName,
+        lastName: lastName,
+        roleId: userResource.roleId,
+        backgroundColor: bgColor,
+        foregroundColor: fgColor,
+      };
+      console.log('SAVE CHANGES AND RELOAD', updatedUser);
+      updateUserMutation(updatedUser);
+    }
   }
-
-  function validateUsername(username: string) {}
 
   return (
     <>
@@ -154,63 +255,132 @@ const UserInfoPopup = (
                   Update User Profile
                 </h2>
                 <div className="m-3 p-3">
-                  <div className="flex">
-                    <div className="pr-3">
-                      <label htmlFor="username-input">Username: </label>
+                  <form>
+                    <div className="flex py-4">
+                      <div className="pr-3">
+                        <label htmlFor="username-input">Username: </label>
+                      </div>
+                      <div>
+                        <input
+                          className="rounded-sm border border-black"
+                          type="text"
+                          name="username-input"
+                          value={usernameInput || username}
+                          onClick={setInitialUsername}
+                          onFocus={setUsernameFocus}
+                          onChange={handleUsernameChange}
+                          onBlur={changeUsername}
+                          required
+                        ></input>
+                        <span
+                          className="relative mb-1 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700"
+                          role="alert"
+                          style={{ visibility: usernameErrorState || 'hidden' }}
+                        >
+                          <strong className="font-bold">Error:</strong>
+                          <span className="block sm:inline">
+                            {usernameErrMsg}
+                          </span>
+                          <span className="absolute bottom-0 right-0 top-0 px-4 py-3">
+                            <svg
+                              className="h-6 w-6 fill-current text-red-500"
+                              role="button"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 20 20"
+                            ></svg>
+                          </span>
+                        </span>
+                      </div>
                     </div>
-                    <div>
+
+                    <div className="flex py-4">
+                      <div className="pr-3">
+                        <label htmlFor="firstname-input">First Name: </label>
+                      </div>
                       <input
                         className="rounded-sm border border-black"
                         type="text"
-                        name="username-input"
-                        value={username}
-                        onChange={changeUsername}
+                        name="firstname-input"
+                        value={firstNameInput || firstName}
+                        onClick={setInitialFirstName}
+                        onFocus={setFirstNameFocus}
+                        onChange={handleFirstNameChange}
+                        onBlur={changeFirstName}
                         required
                       ></input>
+                      <span
+                        className="relative mb-1 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700"
+                        role="alert"
+                        style={{ visibility: firstNameErrorState || 'hidden' }}
+                      >
+                        <strong className="font-bold">Error:</strong>
+                        <span className="block sm:inline">
+                          {firstNameErrMsg}
+                        </span>
+                        <span className="absolute bottom-0 right-0 top-0 px-4 py-3">
+                          <svg
+                            className="h-6 w-6 fill-current text-red-500"
+                            role="button"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                          ></svg>
+                        </span>
+                      </span>
                     </div>
-                  </div>
-                  <div className="flex">
-                    <div className="pr-3">
-                      <label>First Name: </label>
+
+                    <div className="flex py-4">
+                      <div className="pr-3">
+                        <label htmlFor="lastname-input">Last Name: </label>
+                      </div>
+                      <input
+                        className="rounded-sm border border-black"
+                        type="text"
+                        name="lastname-input"
+                        value={lastNameInput || lastName}
+                        onClick={setInitialLastName}
+                        onFocus={setLastNameFocus}
+                        onChange={handleLastNameChange}
+                        onBlur={changeLastName}
+                        required
+                      ></input>
+                      <span
+                        className="relative mb-1 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700"
+                        role="alert"
+                        style={{ visibility: lastNameErrorState || 'hidden' }}
+                      >
+                        <strong className="font-bold">Error:</strong>
+                        <span className="block sm:inline">
+                          {lastNameErrMsg}
+                        </span>
+                        <span className="absolute bottom-0 right-0 top-0 px-4 py-3">
+                          <svg
+                            className="h-6 w-6 fill-current text-red-500"
+                            role="button"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                          ></svg>
+                        </span>
+                      </span>
                     </div>
-                    <input
-                      className="rounded-sm border border-black"
-                      type="text"
-                      value={firstName}
-                      onChange={changeFirstName}
-                      required
-                    ></input>
-                  </div>
-                  <div className="flex">
-                    <div className="pr-3">
-                      <label>Last Name: </label>
+                    <div className="m-3 flex p-3">
+                      <div>
+                        <p>Background Color</p>
+                        <SwatchesPicker
+                          className="user-profile-sketchpicker m-3 p-3"
+                          color={userResource?.backgroundColor}
+                          onChange={handleBackgroundChange}
+                        />
+                      </div>
+                      <div>
+                        <p>Foreground Color</p>
+                        <SwatchesPicker
+                          className="user-profile-sketchpicker m-3 p-3"
+                          color={userResource?.foregroundColor}
+                          onChange={handleForegroundChange}
+                        />
+                      </div>
                     </div>
-                    <input
-                      className="rounded-sm border border-black"
-                      type="text"
-                      value={lastName}
-                      onChange={changeLastName}
-                      required
-                    ></input>
-                  </div>
-                  <div className="m-3 flex p-3">
-                    <div>
-                      <p>Background Color</p>
-                      <SwatchesPicker
-                        className="user-profile-sketchpicker m-3 p-3"
-                        color={userResource?.backgroundColor}
-                        onChange={handleBackgroundChange}
-                      />
-                    </div>
-                    <div>
-                      <p>Foreground Color</p>
-                      <SwatchesPicker
-                        className="user-profile-sketchpicker m-3 p-3"
-                        color={userResource?.foregroundColor}
-                        onChange={handleForegroundChange}
-                      />
-                    </div>
-                  </div>
+                  </form>
                 </div>
                 <div className="flex self-center pb-3">
                   {/*<button*/}

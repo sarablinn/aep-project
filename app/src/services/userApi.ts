@@ -93,6 +93,25 @@ export async function getUserByToken(userToken: string): Promise<UserResource> {
     });
 }
 
+export async function getUserById(userId: number): Promise<UserResource> {
+  const url = 'http://localhost:8000/users/id/' + userId;
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'GET',
+  })
+    .then(response => response.json())
+    .then((data: UserResource) => {
+      console.log('Success getUserByToken():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('Error getUserByToken():', error);
+      throw error;
+    });
+}
+
 export async function createUser(userDto: UserDto): Promise<UserResource> {
   const url = 'http://localhost:8000/users';
   return await fetch(url, {
@@ -146,7 +165,6 @@ export async function updateUser(
   userResource: UserResource,
 ): Promise<UserResource> {
   const url = 'http://localhost:8000/users/' + userResource.userToken;
-  console.log('UPDATE USER REACHED');
   return await fetch(url, {
     headers: {
       'Content-Type': 'application/json',

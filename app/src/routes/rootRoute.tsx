@@ -1,15 +1,18 @@
 import { Outlet, RootRoute } from '@tanstack/react-router';
 import Navbar from './../components/Navbar';
-// import Homepage from './../components/Homepage';
+
+function Root() {
+  return (
+    <>
+      <Navbar />
+      <Outlet />
+    </>
+  );
+}
 
 const rootRoute = new RootRoute({
   component: () => {
-    return (
-      <>
-        <Navbar />
-        <Outlet />
-      </>
-    );
+    return Root();
   },
 });
 

@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[UniqueEntity('email')]
+#[UniqueEntity('email','username')]
 class User
 {
     #[ORM\Id]

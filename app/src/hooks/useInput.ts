@@ -1,39 +1,56 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import React from 'react';
 
-const useInput = (validateValue: (value: string) => boolean) => {
-  const [enteredValue, setEnteredValue] = useState('');
-  const [isTouched, setIsTouched] = useState(false);
+const useInput = (validateInput, startingValue: string) => {
+  const [initialValue] = useState(startingValue);
+  const [enteredValue, setEnteredValue] = useState(startingValue);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isValid, setIsValid] = useState(true);
+  const [isFocused, setToFocused] = useState(false);
 
-  const valueIsValid = validateValue(enteredValue);
-  const hasError = !valueIsValid && isTouched;
-
-  const setInitialValue = (value: string) => {
-    setEnteredValue(value);
+  const setStartValue = () => {
+    console.log('Starting value is set to ' + startingValue);
+    setEnteredValue(startingValue);
   };
 
-  const valueChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('Input change is being handled: enteredValue: ' + enteredValue);
     setEnteredValue(event.target.value);
   };
 
-  // a blur event occurs when an element has lost focus
-  const inputBlurHandler = () => {
-    setIsTouched(true);
+  const setIsFocused = () => {
+    console.log('Element has been set to focus.');
+    setToFocused(true);
   };
 
   const reset = () => {
-    setEnteredValue('');
-    setIsTouched(false);
+    setEnteredValue(initialValue);
+    setToFocused(false);
   };
 
+  useEffect(() => {
+    setErrorMessage(validateInput(initialValue, enteredValue));
+    console.log(
+      'Input Validation useEffect: enteredValue: ' +
+        enteredValue +
+        ': error message set to: ' +
+        errorMessage,
+    );
+  }, [enteredValue, validateInput]);
+
+  useEffect(() => {
+    setIsValid(errorMessage == '');
+    console.log('IsValid set to: ' + isValid);
+  }, [validateInput]);
+
   return {
-    value: enteredValue,
-    valueChangeHandler,
-    inputBlurHandler,
-    hasError,
-    isValid: valueIsValid,
+    input: enteredValue,
+    setStartValue,
+    handleInputChange,
+    setIsFocused,
+    errorMessage,
+    isValid,
     reset,
-    setInitialValue,
   };
 };
 

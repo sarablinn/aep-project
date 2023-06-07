@@ -16,6 +16,7 @@ use JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 
 class UserController extends ApiController
 {
@@ -33,16 +34,16 @@ class UserController extends ApiController
     }
 
 
-//    /**
-//     * @param string $user_id
-//     * @return Response
-//     */
-//    #[Route('/users/{user_id}', methods: ['GET'])]
-//    public function getUserById(string $user_id): Response
-//    {
-//        $user = $this->userService->getUserById($user_id);
-//        return $this->json($this->userService->mapToDto($user));
-//    }
+    /**
+     * @param string $user_id
+     * @return Response
+     */
+    #[Route('/users/id/{user_id}', methods: ['GET'])]
+    public function getUserById(string $user_id): Response
+    {
+        $user = $this->userService->getUserById($user_id);
+        return $this->json($this->userService->mapToDto($user));
+    }
 
     /**
      * @param string $userToken
@@ -95,6 +96,11 @@ class UserController extends ApiController
                 . $constraintViolationException->getMessage()
                 . " " . $constraintViolationException->getTraceAsString(),
                 409);
+        } catch (NotEncodableValueException $notEncodableValueException) {
+            return $this->json("ERROR: NotEncodableValueException: "
+                . $notEncodableValueException->getMessage()
+                . " " . $notEncodableValueException->getTraceAsString(),
+                406);
         }
 
         return $this->json($userDto);
@@ -149,6 +155,11 @@ class UserController extends ApiController
             return $this->json($userDto);
         } catch (EntityNotFoundException $exception) {
             return $this->json($exception->getMessage());
+        } catch (NotEncodableValueException $notEncodableValueException) {
+            return $this->json("ERROR: NotEncodableValueException: "
+                . $notEncodableValueException->getMessage()
+                . " " . $notEncodableValueException->getTraceAsString(),
+                406);
         }
     }
 

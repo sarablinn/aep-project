@@ -26,7 +26,6 @@ export default function App() {
   const [userInitials, setUserInitials] = useState('');
 
   useEffect(() => {
-    // console.log('CURRENT USER ON MAIN LOGIN', currentUser);
     if (isAuthenticated && currentUser.firstName && currentUser.lastName) {
       const firstInitial = currentUser.firstName.substring(0, 1);
       const lastInitial = currentUser.lastName.substring(0, 1);

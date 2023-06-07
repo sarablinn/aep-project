@@ -15,7 +15,7 @@ const Navbar = () => {
         Home
       </Link>
       <Link to={routes.USERS} search={{}} params={{}}>
-        User Page
+        Users Page
       </Link>
       <Link to={routes.ROLE} search={{}} params={{}}>
         Roles
