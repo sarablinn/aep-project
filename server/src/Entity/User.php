@@ -7,7 +7,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[UniqueEntity('email','username')]
 class User
 {
     #[ORM\Id]
@@ -27,7 +26,7 @@ class User
     #[ORM\Column(length: 75, nullable: true)]
     private ?string $last_name = null;
 
-    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\ManyToOne(targetEntity: Role::class, inversedBy: 'users')]
     #[ORM\JoinColumn(name: 'role_id', referencedColumnName: 'role_id',
         nullable: false)]
     private ?Role $role = null;
@@ -38,7 +37,7 @@ class User
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $foreground_color = null;
 
-    #[ORM\Column(length: 50, nullable: true)]
+    #[ORM\Column(length: 50, unique: true, nullable: true)]
     private ?string $user_token = null;
 
 

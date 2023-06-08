@@ -19,7 +19,7 @@ class Role
     private ?string $role_name = null;
 
     #[ORM\OneToMany(mappedBy: 'Role', targetEntity: User::class)]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'user_id')]
+//    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'user_id')]
     private Collection $users;
 
 
