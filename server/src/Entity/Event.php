@@ -26,13 +26,19 @@ class Event
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $end_date = null;
 
+    #[ORM\ManyToOne(targetEntity: 'user')]
     #[ORM\JoinColumn(name: 'created_by_user_id',
         referencedColumnName: 'user_id',
         nullable: false)]
     private ?User $event_creator = null;
 
-    #[ORM\ManyToMany(targetEntity: Game::class, mappedBy: 'Game')]
+    /**
+     * @var Collection<int, Game>
+     */
+    #[ORM\ManyToMany(targetEntity: Game::class, inversedBy: 'games')]
     #[ORM\JoinTable(name: 'game_event')]
+    #[ORM\JoinColumn(name: 'event_id', referencedColumnName: 'event_id')]
+    #[ORM\InverseJoinColumn(name: 'game_id', referencedColumnName: 'game_id')]
     private Collection $event_games;
 
 

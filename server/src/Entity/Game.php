@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\GameRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -15,11 +17,13 @@ class Game
     #[ORM\Column]
     private ?int $game_id = null;
 
+    #[ORM\ManyToOne(targetEntity: 'user')]
     #[ORM\JoinColumn(name: 'player_user_id',
         referencedColumnName: 'user_id',
         nullable: false)]
     private ?User $user = null;
 
+    #[ORM\ManyToOne(targetEntity: 'mode')]
     #[ORM\JoinColumn(name: 'mode_id',
         referencedColumnName: 'mode_id',
         nullable: false)]
@@ -32,6 +36,16 @@ class Game
     #[ORM\Column(nullable: false)]
     private ?int $score = null;
 
+    /**
+     * @var Collection<int, Event>
+     */
+    #[ManyToMany(targetEntity: Event::class, mappedBy: 'event_games')]
+    private Collection $events;
+
+
+    public function __construct() {
+        $this->events = new ArrayCollection();
+    }
 
     public function getGameId(): ?int
     {
@@ -82,6 +96,30 @@ class Game
     public function setScore(int $score): self
     {
         $this->score = $score;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Event>
+     */
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addEvent(Event $event): self
+    {
+        if (!$this->events->contains($event)) {
+            $this->events->add($event);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Event $event): self
+    {
+        $this->events->removeElement($event);
 
         return $this;
     }
