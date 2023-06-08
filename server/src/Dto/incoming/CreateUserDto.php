@@ -10,25 +10,25 @@ class CreateUserDto
 
     #[NotNull]
     #[Type('string')]
-    private string $username;
+    private ?string $username;
 
     #[NotNull]
     #[Type('string')]
-    private string $email;
+    private ?string $email;
 
     #[Type('string')]
-    private string $user_token;
-
-    #[NotNull]
-    #[Type('string')]
-    private string $first_name;
+    private ?string $user_token;
 
     #[NotNull]
     #[Type('string')]
-    private string $last_name;
+    private ?string $first_name;
+
+    #[NotNull]
+    #[Type('string')]
+    private ?string $last_name;
 
     #[Type('int')]
-    private int $role_id;
+    private ?int $role_id;
 
     #[Type('string')]
     private ?string $foreground_color;
@@ -46,9 +46,9 @@ class CreateUserDto
     }
 
     /**
-     * @param string $username
+     * @param ?string $username
      */
-    public function setUsername(string $username): void
+    public function setUsername(?string $username): void
     {
         $this->username = $username;
     }
@@ -62,9 +62,9 @@ class CreateUserDto
     }
 
     /**
-     * @param string $email
+     * @param ?string $email
      */
-    public function setEmail(string $email): void
+    public function setEmail(?string $email): void
     {
         $this->email = $email;
     }
@@ -97,9 +97,9 @@ class CreateUserDto
     }
 
     /**
-     * @param string $first_name
+     * @param ?string $first_name
      */
-    public function setFirstName(string $first_name): void
+    public function setFirstName(?string $first_name): void
     {
         $this->first_name = $first_name;
     }
@@ -113,9 +113,9 @@ class CreateUserDto
     }
 
     /**
-     * @param string $last_name
+     * @param ?string $last_name
      */
-    public function setLastName(string $last_name): void
+    public function setLastName(?string $last_name): void
     {
         $this->last_name = $last_name;
     }

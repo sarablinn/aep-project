@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
-import { deleteUser, getUser, getUsers } from './../services/userApi';
+import { deleteUser, getUserById, getUsers } from './../services/userApi';
 import Loading from './../utilities/Loading';
 import Error from './../utilities/Error';
 import { selectedUser } from './../services/Atoms';
@@ -51,17 +51,7 @@ const UserPage = () => {
 
   const { data, mutate: createMutate } = useMutation({
     // put parameters in ()
-    mutationFn: () =>
-      getUser({
-        username: username,
-        email: email,
-        userToken: userToken,
-        firstName: firstName,
-        lastName: lastName,
-        roleId: roleId,
-        backgroundColor: bgColor,
-        foregroundColor: '000000',
-      }),
+    mutationFn: () => getUserById(userId),
     onMutate: () => console.log('createUserMutation mutate'),
     onError: (err, variables, context) => {
       console.log(err, variables, context);

@@ -53,27 +53,6 @@ export async function getUsers(): Promise<UserResource[]> {
     });
 }
 
-export async function getUser(getUser: {
-  userId: number;
-}): Promise<UserResource> {
-  const url = 'http://localhost:8000/users/' + getUser.userId;
-  return await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    method: 'GET',
-  })
-    .then(response => response.json())
-    .then((data: UserResource) => {
-      console.log('Success getUser():', data);
-      return data;
-    })
-    .catch(error => {
-      console.error('Error getUser():', error);
-      throw error;
-    });
-}
-
 export async function getUserByToken(userToken: string): Promise<UserResource> {
   const url = 'http://localhost:8000/users/' + userToken;
   return await fetch(url, {
@@ -121,7 +100,6 @@ export async function createUser(userDto: UserDto): Promise<UserResource> {
     method: 'POST',
     body: JSON.stringify(userDto),
   })
-    // .then(response => console.log('RESPONSE', response))
     .then(response => {
       console.log('RESPONSE', response);
       return response.json();

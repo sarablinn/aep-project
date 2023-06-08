@@ -26,7 +26,7 @@ class User
     #[ORM\Column(length: 75, nullable: true)]
     private ?string $last_name = null;
 
-    #[ORM\ManyToOne(targetEntity: Role::class, inversedBy: 'users')]
+    #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(name: 'role_id', referencedColumnName: 'role_id',
         nullable: false)]
     private ?Role $role = null;

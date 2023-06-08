@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20230608154544 extends AbstractMigration
+final class Version20230608185020 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -33,7 +33,7 @@ final class Version20230608154544 extends AbstractMigration
         $this->addSql('CREATE UNIQUE INDEX ux_user_email ON "user" (email)');
         $this->addSql('CREATE UNIQUE INDEX ux_user_username ON "user" (username)');
         $this->addSql('CREATE UNIQUE INDEX ux_user_user_token ON "user" (user_token)');
-//        $this->addSql('CREATE INDEX IDX_8D93D649D60322AC ON "user" (role_id)');
+        $this->addSql('CREATE INDEX ix_role_user ON "user" (role_id)');
         $this->addSql('ALTER TABLE "user" ADD CONSTRAINT fk_role_user FOREIGN KEY (role_id) REFERENCES role (role_id) NOT DEFERRABLE INITIALLY IMMEDIATE');
     }
 

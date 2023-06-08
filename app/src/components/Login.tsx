@@ -24,15 +24,14 @@ const Login = () => {
     onError: (err, variables, context) => {
       console.log(err, variables, context);
     },
-    onSettled: () => {
-      console.log('getUserMutation Settled.');
-    },
     onSuccess: data => {
-      console.log('getUserMutation onSuccess REACHED!');
       if (data) {
         setCurrentUser(data);
-        console.log('THIS POINT HAS BEEN REACHED');
+        console.log('getUserMutation onSuccess REACHED!');
       }
+    },
+    onSettled: () => {
+      console.log('getUserMutation Settled.');
     },
   });
 
@@ -102,9 +101,9 @@ const Login = () => {
 
       createUserMutation(createUser);
 
-      window.location.replace(
-        import.meta.env.VITE_AUTH0_BASE_URL + routes.PROFILE,
-      );
+      // window.location.replace(
+      //   import.meta.env.VITE_AUTH0_BASE_URL + routes.PROFILE,
+      // );
     }
   }, [resultsFromGetUser]);
 

@@ -78,30 +78,32 @@ class UserController extends ApiController
     #[Route('/users', methods: ('POST'))]
     public function createUser(Request $request): Response
     {
-        try {
+//        try {
             /** @var CreateUserDto $createUserDto */
             $createUserDto = $this->getValidatedDto($request, CreateUserDto::class);
             $user = $this->userService->createUser($createUserDto);
             $userDto = $this->userService->mapToDto($user);
-        } catch (InvalidRequestDataException $exception) {
-            return $this->json("ERROR: Invalid request: " . $exception->getMessage()
-                . " " . $exception->getTraceAsString(),
-                409);
-        } catch (JsonException $jsonException) {
-            return $this->json("ERROR: JsonException: " . $jsonException->getMessage()
-                . " " . $jsonException->getTraceAsString(),
-                409);
-        } catch (UniqueConstraintViolationException $constraintViolationException) {
-            return $this->json("ERROR: UniqueConstraintViolationException: "
-                . $constraintViolationException->getMessage()
-                . " " . $constraintViolationException->getTraceAsString(),
-                409);
-        } catch (NotEncodableValueException $notEncodableValueException) {
-            return $this->json("ERROR: NotEncodableValueException: "
-                . $notEncodableValueException->getMessage()
-                . " " . $notEncodableValueException->getTraceAsString(),
-                406);
-        }
+//        } catch (InvalidRequestDataException $exception) {
+//            return $this->json("ERROR: Invalid request: " . $exception->getMessage()
+//                . " " . $exception->getTrace(),
+//                409);
+//        } catch (JsonException $jsonException) {
+//            return $this->json("ERROR: JsonException: " . $jsonException->getMessage()
+//                . " " . $jsonException->getTrace(),
+//                409);
+//        }
+//        catch (UniqueConstraintViolationException $constraintViolationException) {
+//            return $this->json("ERROR: UniqueConstraintViolationException: "
+//                . $constraintViolationException->getMessage()
+//                . " " . $constraintViolationException->getTrace(),
+//                409);
+//        } catch (NotEncodableValueException $notEncodableValueException) {
+//            return $this->json("ERROR: NotEncodableValueException: "
+//                . $notEncodableValueException->getMessage()
+//                    . " Ensure that foreign key references are to existing keys."
+//                . " " . $notEncodableValueException->getTrace(),
+//                406);
+//        }
 
         return $this->json($userDto);
     }
