@@ -11,7 +11,6 @@ use App\Exception\InvalidRequestDataException;
 use App\Serialization\SerializationService;
 use App\Service\RoleService;
 use App\Service\UserService;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
