@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\EventRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -21,10 +22,10 @@ class Event
     private ?string $event_name = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $start_date = null;
+    private ?DateTimeInterface $start_date = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $end_date = null;
+    private ?DateTimeInterface $end_date = null;
 
     #[ORM\ManyToOne(targetEntity: 'user')]
     #[ORM\JoinColumn(name: 'created_by_user_id',
@@ -112,6 +113,7 @@ class Event
     {
         if (!$this->event_games->contains($game)) {
             $this->event_games->add($game);
+            $game->addEvent($this);
         }
 
         return $this;
@@ -119,7 +121,10 @@ class Event
 
     public function removeEventGame(Game $game): self
     {
-        $this->event_games->removeElement($game);
+        if ($this->event_games->contains($game)) {
+            $this->event_games->removeElement($game);
+            $game->removeEvent($this);
+        }
 
         return $this;
     }

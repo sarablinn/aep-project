@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\ManyToMany;
 
 #[ORM\Entity(repositoryClass: GameRepository::class)]
 #[ORM\Table(name: '`game`')]
@@ -112,6 +113,7 @@ class Game
     {
         if (!$this->events->contains($event)) {
             $this->events->add($event);
+            $event->addEventGame($this);
         }
 
         return $this;
@@ -119,7 +121,10 @@ class Game
 
     public function removeEvent(Event $event): self
     {
-        $this->events->removeElement($event);
+        if ($this->events->contains($event)) {
+            $this->events->removeElement($event);
+            $event->removeEventGame($this);
+        }
 
         return $this;
     }
