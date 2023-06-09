@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20230608185020 extends AbstractMigration
+final class Version20230609144605 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -35,22 +35,53 @@ final class Version20230608185020 extends AbstractMigration
         $this->addSql('CREATE UNIQUE INDEX ux_user_user_token ON "user" (user_token)');
         $this->addSql('CREATE INDEX ix_role_user ON "user" (role_id)');
         $this->addSql('ALTER TABLE "user" ADD CONSTRAINT fk_role_user FOREIGN KEY (role_id) REFERENCES role (role_id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+
+        $this->addSql('ALTER TABLE event ADD created_by_user_id INT NOT NULL');
+        $this->addSql('ALTER TABLE event ADD CONSTRAINT fk_user_event FOREIGN KEY (created_by_user_id) REFERENCES "user" (user_id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('CREATE INDEX ix_user_event ON event (created_by_user_id)');
+        $this->addSql('ALTER TABLE game ADD player_user_id INT NOT NULL');
+        $this->addSql('ALTER TABLE game ADD mode_id INT NOT NULL');
+        $this->addSql('ALTER TABLE game ADD CONSTRAINT fk_user_game FOREIGN KEY (player_user_id) REFERENCES "user" (user_id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE game ADD CONSTRAINT fk_mode_game FOREIGN KEY (mode_id) REFERENCES mode (mode_id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('CREATE INDEX ix_user_game ON game (player_user_id)');
+        $this->addSql('CREATE INDEX ix_mode_game ON game (mode_id)');
+
+        $this->addSql('CREATE TABLE game_event (event_id INT NOT NULL, game_id INT NOT NULL, PRIMARY KEY(event_id, game_id))');
+        $this->addSql('CREATE INDEX ix_event_game ON game_event (event_id)');
+        $this->addSql('CREATE INDEX ix_game_event ON game_event (game_id)');
+        $this->addSql('ALTER TABLE game_event ADD CONSTRAINT fk_event_game FOREIGN KEY (event_id) REFERENCES "event" (event_id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE game_event ADD CONSTRAINT fk_game_event FOREIGN KEY (game_id) REFERENCES "game" (game_id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE SCHEMA public');
         $this->addSql('DROP SEQUENCE "event_event_id_seq" CASCADE');
         $this->addSql('DROP SEQUENCE "game_game_id_seq" CASCADE');
         $this->addSql('DROP SEQUENCE mode_mode_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE role_role_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE "user_user_id_seq" CASCADE');
         $this->addSql('ALTER TABLE "user" DROP CONSTRAINT fk_role_user');
+
+        $this->addSql('ALTER TABLE "game" DROP CONSTRAINT fk_user_game');
+        $this->addSql('ALTER TABLE "game" DROP CONSTRAINT fk_mode_game');
+        $this->addSql('DROP INDEX ix_user_game');
+        $this->addSql('DROP INDEX ix_mode_game');
+        $this->addSql('ALTER TABLE "game" DROP player_user_id');
+        $this->addSql('ALTER TABLE "game" DROP mode_id');
+        $this->addSql('ALTER TABLE "event" DROP CONSTRAINT fk_user_event');
+        $this->addSql('DROP INDEX ix_user_event');
+        $this->addSql('ALTER TABLE "event" DROP created_by_user_id');
+
+        $this->addSql('ALTER TABLE game_event DROP CONSTRAINT fk_event_game');
+        $this->addSql('ALTER TABLE game_event DROP CONSTRAINT fk_game_event');
         $this->addSql('DROP TABLE "event"');
         $this->addSql('DROP TABLE "game"');
         $this->addSql('DROP TABLE mode');
         $this->addSql('DROP TABLE role');
         $this->addSql('DROP TABLE "user"');
+        $this->addSql('DROP TABLE game_event');
     }
+
 }
