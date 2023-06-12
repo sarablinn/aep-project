@@ -48,26 +48,34 @@ export default function App() {
             className="container"
             style={{ backgroundColor: currentUser.foregroundColor }}
           >
-            <div className="">
-              <button
-                id="user-icon"
-                className=""
-                style={{
-                  backgroundColor: currentUser.backgroundColor,
-                  color: currentUser.foregroundColor,
-                }}
-                onClick={() => window.location.replace(routes.PROFILE)}
-              >
-                {userInitials}
-              </button>
-              <h1 className="title-text text-3xl font-bold">WELCOME</h1>
-              <div className="navbar-btns container flex">
-                <Login />
+            <div className="container-fluid">
+              <div className="container p-6">
+                <div className="">
+                  <h1 className="title-text text-3xl font-bold">NUMBERS</h1>
+                </div>
+                <div className="">
+                  <div className="flex flex-col items-end px-4 pt-4">
+                    <button
+                      id="user-icon"
+                      className="text-center"
+                      style={{
+                        backgroundColor: currentUser.backgroundColor,
+                        color: currentUser.foregroundColor,
+                      }}
+                      onClick={() => window.location.replace(routes.PROFILE)}
+                    >
+                      {userInitials}
+                    </button>
+                    <Login />
+                  </div>
+                </div>
               </div>
+
+              {/*<div className="">*/}
+              {/*  <h1 className="title-text text-3xl font-bold">NUMBERS</h1>*/}
+              {/*</div>*/}
             </div>
           </nav>
-
-          <div className={`flex justify-evenly border`}></div>
 
           <RouterProvider router={router} />
         </QueryClientProvider>
