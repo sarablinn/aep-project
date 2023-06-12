@@ -1,6 +1,12 @@
+<<<<<<< Updated upstream
 <mxfile host="Electron" modified="2023-06-12T16:30:53.023Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.8 Chrome/112.0.5615.165 Electron/24.2.0 Safari/537.36" etag="cpSotoo3ZFejoQaHOxmi" version="21.2.8" type="device" pages="2">
   <diagram name="UC-001 - User creates account" id="2YBvvXClWsGukQMizWep">
     <mxGraphModel dx="1667" dy="909" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1700" math="0" shadow="0">
+=======
+<mxfile host="Electron" modified="2023-06-12T20:24:58.267Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.8 Chrome/112.0.5615.165 Electron/24.2.0 Safari/537.36" etag="6WsT6TLDkUsuLmUVFXIW" version="21.2.8" type="device" pages="2">
+  <diagram name="UC-001 - User creates account" id="2YBvvXClWsGukQMizWep">
+    <mxGraphModel dx="1347" dy="909" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1700" math="0" shadow="0">
+>>>>>>> Stashed changes
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -293,7 +299,11 @@
     </mxGraphModel>
   </diagram>
   <diagram name="UC-002 - User Updates Profile" id="pgmMc1gOEvRtyvNazuU0">
+<<<<<<< Updated upstream
     <mxGraphModel dx="2244" dy="1516" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1700" math="0" shadow="0">
+=======
+    <mxGraphModel dx="1251" dy="853" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1700" math="0" shadow="0">
+>>>>>>> Stashed changes
       <root>
         <mxCell id="ug_tqReiVjrLgQ3OpkwZ-0" />
         <mxCell id="ug_tqReiVjrLgQ3OpkwZ-1" parent="ug_tqReiVjrLgQ3OpkwZ-0" />
@@ -617,6 +627,15 @@
             <mxPoint x="377" y="860" as="targetPoint" />
           </mxGeometry>
         </mxCell>
+<<<<<<< Updated upstream
+=======
+        <mxCell id="88x9bu5NR1vJg1wkNob--0" value="get users" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="ug_tqReiVjrLgQ3OpkwZ-1">
+          <mxGeometry width="80" relative="1" as="geometry">
+            <mxPoint x="380" y="350" as="sourcePoint" />
+            <mxPoint x="460" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+>>>>>>> Stashed changes
       </root>
     </mxGraphModel>
   </diagram>
