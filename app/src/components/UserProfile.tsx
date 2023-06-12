@@ -13,8 +13,8 @@ const UserProfile = () => {
 
   const [currentUser, setCurrentUser] = useAtom(selectedUser);
 
-  const [bgColor, setBackgroundColor] = useState('FFFFFF');
-  const [fgColor, setForegroundColor] = useState('000000');
+  const [bgColor, setBackgroundColor] = useState(currentUser.backgroundColor);
+  const [fgColor, setForegroundColor] = useState(currentUser.foregroundColor);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');

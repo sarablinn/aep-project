@@ -7,6 +7,7 @@ import { ThreeDots } from 'react-loader-spinner';
 import { routes } from '../utilities/Constants';
 import { useAtom } from 'jotai/index';
 import { selectedUser } from '../services/Atoms';
+import Loading from '../utilities/Loading';
 
 const Login = () => {
   const { user, isLoading, isAuthenticated, error, loginWithRedirect, logout } =
@@ -109,7 +110,7 @@ const Login = () => {
 
   if (loadingUser || loadingCreateUser) {
     return (
-      <div>
+      <div className="mx-8">
         <ThreeDots height="30" width="30" color="white" ariaLabel="loading" />
       </div>
     );
