@@ -49,11 +49,16 @@ const UserProfile = () => {
     isLoading: loadingGetUser,
   } = useMutation({
     mutationFn: (userToken: string) => getUserByToken(userToken),
-    onMutate: () => console.log('mutate'),
+    onMutate: () => console.log('getUserByTokenMutation mutate in UserProfile'),
     onError: (err, variables, context) => {
       console.log(err, variables, context);
     },
-    onSettled: () => console.log('getUserByTokenMutation Settled.'),
+    onSuccess: data => {
+      setCurrentUser(data);
+      console.log('getUserByTokenMutation SUCCESS in UserProfile', data);
+    },
+    onSettled: () =>
+      console.log('getUserByTokenMutation Settled in UserProfile.'),
   });
 
   const {
@@ -111,7 +116,7 @@ const UserProfile = () => {
             <p>Background Color</p>
             <SwatchesPicker
               className="user-profile-sketchpicker m-3 p-3"
-              color={userResource?.backgroundColor}
+              color={currentUser?.backgroundColor}
               onChangeComplete={handleBackgroundChangeComplete}
             />
           </div>
@@ -119,7 +124,7 @@ const UserProfile = () => {
             <p>Foreground Color</p>
             <SwatchesPicker
               className="user-profile-sketchpicker m-3 p-3"
-              color={userResource?.foregroundColor}
+              color={currentUser?.foregroundColor}
               onChangeComplete={handleForegroundChangeComplete}
             />
           </div>
