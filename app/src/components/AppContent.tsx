@@ -25,16 +25,14 @@ const AppContent = () => {
   const [userInitials, setUserInitials] = useState('');
   const [isVisible, setIsVisible] = useState('INVISIBLE');
 
-  const [userToken, setUserToken] = useState(user?.sub || '');
-
   useEffect(() => {
     if (isAuthenticated && currentUser.firstName && currentUser.lastName) {
       const firstInitial = currentUser.firstName.substring(0, 1);
       const lastInitial = currentUser.lastName.substring(0, 1);
       // console.log('--SETTING INITIALS--');
-      setUserInitials(firstInitial + lastInitial);
+      setUserInitials((firstInitial + lastInitial).toUpperCase());
     } else {
-      setUserInitials(currentUser.email.substring(0, 1));
+      setUserInitials(currentUser.email.substring(0, 1).toUpperCase());
     }
   }, [isAuthenticated, currentUser, user]);
 
@@ -107,18 +105,20 @@ const AppContent = () => {
               </div>
               <div className="">
                 <div className="flex flex-col items-end px-4 pt-4">
-                  <button
-                    id="user-icon"
-                    className="text-center"
-                    style={{
-                      backgroundColor: currentUser.backgroundColor,
-                      color: currentUser.foregroundColor,
-                    }}
-                    onClick={() => window.location.replace(routes.PROFILE)}
-                  >
-                    {userInitials}
-                  </button>
-                  <Login />
+                  <div className="flex flex-col justify-items-center">
+                    <button
+                      id="user-icon"
+                      className="text-center"
+                      style={{
+                        backgroundColor: currentUser.backgroundColor,
+                        color: currentUser.foregroundColor,
+                      }}
+                      onClick={() => window.location.replace(routes.PROFILE)}
+                    >
+                      {userInitials}
+                    </button>
+                    <Login />
+                  </div>
                 </div>
               </div>
             </div>
