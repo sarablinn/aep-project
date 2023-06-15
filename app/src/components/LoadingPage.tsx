@@ -6,7 +6,10 @@ const LoadingPage = () => {
   const [currentUser] = useAtom(selectedUser);
 
   return (
-    <div style={{ backgroundColor: currentUser.backgroundColor }}>
+    <div
+      className="min-h-screen pt-10"
+      style={{ backgroundColor: currentUser.backgroundColor }}
+    >
       <Loading />
     </div>
   );
