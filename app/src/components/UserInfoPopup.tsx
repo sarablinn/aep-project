@@ -39,24 +39,24 @@ const UserInfoPopup = (
    * @param username
    */
   const validateUsername = (initialValue: string, username: string) => {
-    console.log('VALIDATING: ' + username);
+    // console.log('VALIDATING: ' + username);
     let errorMsg = '';
     if (allUsersData) {
       if (username.trim().length == 0) {
-        console.log('ValidateUser clause 1.');
+        // console.log('ValidateUser clause 1.');
         return ' Username required.';
       }
 
       if (username.trim().length < 4) {
-        console.log('ValidateUser clause 2.');
+        // console.log('ValidateUser clause 2.');
         return ' Username must be at least 4 characters.';
       }
 
       allUsersData.forEach(function (userData) {
-        console.log('ValidateUser clause 3: ' + userData.username);
+        // console.log('ValidateUser clause 3: ' + userData.username);
         if (userData.username == username) {
           if (username != initialValue) {
-            console.log('ValidateUser DUPLICATE USERNAME FOUND.');
+            // console.log('ValidateUser DUPLICATE USERNAME FOUND.');
             errorMsg = ' Username already in use.';
           }
         }
@@ -72,7 +72,7 @@ const UserInfoPopup = (
    * @param name
    */
   const validateName = (initialValue: string, name: string) => {
-    console.log('VALIDATING: ' + name);
+    // console.log('VALIDATING: ' + name);
     if (name.trim().length == 0) {
       return ' required.';
     } else {
@@ -147,6 +147,7 @@ const UserInfoPopup = (
   }, [isVisible]);
 
   const changeUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
+    currentUser.username = event.target.value;
     setUsername(event.target.value);
   };
 
@@ -159,11 +160,11 @@ const UserInfoPopup = (
   };
 
   const handleBackgroundChange = (event: any) => {
-    userResource.backgroundColor = event.hex;
+    currentUser.backgroundColor = event.hex;
     setBackgroundColor(event.hex);
   };
   const handleForegroundChange = (event: any) => {
-    userResource.foregroundColor = event.hex;
+    currentUser.foregroundColor = event.hex;
     setForegroundColor(event.hex);
   };
 
@@ -189,7 +190,6 @@ const UserInfoPopup = (
       console.log('updateUserMutation Settled.');
       if (error) {
         setShowModal(true);
-        console.log('THERE WAS AN ERROR');
       }
     },
   });
