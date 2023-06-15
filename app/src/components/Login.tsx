@@ -4,7 +4,6 @@ import { useMutation } from '@tanstack/react-query';
 import { UserDto, createUser, getUserByToken } from '../services/userApi';
 import { useEffect } from 'react';
 import { ThreeDots } from 'react-loader-spinner';
-import { routes } from '../utilities/Constants';
 import { useAtom } from 'jotai/index';
 import { selectedUser } from '../services/Atoms';
 import Loading from '../utilities/Loading';
@@ -28,7 +27,7 @@ const Login = () => {
     onSuccess: data => {
       if (data) {
         setCurrentUser(data);
-        console.log('getUserMutation onSuccess REACHED!');
+        console.log('getUserMutation onSuccess REACHED!', currentUser);
       }
     },
     onSettled: () => {
@@ -56,17 +55,19 @@ const Login = () => {
     },
   });
 
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      const userToken = user.sub;
-      if (userToken) {
-        getUserMutation(userToken);
+  function getUser() {
+    return new Promise(function () {
+      if (isAuthenticated && user) {
+        const userToken = user.sub;
+        if (userToken) {
+          getUserMutation(userToken);
+        }
       }
-    }
-  }, [isAuthenticated, user]);
+    });
+  }
 
-  useEffect(() => {
-    if (!resultsFromGetUser && user) {
+  function addNewUser() {
+    if (isAuthenticated && user && resultsFromGetUser == undefined) {
       console.log('CREATING USER: ', resultsFromGetUser);
       let username;
       let firstName: string | null;
@@ -101,12 +102,22 @@ const Login = () => {
       };
 
       createUserMutation(createUser);
-
-      // window.location.replace(
-      //   import.meta.env.VITE_AUTH0_BASE_URL + routes.PROFILE,
-      // );
     }
-  }, [resultsFromGetUser]);
+  }
+
+  function loadUser() {
+    if (isAuthenticated && user) {
+      getUser().then(addNewUser);
+      console.log(currentUser);
+    }
+  }
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      getUser().then(addNewUser);
+      console.log(currentUser);
+    }
+  }, [isAuthenticated]);
 
   if (loadingUser || loadingCreateUser) {
     return (
@@ -141,7 +152,7 @@ const Login = () => {
       <button
         className="login-btn"
         onClick={() => {
-          loginWithRedirect();
+          loginWithRedirect().then();
         }}
       >
         Log in
