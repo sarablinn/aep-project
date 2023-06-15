@@ -114,31 +114,6 @@ export async function createUser(userDto: UserDto): Promise<UserResource> {
     });
 }
 
-// export async function getOrCreateUser(userDto: UserDto): Promise<UserResource> {
-//   const url = 'http://localhost:8000/users';
-//   console.log('GETORCREATE REACHED');
-//   return await fetch(url, {
-//     headers: {
-//       'Content-Type': 'application/json',
-//     },
-//     method: 'POST',
-//     body: JSON.stringify(userDto),
-//   })
-//     // .then(response => console.log('RESPONSE', response))
-//     .then(response => {
-//       console.log('RESPONSE', response);
-//       return response.json();
-//     })
-//     .then((data: UserResource) => {
-//       console.log('Success getOrCreateUser():', data);
-//       return data;
-//     })
-//     .catch(error => {
-//       console.error('Error getOrCreateUser():', error);
-//       throw error;
-//     });
-// }
-
 export async function updateUser(
   userResource: UserResource,
 ): Promise<UserResource> {
