@@ -105,7 +105,7 @@ const AppContent = () => {
               </div>
               <div className="">
                 <div className="flex flex-col items-end px-4 pt-4">
-                  <div className="flex flex-col justify-items-center">
+                  <div className="flex flex-col place-items-center">
                     <button
                       id="user-icon"
                       className="text-center"
