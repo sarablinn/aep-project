@@ -45,18 +45,5 @@ export const selectedUser = atom(
   },
 );
 
-// export const [userAtom] = (userToken: string) =>
-//   atomsWithQuery(get => {
-//     return {
-//       queryKey: ['user', 'userToken', userToken],
-//       queryFn: () => getUserByToken(userToken),
-//     };
-//   });
-
-// export const { data: userData } = useQuery( {
-//   queryKey: [`user`, 'userToken', userToken],
-//   queryFn: () => getUserByToken(userToken),
-// });
-
 // export const selectedUser = atom<UserResource>(defaultUser);
 export const selectedRole = atom<Role>(defaultRole);

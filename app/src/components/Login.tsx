@@ -6,7 +6,6 @@ import { useEffect } from 'react';
 import { ThreeDots } from 'react-loader-spinner';
 import { useAtom } from 'jotai/index';
 import { selectedUser } from '../services/Atoms';
-import Loading from '../utilities/Loading';
 
 const Login = () => {
   const { user, isLoading, isAuthenticated, error, loginWithRedirect, logout } =
@@ -14,39 +13,58 @@ const Login = () => {
 
   const [currentUser, setCurrentUser] = useAtom(selectedUser);
 
+  /**
+   * getUserMutation --> getUserByToken(userToken)
+   */
   const {
     data: resultsFromGetUser,
     mutate: getUserMutation,
     isLoading: loadingUser,
+    error: getUserError,
+    isSuccess: getUserIsSuccess,
   } = useMutation({
     mutationFn: (userToken: string) => getUserByToken(userToken),
-    onMutate: () => console.log('mutate getUser'),
+    onMutate: () => console.log('Login: Mutate: getUserMutation'),
     onError: (err, variables, context) => {
       console.log(err, variables, context);
     },
     onSuccess: data => {
       if (data) {
         setCurrentUser(data);
-        console.log('getUserMutation onSuccess REACHED!', currentUser);
+        console.log('Login: Success: getUserMutation', currentUser);
       }
+      return data;
     },
-    onSettled: () => {
-      console.log('getUserMutation Settled.');
+    onSettled: data => {
+      console.log('Login: Settled: getUserMutation');
+      if (!data) {
+        if (isAuthenticated) {
+          addNewUser();
+        }
+      }
+      // if (!data) {
+      //   if (isAuthenticated) {
+      //     return new Error('No User Found.');
+      //   }
+      // }
     },
   });
 
+  /**
+   * createUserMutation --> createUser(userDto)
+   */
   const {
     data: resultsFromCreateUser,
     mutate: createUserMutation,
     isLoading: loadingCreateUser,
   } = useMutation({
     mutationFn: (userDto: UserDto) => createUser(userDto),
-    onMutate: () => console.log('mutate createUser'),
+    onMutate: () => console.log('Login: Mutate: createUserMutation'),
     onError: (err, variables, context) => {
       console.log(err, variables, context);
     },
     onSettled: () => {
-      console.log('createUserMutation Settled.');
+      console.log('Login: Settled: createUserMutation');
     },
     onSuccess: data => {
       if (data) {
@@ -55,27 +73,26 @@ const Login = () => {
     },
   });
 
-  function getUser() {
-    return new Promise(function () {
-      if (isAuthenticated && user) {
-        const userToken = user.sub;
-        if (userToken) {
-          getUserMutation(userToken);
-        }
-      }
-    });
-  }
-
+  /**
+   * Creates a UserDto, setting username to be the new user's email without the domain.
+   * Backend UserService handles what happens if the given username is unavailable.
+   */
   function addNewUser() {
     if (isAuthenticated && user && resultsFromGetUser == undefined) {
-      console.log('CREATING USER: ', resultsFromGetUser);
-      let username;
+      console.log(
+        'Login: starting process: addNewUser(): ',
+        resultsFromGetUser,
+      );
+
       let firstName: string | null;
       let lastName: string | null;
+      let username = '';
 
-      if (user.email) {
-        const emailSlice = user.email.split('@');
-        username = emailSlice[0];
+      if (user) {
+        if (user.email) {
+          const emailSlice = user.email.split('@');
+          username = emailSlice[0];
+        }
       }
 
       if (
@@ -105,19 +122,13 @@ const Login = () => {
     }
   }
 
-  function loadUser() {
-    if (isAuthenticated && user) {
-      getUser().then(addNewUser);
-      console.log(currentUser);
-    }
-  }
-
   useEffect(() => {
     if (isAuthenticated && user) {
-      getUser().then(addNewUser);
-      console.log(currentUser);
+      if (user.sub) {
+        getUserMutation(user?.sub);
+      }
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
 
   if (loadingUser || loadingCreateUser) {
     return (

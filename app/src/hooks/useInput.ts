@@ -16,6 +16,8 @@ const useInput = (validateInput, startingValue: string) => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // console.log('Input change is being handled: enteredValue: ' + enteredValue);
     setEnteredValue(event.target.value);
+    // setErrorMessage(validateInput(initialValue, enteredValue));
+    // setIsValid(errorMessage == '');
   };
 
   const setIsFocused = () => {
@@ -30,13 +32,15 @@ const useInput = (validateInput, startingValue: string) => {
 
   useEffect(() => {
     setErrorMessage(validateInput(initialValue, enteredValue));
+    // setIsValid(errorMessage == '');
+
     // console.log(
     //   'Input Validation useEffect: enteredValue: ' +
     //     enteredValue +
     //     ': error message set to: ' +
     //     errorMessage,
     // );
-  }, [enteredValue, validateInput]);
+  }, [enteredValue]);
 
   useEffect(() => {
     setIsValid(errorMessage == '');

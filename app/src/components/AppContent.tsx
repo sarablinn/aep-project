@@ -23,27 +23,26 @@ const AppContent = () => {
   const [currentUser, setCurrentUser] = useAtom(selectedUser);
   const { user, isAuthenticated } = useAuth0();
   const [userInitials, setUserInitials] = useState('');
-  const [isVisible, setIsVisible] = useState('INVISIBLE');
+  const [isVisible, setIsVisible] = useState('VISIBLE');
 
   useEffect(() => {
-    if (isAuthenticated && currentUser.firstName && currentUser.lastName) {
+    if (
+      isAuthenticated &&
+      currentUser.firstName != '' &&
+      currentUser.lastName != ''
+    ) {
       const firstInitial = currentUser.firstName.substring(0, 1);
       const lastInitial = currentUser.lastName.substring(0, 1);
-      // console.log('--SETTING INITIALS--');
       setUserInitials((firstInitial + lastInitial).toUpperCase());
     } else {
       setUserInitials(currentUser.email.substring(0, 1).toUpperCase());
     }
-  }, [isAuthenticated, currentUser, user]);
-
-  useEffect(() => {
-    if (isAuthenticated && currentUser.firstName == '') {
+    if (currentUser.firstName == '' || currentUser.lastName == '') {
       setIsVisible('VISIBLE');
-    }
-    if (currentUser.firstName != '') {
+    } else {
       setIsVisible('INVISIBLE');
     }
-  }, [isAuthenticated, currentUser.firstName]);
+  }, [isAuthenticated, currentUser, user]);
 
   const {
     data: resultsFromGetUser,
@@ -51,21 +50,18 @@ const AppContent = () => {
     isLoading: loadingUser,
   } = useMutation({
     mutationFn: (userToken: string) => getUserByToken(userToken),
-    onMutate: () => console.log('mutate getUserByToken on AppContent'),
+    onMutate: () => console.log('AppContent: Mutate: getUserMutation'),
     onError: (err, variables, context) => {
       console.log(err, variables, context);
     },
     onSuccess: data => {
       if (data) {
         setCurrentUser(data);
-        console.log(
-          'getUserMutation on AppContent onSuccess REACHED!',
-          currentUser,
-        );
+        console.log('AppContent: Success: getUserMutation', currentUser);
       }
     },
     onSettled: () => {
-      console.log('getUserMutation on AppContent Settled.');
+      console.log('AppContent: Settled: getUserMutation');
     },
   });
 
@@ -91,8 +87,6 @@ const AppContent = () => {
         className="content-container container-fluid"
         style={{ backgroundColor: currentUser.backgroundColor }}
       >
-        {/*{showPopup()}*/}
-
         <nav
           id="navbar-main"
           className="container"
