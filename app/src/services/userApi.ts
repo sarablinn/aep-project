@@ -1,5 +1,3 @@
-import { Role } from './roleApi';
-
 export interface UserResource {
   userId: number;
   username: string;
@@ -23,17 +21,6 @@ export interface UserDto {
   foregroundColor: string | undefined;
 }
 
-export interface UserRole {
-  userId: number;
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: Role;
-  backgroundColor: string;
-  foregroundColor: string;
-}
-
 export async function getUsers(): Promise<UserResource[]> {
   const url = 'http://localhost:8000/users';
   return await fetch(url, {
@@ -44,11 +31,11 @@ export async function getUsers(): Promise<UserResource[]> {
   })
     .then(response => response.json())
     .then((data: UserResource[]) => {
-      console.log('Success getUsers():', data);
+      console.log('userApi: Success getUsers():', data);
       return data;
     })
     .catch(error => {
-      console.error('Error getUsers():', error);
+      console.error('userApi: Error getUsers():', error);
       throw error;
     });
 }
@@ -63,11 +50,14 @@ export async function getUserByToken(userToken: string): Promise<UserResource> {
   })
     .then(response => response.json())
     .then((data: UserResource) => {
-      console.log('Success getUserByToken():', data);
+      console.log('userApi: Success getUserByToken():', data);
+      if (!data) {
+        throw new Error('ERROR: no user found.');
+      }
       return data;
     })
     .catch(error => {
-      console.error('Error getUserByToken():', error);
+      console.error('userApi: Error getUserByToken():', error);
       throw error;
     });
 }
@@ -82,11 +72,11 @@ export async function getUserById(userId: number): Promise<UserResource> {
   })
     .then(response => response.json())
     .then((data: UserResource) => {
-      console.log('Success getUserByToken():', data);
+      console.log('userApi: Success getUserByToken():', data);
       return data;
     })
     .catch(error => {
-      console.error('Error getUserByToken():', error);
+      console.error('userApi: Error getUserByToken():', error);
       throw error;
     });
 }
@@ -105,11 +95,11 @@ export async function createUser(userDto: UserDto): Promise<UserResource> {
       return response.json();
     })
     .then((data: UserResource) => {
-      console.log('Success createUser():', data);
+      console.log('userApi: Success createUser():', data);
       return data;
     })
     .catch(error => {
-      console.error('Error createUser():', error);
+      console.error('userApi: Error createUser():', error);
       throw error;
     });
 }
@@ -131,11 +121,11 @@ export async function updateUser(
       return response.json();
     })
     .then((data: UserResource) => {
-      console.log('Success updateUser():', data);
+      console.log('userApi: Success updateUser():', data);
       return data;
     })
     .catch(error => {
-      console.error('Error updateUser():', error);
+      console.error('userApi: Error updateUser():', error);
       throw error;
     });
 }
@@ -151,11 +141,30 @@ export async function deleteUser(userId: number): Promise<boolean> {
   })
     .then(response => response.json())
     .then((data: boolean) => {
-      console.log('Success deleteUser():', data);
+      console.log('userApi: Success deleteUser():', data);
       return data;
     })
     .catch(error => {
-      console.error('Error deleteUser():', error);
+      console.error('userApi: Error deleteUser():', error);
+      throw error;
+    });
+}
+
+export async function isAvailableUsername(username: string): Promise<boolean> {
+  const url = 'http://localhost:8000/users/validate/' + username;
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'GET',
+  })
+    .then(response => response.json())
+    .then((data: boolean) => {
+      console.log('userApi: Success isAvailableUsername():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('userApi: Error isAvailableUsername():', error);
       throw error;
     });
 }
