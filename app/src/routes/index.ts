@@ -5,17 +5,19 @@ import userRoute from './userRoute';
 import rolesRoute from './rolesRoute';
 import userProfileRoute from './userProfileRoute';
 import LoadingPage from '../components/LoadingPage';
+import gameComponentRoute from './gameComponentRoute';
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
   userRoute,
   rolesRoute,
   userProfileRoute,
+  gameComponentRoute,
 ]);
 
 export const router = new Router({
   routeTree,
   defaultPreload: 'intent',
-  defaultPreloadDelay: 100,
+  defaultPreloadDelay: 500,
   defaultPendingComponent: LoadingPage,
 });

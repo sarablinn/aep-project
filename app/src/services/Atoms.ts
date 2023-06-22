@@ -19,5 +19,31 @@ const defaultRole = {
   roleName: 'USER',
 };
 
-export const selectedUser = atom<UserResource>(defaultUser);
+export function updateCurrentUser(userResource: UserResource): void {
+  defaultUser.userId = userResource.userId;
+  defaultUser.username = userResource.username;
+  defaultUser.email = userResource.email;
+  defaultUser.userToken = userResource.userToken;
+  defaultUser.firstName = userResource.firstName;
+  defaultUser.lastName = userResource.lastName;
+  defaultUser.roleId = userResource.roleId;
+  defaultUser.backgroundColor = userResource.backgroundColor;
+  defaultUser.foregroundColor = userResource.foregroundColor;
+}
+
+export const guestUser = atom<UserResource>(defaultUser);
+export const loggedInUser = atom(null);
+
+export const selectedUser = atom(
+  get => get(loggedInUser) ?? get(guestUser),
+  (get, set, updatedUser) => {
+    const nextUser =
+      typeof updatedUser === 'function'
+        ? updatedUser(get(selectedUser))
+        : updatedUser;
+    set(loggedInUser, nextUser);
+  },
+);
+
+// export const selectedUser = atom<UserResource>(defaultUser);
 export const selectedRole = atom<Role>(defaultRole);

@@ -11,6 +11,7 @@ use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
+use phpDocumentor\Reflection\Types\Boolean;
 use Psr\Log\LoggerInterface;
 
 class UserService implements ObjectMapperInterface
@@ -50,7 +51,18 @@ class UserService implements ObjectMapperInterface
         $newUser->setBackgroundColor($createUserDto->getBackgroundColor());
         $newUser->setForegroundColor($createUserDto->getForegroundColor());
 
-        #TODO catch/throw exception for a non-unique email address
+        # if the username is already in use, append a number to the end of the
+        # default username to make it unique
+        if (!$this->isAvailableUsername($newUser->getUsername())) {
+            $index = 0;
+            $newUsername = $newUser->getUsername() . ($index +1);
+            while (!$this->isAvailableUsername($newUsername)) {
+                $index++;
+                $newUsername = $newUser->getUsername() + $index;
+            }
+            $newUser->setUsername($newUsername);
+        }
+
         $this->userRepository->save($newUser, true);
 
         #retrieve the user, which should now have a userID value
@@ -232,6 +244,20 @@ class UserService implements ObjectMapperInterface
         }
 
         $this->userRepository->remove($user, true);
+        return true;
+    }
+
+    /**
+     * Checks if a given username is available or in use.
+     * @param string $username
+     * @return bool
+     */
+    public function isAvailableUsername(string $username): bool {
+        $user = $this->userRepository->findOneBy(['username' => $username]);
+
+        if ($user) {
+            return false;
+        }
         return true;
     }
 

@@ -179,6 +179,17 @@ class UserController extends ApiController
         return $this->json($this->userService->deleteUser(intval($user_id)));
     }
 
+    /**
+     * Checks if username is already in use. Returns true if available.
+     * @param string $username
+     * @return Response
+     */
+    #[Route('/users/validate/{username}', methods: ['GET'])]
+    public function isAvailableUsername(string $username): Response
+    {
+        return  $this->json($this->userService->isAvailableUsername($username));
+    }
+
 
     ###################################################################
     ############################  ROLE  ###############################

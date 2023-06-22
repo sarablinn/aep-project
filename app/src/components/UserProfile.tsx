@@ -3,7 +3,6 @@ import { SwatchesPicker } from 'react-color';
 import React, { useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { getUserByToken, updateUser, UserResource } from '../services/userApi';
-import UserInfoPopup from './UserInfoPopup';
 import { useAtom } from 'jotai/index';
 import { selectedUser } from '../services/Atoms';
 import Loading from '../utilities/Loading';
@@ -43,19 +42,30 @@ const UserProfile = () => {
     setForegroundColor(event.hex);
   };
 
+  /**
+   * getUserByTokenMutation --> getUserByToken(userToken)
+   */
   const {
     data: userResource,
     mutate: getUserByTokenMutation,
     isLoading: loadingGetUser,
   } = useMutation({
     mutationFn: (userToken: string) => getUserByToken(userToken),
-    onMutate: () => console.log('mutate'),
+    onMutate: () => console.log('UserProfile: Mutate: getUserByTokenMutation'),
     onError: (err, variables, context) => {
       console.log(err, variables, context);
     },
-    onSettled: () => console.log('getUserByTokenMutation Settled.'),
+    onSuccess: data => {
+      setCurrentUser(data);
+      console.log('UserProfile: Success: getUserByTokenMutation:', data);
+    },
+    onSettled: () =>
+      console.log('UserProfile: Settled: getUserByTokenMutation.'),
   });
 
+  /**
+   * updateUserMutation --> updateUser(userResource)
+   */
   const {
     data: resultsFromUpdateUser,
     mutate: updateUserMutation,
@@ -64,13 +74,16 @@ const UserProfile = () => {
   } = useMutation({
     mutationFn: (userResourceInput: UserResource) =>
       updateUser(userResourceInput),
-    onMutate: () => console.log('mutate'),
+    onMutate: () => console.log('UserProfile: Mutate: updateUserMutation'),
     onError: (err, variables, context) => {
       console.log(err, variables, context);
     },
-    onSettled: () => console.log('updateUserMutation Settled.'),
+    onSettled: () => console.log('UserProfile: Settled: updateUserMutation'),
   });
 
+  /**
+   *
+   */
   useEffect(() => {
     if (isAuthenticated && user?.sub != null) {
       getUserByTokenMutation(user.sub);
@@ -94,6 +107,7 @@ const UserProfile = () => {
   if (error) {
     return <div>ERROR: {error.message}</div>;
   }
+
   if (isAuthenticated && userResource) {
     return (
       <div className="container-fluid m-3 p-3">
@@ -111,7 +125,7 @@ const UserProfile = () => {
             <p>Background Color</p>
             <SwatchesPicker
               className="user-profile-sketchpicker m-3 p-3"
-              color={userResource?.backgroundColor}
+              color={currentUser?.backgroundColor}
               onChangeComplete={handleBackgroundChangeComplete}
             />
           </div>
@@ -119,7 +133,7 @@ const UserProfile = () => {
             <p>Foreground Color</p>
             <SwatchesPicker
               className="user-profile-sketchpicker m-3 p-3"
-              color={userResource?.foregroundColor}
+              color={currentUser?.foregroundColor}
               onChangeComplete={handleForegroundChangeComplete}
             />
           </div>
@@ -135,9 +149,9 @@ const UserProfile = () => {
           className="w-100 h-25 mx-3 mb-5 mt-0 p-3"
           style={{ backgroundColor: bgColor }}
         ></div>
-        <div className="flex flex-row justify-center">
-          <UserInfoPopup userResource={userResource} isVisible="VISIBLE" />
-        </div>
+        {/*<div className="flex flex-row justify-center">*/}
+        {/*  <UserInfoPopup userResource={userResource} isVisible="VISIBLE" />*/}
+        {/*</div>*/}
       </div>
     );
   }
