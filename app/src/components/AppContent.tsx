@@ -23,11 +23,7 @@ const AppContent = () => {
   const [currentUser, setCurrentUser] = useAtom(selectedUser);
   const { user, isAuthenticated } = useAuth0();
   const [userInitials, setUserInitials] = useState('');
-<<<<<<< Updated upstream
   const [isVisible, setIsVisible] = useState('VISIBLE');
-=======
-  const [isVisible, setIsVisible] = useState('INVISIBLE');
->>>>>>> Stashed changes
 
   useEffect(() => {
     if (
@@ -41,21 +37,8 @@ const AppContent = () => {
     } else {
       setUserInitials(currentUser.email.substring(0, 1).toUpperCase());
     }
-<<<<<<< Updated upstream
     if (currentUser.firstName == '' || currentUser.lastName == '') {
       setIsVisible('VISIBLE');
-=======
-    if (
-      (currentUser.username != 'guest' && currentUser.firstName == '') ||
-      (currentUser.username != 'guest' && currentUser.lastName == '')
-    ) {
-      setIsVisible('VISIBLE');
-      console.log('empty names, set visibility to ', isVisible);
-    }
-    if (currentUser.username === 'guest') {
-      setIsVisible('INVISIBLE');
-      console.log('is guest, set visibility to ', isVisible);
->>>>>>> Stashed changes
     } else {
       setIsVisible('INVISIBLE');
     }
@@ -139,14 +122,7 @@ const AppContent = () => {
             {/*</div>*/}
           </div>
           <div className="flex flex-row justify-center">
-<<<<<<< Updated upstream
             <UserInfoPopup userResource={currentUser} isVisible={isVisible} />
-=======
-            <UserInfoPopup
-              userResource={currentUser}
-              isVisible={isVisible || 'INVISIBLE'}
-            />
->>>>>>> Stashed changes
           </div>
         </nav>
 
