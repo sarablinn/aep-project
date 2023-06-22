@@ -2,6 +2,7 @@
 
 namespace App\Dto\incoming;
 
+use DateTime;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Type;
 
@@ -16,8 +17,8 @@ class CreateGameDto
     private int $mode_id;
 
     #[NotNull]
-    #[Type('string')]
-    private string $timestamp;
+    #[Type('DateTime')]
+    private DateTime $timestamp;
 
     #[NotNull]
     #[Type('int')]
@@ -60,17 +61,17 @@ class CreateGameDto
     }
 
     /**
-     * @return int
+     * @return DateTime
      */
-    public function getTimestamp(): int
+    public function getTimestamp(): DateTime
     {
         return $this->timestamp;
     }
 
     /**
-     * @param int $timestamp
+     * @param DateTime $timestamp
      */
-    public function setTimestamp(int $timestamp): void
+    public function setTimestamp(DateTime $timestamp): void
     {
         $this->timestamp = $timestamp;
     }

@@ -2,6 +2,7 @@
 
 namespace App\Dto\incoming;
 
+use DateTime;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Type;
 
@@ -17,16 +18,17 @@ class UpdateEventDto
     private string $event_name;
 
     #[NotNull]
-    #[Type('string')]
-    private string $start_date;
+    #[Type('DateTime')]
+    private DateTime $start_date;
 
     #[NotNull]
-    #[Type('string')]
-    private string $end_date;
+    #[Type('DateTime')]
+    private DateTime $end_date;
 
     #[NotNull]
     #[Type('int')]
     private int $event_creator_user_id;
+
 
 
     /**
@@ -62,33 +64,33 @@ class UpdateEventDto
     }
 
     /**
-     * @return string
+     * @return DateTime|null
      */
-    public function getStartDate(): string
+    public function getStartDate(): ?DateTime
     {
         return $this->start_date;
     }
 
     /**
-     * @param string $start_date
+     * @param DateTime $start_date
      */
-    public function setStartDate(string $start_date): void
+    public function setStartDate(DateTime $start_date): void
     {
         $this->start_date = $start_date;
     }
 
     /**
-     * @return string
+     * @return DateTime|null
      */
-    public function getEndDate(): string
+    public function getEndDate(): ?DateTime
     {
         return $this->end_date;
     }
 
     /**
-     * @param string $end_date
+     * @param DateTime $end_date
      */
-    public function setEndDate(string $end_date): void
+    public function setEndDate(DateTime $end_date): void
     {
         $this->end_date = $end_date;
     }
