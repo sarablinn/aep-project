@@ -13,6 +13,7 @@ import { useAtom } from 'jotai/index';
 import { selectedUser } from '../services/Atoms';
 import { SwatchesPicker } from 'react-color';
 import useInput from '../hooks/useInput';
+import Login from './Login';
 
 const UserInfoPopup = (
   { userResource }: { userResource: UserResource },
@@ -152,16 +153,51 @@ const UserInfoPopup = (
     }
   }, [lastNameErrMsg]);
 
+  // useEffect(() => {
+  //   console.log('USERINFOPOPUP: UseEffect set visibility: ', visibility);
+  //   if (visibility === 'VISIBLE') {
+  //     setShowModal(true);
+  //   }
+  //
+  //   if (visibility === 'INVISIBLE') {
+  //     setShowModal(false);
+  //   }
+  // }, [isVisible, visibility]);
+
   useEffect(() => {
+<<<<<<< Updated upstream
     console.log('USERINFOPOPUP: UseEffect set visibility: ', visibility);
     if (visibility === 'VISIBLE') {
+=======
+<<<<<<< Updated upstream
+    if (isVisible == 'VISIBLE') {
+=======
+    if (
+      (userResource.username != 'guest' && userResource.firstName == '') ||
+      (userResource.username != 'guest' && userResource.lastName == '')
+    ) {
+      setVisibility('VISIBLE');
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
       setShowModal(true);
     }
+<<<<<<< Updated upstream
 
+<<<<<<< Updated upstream
     if (visibility === 'INVISIBLE') {
+=======
+    if (isVisible == 'INVISIBLE') {
+=======
+    if (userResource.username === 'guest') {
+      setVisibility('INVISIBLE');
+      setShowModal(false);
+    } else {
+      setVisibility('INVISIBLE');
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
       setShowModal(false);
     }
-  }, [isVisible]);
+  }, [userResource.username == '']);
 
   const changeUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
     currentUser.username = event.target.value;
@@ -244,8 +280,47 @@ const UserInfoPopup = (
     }
   }
 
+  if (userResource.username === 'guest') {
+    return (
+      <>
+        {showModal ? (
+          <div>
+            <>
+              <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
+                <div className="relative mx-auto my-6 w-auto max-w-3xl ">
+                  {/*content*/}
+                  <div className="relative flex w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none focus:outline-none">
+                    {/*header*/}
+                    <h2 className="mb-1 bg-pink-500 px-6 py-3 text-center text-sm font-bold uppercase text-white">
+                      Sign up!
+                    </h2>
+                    <div className="m-3 bg-pink-500 p-3 ">
+                      <div className="text-white">
+                        <Login />
+                      </div>
+                    </div>
+                    <div className="flex self-center pb-3">
+                      <button
+                        className="background-transparent mb-1 mr-1 px-6 py-2 text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear focus:outline-none"
+                        type="button"
+                        onClick={() => setShowModal(false)}
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          </div>
+        ) : null}
+      </>
+    );
+  }
+
   return (
     <>
+<<<<<<< Updated upstream
       {showModal ? (
         <div>
           <button
@@ -256,6 +331,42 @@ const UserInfoPopup = (
             Update User Profile
           </button>
 
+=======
+<<<<<<< Updated upstream
+      <button
+        className="mb-1 mr-1 rounded bg-pink-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-pink-600"
+        type="button"
+        onClick={() => setShowModal(true)}
+      >
+        Update User Profile
+      </button>
+      {showModal ? (
+        <>
+          <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
+            <div className="relative mx-auto my-6 w-auto max-w-3xl">
+              {/*content*/}
+              <div className="relative flex w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none focus:outline-none">
+                {/*header*/}
+                <h2 className="mb-1 bg-pink-500 px-6 py-3 text-center text-sm font-bold uppercase text-white">
+                  Update User Profile
+                </h2>
+                <div className="m-3 p-3">
+                  <form>
+                    <div className="flex py-4">
+                      <div className="pr-3">
+                        <label htmlFor="username-input">Username: </label>
+=======
+      <div>
+        <button
+          className="mb-1 mr-1 rounded bg-pink-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-pink-600"
+          type="button"
+          onClick={() => setShowModal(true)}
+        >
+          Update User Profile
+        </button>
+
+        {showModal ? (
+>>>>>>> Stashed changes
           <>
             <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
               <div className="relative mx-auto my-6 w-auto max-w-3xl">
@@ -304,6 +415,10 @@ const UserInfoPopup = (
                             </span>
                           </span>
                         </div>
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
                       </div>
 
                       <div className="flex py-4">
@@ -343,6 +458,34 @@ const UserInfoPopup = (
                         </span>
                       </div>
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+                    <div className="flex py-4">
+                      <div className="pr-3">
+                        <label htmlFor="firstname-input">First Name: </label>
+                      </div>
+                      <input
+                        className="rounded-sm border border-black"
+                        type="text"
+                        name="firstname-input"
+                        value={firstNameInput || firstName}
+                        onClick={setInitialFirstName}
+                        onFocus={setFirstNameFocus}
+                        onChange={handleFirstNameChange}
+                        onBlur={changeFirstName}
+                        required
+                      ></input>
+                      <span
+                        className="relative mb-1 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700"
+                        role="alert"
+                        style={{ visibility: firstNameErrorState || 'hidden' }}
+                      >
+                        <strong className="font-bold">Error:</strong>
+                        <span className="block sm:inline">
+                          {firstNameErrMsg}
+=======
+>>>>>>> Stashed changes
                       <div className="flex py-4">
                         <div className="pr-3">
                           <label htmlFor="lastname-input">Last Name: </label>
@@ -361,7 +504,13 @@ const UserInfoPopup = (
                         <span
                           className="relative mb-1 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700"
                           role="alert"
+<<<<<<< Updated upstream
                           style={{ visibility: lastNameErrorState || 'hidden' }}
+=======
+                          style={{
+                            visibility: lastNameErrorState || 'hidden',
+                          }}
+>>>>>>> Stashed changes
                         >
                           <strong className="font-bold">Error:</strong>
                           <span className="block sm:inline">
@@ -375,6 +524,10 @@ const UserInfoPopup = (
                               viewBox="0 0 20 20"
                             ></svg>
                           </span>
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
                         </span>
                       </div>
                       <div className="m-3 flex p-3">
@@ -416,10 +569,23 @@ const UserInfoPopup = (
                 </div>
               </div>
             </div>
+<<<<<<< Updated upstream
             <div className="fixed inset-0 z-40 bg-black opacity-25"></div>
           </>
         </div>
+=======
+<<<<<<< Updated upstream
+          </div>
+          <div className="fixed inset-0 z-40 bg-black opacity-25"></div>
+        </>
+>>>>>>> Stashed changes
       ) : null}
+=======
+            <div className="fixed inset-0 z-40 bg-black opacity-25"></div>
+          </>
+        ) : null}
+      </div>
+>>>>>>> Stashed changes
     </>
   );
 };
