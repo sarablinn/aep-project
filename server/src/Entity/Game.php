@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\GameRepository;
+use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Types;
@@ -32,7 +33,7 @@ class Game
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE,
         nullable: false)]
-    private ?\DateTimeInterface $timestamp = null;
+    private ?DateTime $timestamp = null;
 
     #[ORM\Column(nullable: false)]
     private ?int $score = null;
@@ -77,12 +78,12 @@ class Game
         return $this;
     }
 
-    public function getTimestamp(): ?\DateTimeInterface
+    public function getTimestamp(): ?DateTime
     {
         return $this->timestamp;
     }
 
-    public function setTimestamp(\DateTimeInterface $timestamp): self
+    public function setTimestamp(DateTime $timestamp): self
     {
         $this->timestamp = $timestamp;
 

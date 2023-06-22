@@ -134,6 +134,8 @@ class UserService implements ObjectMapperInterface
                 . $user_id . " does not exist.");
         }
 
+        $role = $this->roleRepository->find($updateUserDto->getRoleId());
+
         if ($email) {
             $existing_user->setEmail($email);
         }
@@ -149,8 +151,7 @@ class UserService implements ObjectMapperInterface
         if ($lastName) {
             $existing_user->setLastName($lastName);
         }
-        if ($role_id) {
-            $role = $this->roleRepository->find($updateUserDto->getRoleId());
+        if ($role) {
             $existing_user->setRole($role);
         }
         if ($backgroundColor) {

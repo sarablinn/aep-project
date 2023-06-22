@@ -72,7 +72,10 @@ class UserController extends ApiController
     }
 
     /**
-     *
+     * @param Request $request
+     * @return Response
+     * @throws InvalidRequestDataException
+     * @throws JsonException
      */
     #[Route('/users', methods: ('POST'))]
     public function createUser(Request $request): Response
@@ -107,9 +110,7 @@ class UserController extends ApiController
         return $this->json($userDto);
     }
 
-    /**
-     *
-     */
+
 //    #[Route('/users', methods: ('POST'))]
 //    public function getOrCreateUser(Request $request): Response
 //    {
@@ -142,7 +143,11 @@ class UserController extends ApiController
      *
      * Empty strings will be ignored but all fields must be present in the body of the request.
      *
-     * @throws InvalidRequestDataException|JsonException
+     * @param string $user_token
+     * @param Request $request
+     * @return Response
+     * @throws InvalidRequestDataException
+     * @throws JsonException
      */
     #[Route('/users/{user_token}', methods: ['PATCH', 'PUT'])]
     public function updateUserByUserToken(string $user_token, Request $request): Response

@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\EventRepository;
-use DateTimeInterface;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -22,10 +22,10 @@ class Event
     private ?string $event_name = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?DateTimeInterface $start_date = null;
+    private ?DateTime $start_date = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?DateTimeInterface $end_date = null;
+    private ?DateTime $end_date = null;
 
     #[ORM\ManyToOne(targetEntity: 'user')]
     #[ORM\JoinColumn(name: 'created_by_user_id',
@@ -65,24 +65,24 @@ class Event
         return $this;
     }
 
-    public function getStartDate(): ?\DateTimeInterface
+    public function getStartDate(): ?DateTime
     {
         return $this->start_date;
     }
 
-    public function setStartDate(\DateTimeInterface $start_date): self
+    public function setStartDate(DateTime $start_date): self
     {
         $this->start_date = $start_date;
 
         return $this;
     }
 
-    public function getEndDate(): ?\DateTimeInterface
+    public function getEndDate(): ?DateTime
     {
         return $this->end_date;
     }
 
-    public function setEndDate(\DateTimeInterface $end_date): self
+    public function setEndDate(DateTime $end_date): self
     {
         $this->end_date = $end_date;
 

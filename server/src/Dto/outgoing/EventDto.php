@@ -16,6 +16,8 @@ class EventDto
 
     private DateTime $start_date;
 
+    private DateTime $end_date;
+
     private User $event_creator;
 
     private Collection $event_games;
@@ -71,6 +73,22 @@ class EventDto
     public function setStartDate(DateTime $start_date): void
     {
         $this->start_date = $start_date;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getEndDate(): DateTime
+    {
+        return $this->end_date;
+    }
+
+    /**
+     * @param DateTime $end_date
+     */
+    public function setEndDate(DateTime $end_date): void
+    {
+        $this->end_date = $end_date;
     }
 
     /**
