@@ -3,8 +3,8 @@ export interface GameGrid {
 }
 
 export interface NumberSelection {
-  rowIndex: number | null;
-  colIndex: number | null;
+  rowNum: number | null; // row number
+  colNum: number | null; // column number
   value: number | null;
 }
 
