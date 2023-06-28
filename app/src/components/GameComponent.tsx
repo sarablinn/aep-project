@@ -121,10 +121,16 @@ const GameComponent = () => {
               // check that all numbers in between the selections are null
               const currentRow = grid.rows[firstRowNum]; // same row for both selections
               for (
-                let colNum = lowestColNum;
+                let colNum = lowestColNum + 1;
                 colNum < highestColNum;
                 colNum++
               ) {
+                console.log(
+                  'SAME ROW: ROW ITEM: colNum: ' +
+                    colNum +
+                    ', value: ' +
+                    currentRow[colNum],
+                );
                 if (currentRow[colNum] != 0) {
                   console.log('SAME ROW BUT BLOCKED');
                   resetSelections();
@@ -158,7 +164,7 @@ const GameComponent = () => {
               // check that all numbers in between the selections are null
               const currentCol = firstColNum; // same col for both selections
               for (
-                let rowNum = lowestRowNum;
+                let rowNum = lowestRowNum + 1;
                 rowNum < highestRowNum;
                 rowNum++
               ) {
