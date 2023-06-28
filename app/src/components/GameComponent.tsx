@@ -177,10 +177,67 @@ const GameComponent = () => {
               }
             }
           } else {
-            console.log('NOT ADJACENT VERTICALLY OR HORIZONTALLY');
-            resetSelections();
-            return false;
+            // check if the values are next to each other in line, separated by prev matches
+            // determine lowest and highest row numbers
+            const hasLowestRowNum =
+              firstRowNum < secondRowNum ? firstSelection : secondSelection;
+            const hasHighestRowNum =
+              firstRowNum > secondRowNum ? firstSelection : secondSelection;
+
+            const lowestRowNum = hasLowestRowNum.rowNum;
+            const highestRowNum = hasHighestRowNum.rowNum;
+            const firstRowColNum = hasLowestRowNum.colNum;
+            const secondRowColNum = hasHighestRowNum.colNum;
+
+            if (
+              lowestRowNum != null &&
+              highestRowNum != null &&
+              firstRowColNum != null &&
+              secondRowColNum != null
+            ) {
+              // iterate each row from lowestRowNum to highestRowNum
+              for (
+                let rowNum = lowestRowNum;
+                rowNum < highestRowNum + 1;
+                rowNum++
+              ) {
+                // iterate each row checking for non-zero values
+                // iteration is different for:
+                // starting row (lowestRowNum) and ending row (highestRowNum)
+                const currentRow = grid.rows[rowNum];
+                if (rowNum === lowestRowNum) {
+                  for (
+                    let colNum = firstRowColNum + 1;
+                    colNum < currentRow.length;
+                    colNum++
+                  ) {
+                    if (currentRow[colNum] === 0) {
+                      return false;
+                    }
+                  }
+                } else if (rowNum === highestRowNum) {
+                  for (let colNum = 0; colNum < secondRowColNum; colNum++) {
+                    if (currentRow[colNum] === 0) {
+                      return false;
+                    }
+                  }
+                } else {
+                  for (let colNum = 0; colNum < currentRow.length; colNum++) {
+                    if (currentRow[colNum] === 0) {
+                      return false;
+                    }
+                  }
+                }
+              }
+              console.log('VALUES NOT ADJACENT BUT SEPARATED ONLY BY MATCHES');
+              return true;
+            }
           }
+          // else {
+          //   console.log('NOT ADJACENT VERTICALLY OR HORIZONTALLY');
+          //   resetSelections();
+          //   return false;
+          // }
         } else {
           console.log('VALUES DO NOT MATCH OR DO NOT EQUAL A SUM OF 10');
           resetSelections();
