@@ -9,6 +9,7 @@ const GameComponent = () => {
     useState<NumberSelection | null>(null);
 
   const [mode, setMode] = useState('');
+  const [score, setScore] = useState<number>(0);
 
   const initialGrid: GameGrid = { rows: [] };
   const [grid, setGrid] = useState(initialGrid);
@@ -20,6 +21,7 @@ const GameComponent = () => {
       console.log('ISVALID: ' + isValid);
       if (isValid) {
         updateGameGrid();
+        setScore(score + 1);
       }
     }
   }, [firstSelection, secondSelection]);
@@ -45,7 +47,7 @@ const GameComponent = () => {
       resetSelections();
       setFirstSelection(selection);
     }
-    console.log(selection);
+    console.log('SELECTED: ', selection);
   }
 
   const resetSelections = () => {
@@ -253,6 +255,25 @@ const GameComponent = () => {
     return true;
   }
 
+  function calculateRowScores(): number {
+    let rowScoreSum = 0;
+    grid.rows.forEach(row => {
+      let rowScore = row.length - 1;
+      row.forEach(item => {
+        if (item != 0) {
+          rowScore = 0;
+        }
+      });
+      rowScoreSum += rowScore;
+    });
+    return rowScoreSum;
+    // setScore(score + addtlScore);
+  }
+
+  function calculateFinalScore(): number {
+    return score + calculateRowScores();
+  }
+
   if (mode == '') {
     return (
       <div className="container-fluid p-5">
@@ -287,7 +308,6 @@ const GameComponent = () => {
         console.log('UPDATEGAMEGRID');
 
         resetSelections();
-        // console.log(grid);
       }
     }
   }
@@ -329,8 +349,12 @@ const GameComponent = () => {
   }
 
   return (
-    <div className="container-fluid bg-red-500 p-5">
-      <div className="container-fluid bg-green-500 p-5">
+    <div className="container-fluid bg-blue-350 flex p-5">
+      <div className="container w-20 bg-blue-300 p-5">
+        <h3 className="font-bold text-white">Score</h3>
+        <h2 className="font-bold text-white">{score}</h2>
+      </div>
+      <div className="container-fluid bg-blue-400 p-5">
         {grid.rows.map((row: number[], rowIndex: number) => {
           return (
             <div>
