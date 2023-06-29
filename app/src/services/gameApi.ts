@@ -1,3 +1,5 @@
+import { UserResource } from './userApi';
+
 export interface GameGrid {
   rows: Array<Array<number>>;
 }
@@ -21,6 +23,46 @@ export interface GameDto {
   mode_id: number;
   timestamp: Date;
   score: number;
+}
+
+export async function getAllGames(): Promise<GameResource[]> {
+  const url = 'http://localhost:8000/games';
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'GET',
+  })
+    .then(response => response.json())
+    .then((data: GameResource[]) => {
+      console.log('gameApi: Success getAllGames():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('gameApi: Error getAllGames():', error);
+      throw error;
+    });
+}
+
+export async function getAllGamesByUser(
+  $userId: string,
+): Promise<GameResource[]> {
+  const url = 'http://localhost:8000/games/user/' + $userId;
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'GET',
+  })
+    .then(response => response.json())
+    .then((data: GameResource[]) => {
+      console.log('gameApi: Success getAllGamesByUser():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('gameApi: Error getAllGamesByUser():', error);
+      throw error;
+    });
 }
 
 export async function createGame(gameDto: GameDto): Promise<GameResource> {
