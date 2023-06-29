@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { deleteUser, getUserById, getUsers } from './../services/userApi';
 import Loading from './../utilities/Loading';
-import Error from './../utilities/Error';
+import ErrorMessage from '../utilities/ErrorMessage';
 import { selectedUser } from './../services/Atoms';
 import { useAtom } from 'jotai';
 import { PhotoshopPicker } from 'react-color';
@@ -108,7 +108,7 @@ const UserPage = () => {
       </div>
     );
 
-  if (usersError || rolesError) return <Error />;
+  if (usersError || rolesError) return <ErrorMessage />;
 
   if (usersData) {
     return (
