@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
 import { GameGrid, NumberSelection } from '../services/gameApi';
+import { useQuery } from '@tanstack/react-query';
+import { getModes, ModeResource } from '../services/modeApi';
+import CountdownTimer from './CountdownTimer';
+import Loading from '../utilities/Loading';
+import ErrorMessage from '../utilities/ErrorMessage';
 
 const GameComponent = () => {
   const [firstSelection, setFirstSelection] = useState<NumberSelection | null>(
@@ -8,7 +13,9 @@ const GameComponent = () => {
   const [secondSelection, setSecondSelection] =
     useState<NumberSelection | null>(null);
 
-  const [mode, setMode] = useState('');
+  const [showGame, setShowGame] = useState(true);
+
+  const [mode, setMode] = useState<ModeResource | null>(null);
   const [score, setScore] = useState<number>(0);
 
   const initialGrid: GameGrid = { rows: [] };
@@ -25,6 +32,13 @@ const GameComponent = () => {
       }
     }
   }, [firstSelection, secondSelection]);
+
+  // useEffect(() => {
+  //   if (mode) {
+  //     setMode(mode);
+  //     createGrid(mode);
+  //   }
+  // }, [mode]);
 
   function handleClick(selection: NumberSelection) {
     let isDone = false;
@@ -59,10 +73,10 @@ const GameComponent = () => {
     setGrid(initialGrid);
   };
 
-  const createGrid = (mode: string) => {
+  const createGrid = (mode: ModeResource) => {
     resetGrid();
     addNewRows(grid, 9);
-    setMode(mode);
+    // setMode(mode);
   };
 
   function addNewRows(grid: GameGrid, numberOfRows: number) {
@@ -274,22 +288,6 @@ const GameComponent = () => {
     return score + calculateRowScores();
   }
 
-  if (mode == '') {
-    return (
-      <div className="container-fluid p-5">
-        <button
-          className="m-1 bg-pink-500 p-3 font-bold text-white"
-          onClick={() => {
-            createGrid('NORMAL');
-            // setMode('NORMAL');
-          }}
-        >
-          NORMAL
-        </button>
-      </div>
-    );
-  }
-
   function updateGameGrid() {
     if (firstSelection && secondSelection) {
       const firstRowNum = firstSelection.rowNum;
@@ -348,42 +346,110 @@ const GameComponent = () => {
     }
   }
 
-  return (
-    <div className="container-fluid bg-blue-350 flex p-5">
-      <div className="container w-20 bg-blue-300 p-5">
-        <h3 className="font-bold text-white">Score</h3>
-        <h2 className="font-bold text-white">{score}</h2>
+  const {
+    isLoading: isLoadingModes,
+    error: modesError,
+    data: modesData,
+  } = useQuery({
+    queryKey: [`modes`],
+    queryFn: () => getModes(),
+  });
+
+  function handleHasTimeRemaining(hasTime: boolean) {
+    setShowGame(hasTime);
+  }
+
+  useEffect(() => {
+    if (mode) {
+      setShowGame(true);
+      const timer = setTimeout(() => {
+        setShowGame(false);
+      }, mode.timeLimit * 1000 + 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [mode]);
+
+  if (isLoadingModes) {
+    return (
+      <div>
+        <Loading />
       </div>
-      <div className="container-fluid bg-blue-400 p-5">
-        {grid.rows.map((row: number[], rowIndex: number) => {
-          return (
-            <div>
-              {row.map((column: number, colIndex: number) => {
-                return (
-                  <button
-                    className={
-                      isSelectedBtn(rowIndex, colIndex, column)
-                        ? 'isActive m-1 h-12 w-12 rounded bg-pink-600 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600'
-                        : 'm-1 h-12 w-12 rounded bg-pink-500 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600'
-                    }
-                    onClick={() =>
-                      handleClick({
-                        rowNum: rowIndex,
-                        colNum: colIndex,
-                        value: column,
-                      })
-                    }
-                  >
-                    {column != 0 ? column : '•'}
-                  </button>
-                );
-              })}
-            </div>
-          );
-        })}
+    );
+  } else if (modesError) {
+    return (
+      <div>
+        <ErrorMessage
+          errorMessage={'An error has occurred while loading game settings.'}
+        />
       </div>
-    </div>
-  );
+    );
+  } else if (mode === null && modesData != undefined) {
+    return (
+      <div className="container-fluid p-5">
+        {modesData.map((mode, index) => (
+          <button
+            key={index}
+            className="m-1 bg-pink-500 p-3 font-bold text-white"
+            onClick={() => {
+              setMode(mode);
+              createGrid(mode);
+            }}
+          >
+            {mode.modeName}
+          </button>
+        ))}
+        {/*<button*/}
+        {/*  className="m-1 bg-pink-500 p-3 font-bold text-white"*/}
+        {/*  onClick={() => {*/}
+        {/*    createGrid('NORMAL');*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  NORMAL*/}
+        {/*</button>*/}
+      </div>
+    );
+  } else if (mode && showGame) {
+    return (
+      <div className="container-fluid bg-blue-350 flex p-5">
+        <div className="container w-20 bg-blue-300 p-5">
+          <h3 className="font-bold text-white">Score</h3>
+          <h2 className="font-bold text-white">{score}</h2>
+          <div>
+            <CountdownTimer time_limit_in_seconds={mode.timeLimit} />
+          </div>
+        </div>
+        <div className="container-fluid bg-blue-400 p-5">
+          {grid.rows.map((row: number[], rowIndex: number) => {
+            return (
+              <div>
+                {row.map((column: number, colIndex: number) => {
+                  return (
+                    <button
+                      key={rowIndex + '.' + colIndex}
+                      className={
+                        isSelectedBtn(rowIndex, colIndex, column)
+                          ? 'isActive m-1 h-12 w-12 rounded bg-pink-600 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600'
+                          : 'm-1 h-12 w-12 rounded bg-pink-500 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600'
+                      }
+                      onClick={() =>
+                        handleClick({
+                          rowNum: rowIndex,
+                          colNum: colIndex,
+                          value: column,
+                        })
+                      }
+                    >
+                      {column != 0 ? column : '•'}
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 };
 
 export default GameComponent;

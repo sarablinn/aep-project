@@ -8,25 +8,40 @@ export interface NumberSelection {
   value: number | null;
 }
 
-// export async function createUser(userDto: UserDto): Promise<UserResource> {
-//   const url = 'http://localhost:8000/users';
-//   return await fetch(url, {
-//     headers: {
-//       'Content-Type': 'application/json',
-//     },
-//     method: 'POST',
-//     body: JSON.stringify(userDto),
-//   })
-//     .then(response => {
-//       console.log('RESPONSE', response);
-//       return response.json();
-//     })
-//     .then((data: UserResource) => {
-//       console.log('userApi: Success createUser():', data);
-//       return data;
-//     })
-//     .catch(error => {
-//       console.error('userApi: Error createUser():', error);
-//       throw error;
-//     });
-// }
+export interface GameResource {
+  game_id: number;
+  user_id: number;
+  mode_id: number;
+  timestamp: Date;
+  score: number;
+}
+
+export interface GameDto {
+  user_id: number;
+  mode_id: number;
+  timestamp: Date;
+  score: number;
+}
+
+export async function createGame(gameDto: GameDto): Promise<GameResource> {
+  const url = 'http://localhost:8000/games';
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(gameDto),
+  })
+    .then(response => {
+      console.log('RESPONSE', response);
+      return response.json();
+    })
+    .then((data: GameResource) => {
+      console.log('gameApi: Success createGame():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('gameApi: Error createGame():', error);
+      throw error;
+    });
+}
