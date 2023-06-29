@@ -7,6 +7,7 @@ use App\Exception\EntityNotFoundException;
 use App\Exception\InvalidRequestDataException;
 use App\Serialization\SerializationService;
 use App\Service\GameService;
+use App\Service\ModeService;
 use JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,14 +16,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class GameController extends ApiController
 {
     private GameService $gameService;
+    private ModeService $modeService;
     private SerializationService $serializationService;
 
     public function __construct(GameService $gameService,
+                                ModeService $modeService,
                                 SerializationService $serializationService)
     {
         parent::__construct($serializationService);
 
         $this->gameService = $gameService;
+        $this->modeService = $modeService;
     }
 
 
@@ -68,6 +72,16 @@ class GameController extends ApiController
         }
 
         return $this->json($gameDto);
+    }
+
+    /**
+     * @return Response
+     */
+    #[Route('/modes', methods: ['GET'])]
+    public function getModes(): Response {
+        $modes = $this->modeService->getModes();
+        $modeDtos = $this->modeService->mapToDtos($modes);
+        return $this->json($modeDtos);
     }
 
 }
