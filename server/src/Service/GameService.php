@@ -10,7 +10,9 @@ use App\Exception\EntityNotFoundException;
 use App\Repository\GameRepository;
 use App\Repository\ModeRepository;
 use App\Repository\UserRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 
 class GameService implements ObjectMapperInterface
@@ -84,18 +86,34 @@ class GameService implements ObjectMapperInterface
 
         $newGame->setUser($user_player);
         $newGame->setMode($game_mode);
-        $newGame->setTimestamp($createGameDto->getTimestamp());
         $newGame->setScore($createGameDto->getScore());
 
-        $this->gameRepository->save($newGame, true);
+        $date = null;
+        try {
+            $unix_timestamp = strval($createGameDto->getTimestamp());
+            $date = new DateTime("@{$unix_timestamp}");
+            $newGame->setTimestamp($date);
+        } catch (Exception $exception) {
+            return null;
+        }
 
-        $created_game = $this->gameRepository->findOneBy([
-            'user' => $user_player,
-            'timestamp' => $createGameDto->getTimestamp()]
+        // check that the game doesn't already exist, if not, add it, retrieve it and return it
+        $existing_game = $this->gameRepository->findOneBy([
+                'timestamp' => $date,
+                'score' => $createGameDto->getScore(),
+                'user' => $createGameDto->getUserId(),
+                'mode' => $createGameDto->getModeId()]
         );
 
-        if ($created_game) {
-            return $created_game;
+        if ($existing_game) {
+            return $existing_game;
+        } else {
+            $this->gameRepository->save($newGame, true);
+
+            return $this->gameRepository->findOneBy([
+                    'player_user_id' => $createGameDto->getUserId(),
+                    'timestamp' => $createGameDto->getTimestamp()]
+            );;
         }
 
         return null;
@@ -126,7 +144,9 @@ class GameService implements ObjectMapperInterface
             $existing_game->setMode($game_mode);
         }
         if ($timestamp) {
-            $existing_game->setTimestamp($timestamp);
+            $date = new DateTime();
+            $date->setTimestamp($timestamp);
+            $existing_game->setTimestamp($date);
         }
         if ($score) {
             $existing_game->setScore($score);
@@ -150,6 +170,13 @@ class GameService implements ObjectMapperInterface
 
         $this->gameRepository->remove($game, true);
         return true;
+    }
+
+    /**
+     * @return Game[]
+     */
+    public function getGamesOrderedByScore(): iterable {
+        return $this->gameRepository->findBy([], ['score' => 'DESC']);
     }
 
 

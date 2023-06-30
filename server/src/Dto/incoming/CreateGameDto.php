@@ -13,12 +13,12 @@ class CreateGameDto
     private int $user_id;
 
     #[NotNull]
-    #[Type('string')]
+    #[Type('int')]
     private int $mode_id;
 
     #[NotNull]
-    #[Type('DateTime')]
-    private DateTime $timestamp;
+    #[Type('int')]
+    private int $timestamp;
 
     #[NotNull]
     #[Type('int')]
@@ -61,17 +61,17 @@ class CreateGameDto
     }
 
     /**
-     * @return DateTime
+     * @return int
      */
-    public function getTimestamp(): DateTime
+    public function getTimestamp(): int
     {
         return $this->timestamp;
     }
 
     /**
-     * @param DateTime $timestamp
+     * @param int $timestamp
      */
-    public function setTimestamp(DateTime $timestamp): void
+    public function setTimestamp(int $timestamp): void
     {
         $this->timestamp = $timestamp;
     }

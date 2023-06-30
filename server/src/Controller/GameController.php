@@ -8,6 +8,7 @@ use App\Exception\InvalidRequestDataException;
 use App\Serialization\SerializationService;
 use App\Service\GameService;
 use App\Service\ModeService;
+use Exception;
 use JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,6 +50,17 @@ class GameController extends ApiController
     public function getAllGamesByUser(string $user_id): Response
     {
         $games = $this->gameService->getGamesByUser($user_id);
+        $gameDtos = $this->gameService->mapToDtos($games);
+        return $this->json($gameDtos);
+    }
+
+    /**
+     * @return Response
+     */
+    #[Route('/games/topscores', methods: ['GET'])]
+    public function getAllGamesOrderedByScore(): Response
+    {
+        $games = $this->gameService->getGamesOrderedByScore();
         $gameDtos = $this->gameService->mapToDtos($games);
         return $this->json($gameDtos);
     }

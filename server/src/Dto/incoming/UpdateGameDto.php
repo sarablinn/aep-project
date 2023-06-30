@@ -60,9 +60,9 @@ class UpdateGameDto
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getTimestamp(): int
+    public function getTimestamp(): string
     {
         return $this->timestamp;
     }
