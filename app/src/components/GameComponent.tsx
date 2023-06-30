@@ -1,12 +1,21 @@
 import { useEffect, useState } from 'react';
-import { GameGrid, NumberSelection } from '../services/gameApi';
-import { useQuery } from '@tanstack/react-query';
+import {
+  createGame,
+  GameDto,
+  GameGrid,
+  NumberSelection,
+} from '../services/gameApi';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { getModes, ModeResource } from '../services/modeApi';
 import CountdownTimer from './CountdownTimer';
 import Loading from '../utilities/Loading';
 import ErrorMessage from '../utilities/ErrorMessage';
+import { useAuth0 } from '@auth0/auth0-react';
+import { getUserByToken } from '../services/userApi';
 
 const GameComponent = () => {
+  const { user } = useAuth0();
+
   const [firstSelection, setFirstSelection] = useState<NumberSelection | null>(
     null,
   );
@@ -14,12 +23,45 @@ const GameComponent = () => {
     useState<NumberSelection | null>(null);
 
   const [showGame, setShowGame] = useState(true);
+  const [isComplete, setIsComplete] = useState(false);
 
   const [mode, setMode] = useState<ModeResource | null>(null);
-  const [score, setScore] = useState<number>(0);
+  const [baseScore, setBaseScore] = useState<number>(0);
+  const [finalScore, setFinalScore] = useState<number>(0);
 
   const initialGrid: GameGrid = { rows: [] };
   const [grid, setGrid] = useState(initialGrid);
+
+  const [currentGame, setCurrentGame] = useState<GameDto | null>(null);
+
+  const {
+    data: createGameResults,
+    mutate: createGameMutate,
+    error: createGameError,
+    isLoading: createGameLoading,
+  } = useMutation({
+    mutationFn: (gameDto: GameDto) => createGame(gameDto),
+    onMutate: () => console.log('GameComponent: Mutate: createGame Mutation'),
+    onError: (err, variables, context) => {
+      console.log(err, variables, context);
+    },
+    onSuccess: data => {
+      console.log('GameComponent: Success: createGame Mutation: ', data);
+    },
+  });
+
+  const { data: getUserByTokenResults, mutate: getUserByTokenMutate } =
+    useMutation({
+      mutationFn: (userToken: string) => getUserByToken(userToken),
+      onMutate: () =>
+        console.log('GameComponent: Mutate: getUserByToken Mutation'),
+      onError: (err, variables, context) => {
+        console.log(err, variables, context);
+      },
+      onSuccess: data => {
+        console.log('GameComponent: Success: getUserByToken Mutation: ', data);
+      },
+    });
 
   useEffect(() => {
     if (firstSelection && secondSelection) {
@@ -28,7 +70,7 @@ const GameComponent = () => {
       console.log('ISVALID: ' + isValid);
       if (isValid) {
         updateGameGrid();
-        setScore(score + 1);
+        setBaseScore(baseScore + 1);
       }
     }
   }, [firstSelection, secondSelection]);
@@ -284,8 +326,8 @@ const GameComponent = () => {
     // setScore(score + addtlScore);
   }
 
-  function calculateFinalScore(): number {
-    return score + calculateRowScores();
+  function calculateAndSetFinalScore() {
+    setFinalScore(baseScore + calculateRowScores());
   }
 
   function updateGameGrid() {
@@ -355,19 +397,55 @@ const GameComponent = () => {
     queryFn: () => getModes(),
   });
 
-  function handleHasTimeRemaining(hasTime: boolean) {
-    setShowGame(hasTime);
-  }
-
   useEffect(() => {
-    if (mode) {
+    if (mode && !isComplete) {
       setShowGame(true);
       const timer = setTimeout(() => {
         setShowGame(false);
+        setIsComplete(true);
       }, mode.timeLimit * 1000 + 1000);
       return () => clearTimeout(timer);
     }
   }, [mode]);
+
+  useEffect(() => {
+    if (!showGame && isComplete) {
+      calculateAndSetFinalScore();
+      console.log('final score: ' + finalScore);
+      saveCompletedGame();
+      console.log('end of handleGameComplete()');
+    }
+  }, [showGame, isComplete]);
+
+  // function handleGameComplete() {
+  //   calculateAndSetFinalScore();
+  //   console.log('final score: ' + finalScore);
+  //   saveCompletedGame();
+  //   console.log('end of handleGameComplete()');
+  // }
+
+  function saveCompletedGame() {
+    if (user && user.sub && mode) {
+      const userToken = user.sub;
+      getUserByTokenMutate(userToken);
+
+      if (getUserByTokenResults) {
+        const userId = getUserByTokenResults.userId;
+        const gameDto: GameDto = {
+          userId: userId,
+          modeId: mode.modeId,
+          timestamp: Math.round(new Date(Date.now()).getTime() / 1000),
+          score: finalScore,
+        };
+        console.log('GAME TO SAVE: ', gameDto);
+
+        createGameMutate(gameDto);
+        // reset gameboard
+        // maybe create an isComplete state for game -- to determine when to show board
+        // display end of game leadership board
+      }
+    }
+  }
 
   if (isLoadingModes) {
     return (
@@ -388,7 +466,7 @@ const GameComponent = () => {
       <div className="container-fluid p-5">
         {modesData.map((mode, index) => (
           <button
-            key={index}
+            key={'mode-' + index}
             className="m-1 bg-pink-500 p-3 font-bold text-white"
             onClick={() => {
               setMode(mode);
@@ -398,14 +476,6 @@ const GameComponent = () => {
             {mode.modeName}
           </button>
         ))}
-        {/*<button*/}
-        {/*  className="m-1 bg-pink-500 p-3 font-bold text-white"*/}
-        {/*  onClick={() => {*/}
-        {/*    createGrid('NORMAL');*/}
-        {/*  }}*/}
-        {/*>*/}
-        {/*  NORMAL*/}
-        {/*</button>*/}
       </div>
     );
   } else if (mode && showGame) {
@@ -413,7 +483,7 @@ const GameComponent = () => {
       <div className="container-fluid bg-blue-350 flex p-5">
         <div className="container w-20 bg-blue-300 p-5">
           <h3 className="font-bold text-white">Score</h3>
-          <h2 className="font-bold text-white">{score}</h2>
+          <h2 className="font-bold text-white">{baseScore}</h2>
           <div>
             <CountdownTimer time_limit_in_seconds={mode.timeLimit} />
           </div>
@@ -421,7 +491,7 @@ const GameComponent = () => {
         <div className="container-fluid bg-blue-400 p-5">
           {grid.rows.map((row: number[], rowIndex: number) => {
             return (
-              <div>
+              <div key={'row-' + rowIndex}>
                 {row.map((column: number, colIndex: number) => {
                   return (
                     <button
