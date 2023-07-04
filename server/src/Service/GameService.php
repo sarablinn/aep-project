@@ -71,10 +71,10 @@ class GameService implements ObjectMapperInterface
     {
         $newGame = new Game();
 
-        $user_player = $this->userRepository->find($createGameDto->getUserId());
+        $user_player = $this->userRepository->findOneBy(['user_token' => $createGameDto->getUserToken()]);
         if (!$user_player) {
             throw new EntityNotFoundException('ERROR: Unable to '
-                . 'new Game. Player id #' . $createGameDto->getUserId()
+                . 'new Game. Player token #' . $createGameDto->getUserToken()
                 . ' does not yet exist.');
         }
 
@@ -101,7 +101,7 @@ class GameService implements ObjectMapperInterface
         $existing_game = $this->gameRepository->findOneBy([
                 'timestamp' => $date,
                 'score' => $createGameDto->getScore(),
-                'user' => $createGameDto->getUserId(),
+                'user' => $user_player->getUserId(),
                 'mode' => $createGameDto->getModeId()]
         );
 

@@ -9,8 +9,8 @@ use Symfony\Component\Validator\Constraints\Type;
 class CreateGameDto
 {
     #[NotNull]
-    #[Type('int')]
-    private int $user_id;
+    #[Type('string')]
+    private string $user_token;
 
     #[NotNull]
     #[Type('int')]
@@ -29,19 +29,19 @@ class CreateGameDto
 
 
     /**
-     * @return int
+     * @return string
      */
-    public function getUserId(): int
+    public function getUserToken(): string
     {
-        return $this->user_id;
+        return $this->user_token;
     }
 
     /**
-     * @param int $user_id
+     * @param string $user_token
      */
-    public function setUserId(int $user_id): void
+    public function setUserToken(string $user_token): void
     {
-        $this->user_id = $user_id;
+        $this->user_token = $user_token;
     }
 
     /**
