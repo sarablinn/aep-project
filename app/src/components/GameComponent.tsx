@@ -13,7 +13,11 @@ import ErrorMessage from '../utilities/ErrorMessage';
 import { useAuth0 } from '@auth0/auth0-react';
 import { getUserByToken } from '../services/userApi';
 
-const GameComponent = () => {
+export type GameComponentProps = {
+  selected_mode: ModeResource;
+};
+
+const GameComponent = ({ selected_mode }: { selected_mode: ModeResource }) => {
   const { user } = useAuth0();
 
   const [firstSelection, setFirstSelection] = useState<NumberSelection | null>(
@@ -75,12 +79,9 @@ const GameComponent = () => {
     }
   }, [firstSelection, secondSelection]);
 
-  // useEffect(() => {
-  //   if (mode) {
-  //     setMode(mode);
-  //     createGrid(mode);
-  //   }
-  // }, [mode]);
+  useEffect(() => {
+    calculateAndSetFinalScore();
+  }, [baseScore]);
 
   function handleClick(selection: NumberSelection) {
     let isDone = false;
@@ -417,13 +418,6 @@ const GameComponent = () => {
     }
   }, [showGame, isComplete]);
 
-  // function handleGameComplete() {
-  //   calculateAndSetFinalScore();
-  //   console.log('final score: ' + finalScore);
-  //   saveCompletedGame();
-  //   console.log('end of handleGameComplete()');
-  // }
-
   function saveCompletedGame() {
     if (user && user.sub && mode) {
       const userToken = user.sub;
@@ -439,7 +433,8 @@ const GameComponent = () => {
         };
         console.log('GAME TO SAVE: ', gameDto);
 
-        createGameMutate(gameDto);
+        // createGameMutate(gameDto);
+
         // reset gameboard
         // maybe create an isComplete state for game -- to determine when to show board
         // display end of game leadership board
@@ -479,16 +474,20 @@ const GameComponent = () => {
       </div>
     );
   } else if (mode && showGame) {
+    const start_time = new Date();
     return (
       <div className="container-fluid bg-blue-350 flex p-5">
-        <div className="container w-20 bg-blue-300 p-5">
+        <div className="min-w-1/5 container w-1/5 bg-blue-300 p-5">
           <h3 className="font-bold text-white">Score</h3>
           <h2 className="font-bold text-white">{baseScore}</h2>
           <div>
-            <CountdownTimer time_limit_in_seconds={mode.timeLimit} />
+            <CountdownTimer
+              time_limit_in_seconds={mode.timeLimit}
+              start_time={start_time}
+            />
           </div>
         </div>
-        <div className="container-fluid bg-blue-400 p-5">
+        <div className=" min-w-4/5 container flex w-4/5 bg-blue-400 p-5">
           {grid.rows.map((row: number[], rowIndex: number) => {
             return (
               <div key={'row-' + rowIndex}>
@@ -519,6 +518,8 @@ const GameComponent = () => {
         </div>
       </div>
     );
+  } else {
+    return <></>;
   }
 };
 
