@@ -1,6 +1,6 @@
 import { Route } from '@tanstack/react-router';
 import rootRoute from './rootRoute';
-import GameComponent from '../components/GameComponent';
+import GameSettingsPage from '../components/GameSettingsPage';
 
 const gameComponentRoute = new Route({
   getParentRoute: () => rootRoute,
@@ -8,7 +8,7 @@ const gameComponentRoute = new Route({
   component: () => {
     return (
       <>
-        <GameComponent />;
+        <GameSettingsPage />;
       </>
     );
   },

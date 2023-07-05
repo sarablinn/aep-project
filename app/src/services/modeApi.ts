@@ -12,6 +12,7 @@ export interface ModeDto {
 export interface Timer {
   minutes: number;
   seconds: number;
+  // milliseconds: number;
 }
 
 export async function getModes(): Promise<ModeResource[]> {

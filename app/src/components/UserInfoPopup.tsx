@@ -14,10 +14,12 @@ import { selectedUser } from '../services/Atoms';
 import { SwatchesPicker } from 'react-color';
 import useInput from '../hooks/useInput';
 
-const UserInfoPopup = (
-  { userResource }: { userResource: UserResource },
-  { isVisible }: { isVisible: string },
-) => {
+export type UserInfoPopupProps = {
+  userResource: UserResource;
+  isVisible: string;
+};
+
+const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
   const { user, isLoading, error } = useAuth0();
 
   const [showModal, setShowModal] = useState(false);
