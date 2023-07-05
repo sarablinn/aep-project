@@ -2,3 +2,4 @@
 app/.env
 app/.env
 app/src/auth_config.json
+.DS_Store
