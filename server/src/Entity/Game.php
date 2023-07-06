@@ -19,13 +19,13 @@ class Game
     #[ORM\Column]
     private ?int $game_id = null;
 
-    #[ORM\ManyToOne(targetEntity: 'user')]
+    #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'player_user_id',
         referencedColumnName: 'user_id',
         nullable: false)]
     private ?User $user = null;
 
-    #[ORM\ManyToOne(targetEntity: 'mode')]
+    #[ORM\ManyToOne(targetEntity: 'Mode')]
     #[ORM\JoinColumn(name: 'mode_id',
         referencedColumnName: 'mode_id',
         nullable: false)]

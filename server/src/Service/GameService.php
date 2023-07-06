@@ -21,18 +21,24 @@ class GameService implements ObjectMapperInterface
     private GameRepository $gameRepository;
     private UserRepository $userRepository;
     private ModeRepository $modeRepository;
+    private UserService $userService;
+    private ModeService $modeService;
     private LoggerInterface $logger;
 
     function __construct(EntityManagerInterface $entityManager,
                          GameRepository $gameRepository,
                          UserRepository $userRepository,
                          ModeRepository $modeRepository,
+                         UserService $userService,
+                         ModeService $modeService,
                          LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
         $this->gameRepository = $gameRepository;
         $this->userRepository = $userRepository;
         $this->modeRepository = $modeRepository;
+        $this->userService = $userService;
+        $this->modeService = $modeService;
         $this->logger = $logger;
     }
 
@@ -111,12 +117,10 @@ class GameService implements ObjectMapperInterface
             $this->gameRepository->save($newGame, true);
 
             return $this->gameRepository->findOneBy([
-                    'player_user_id' => $createGameDto->getUserId(),
-                    'timestamp' => $createGameDto->getTimestamp()]
-            );;
+                    'user' => $user_player->getUserId(),
+                    'timestamp' => $date]
+            );
         }
-
-        return null;
     }
 
     /**
@@ -193,9 +197,21 @@ class GameService implements ObjectMapperInterface
     {
         $gameDto = new GameDto;
 
+        $user = $object->getUser();
+        $userDto = null;
+        if ($user) {
+            $userDto = $this->userService->mapToDto($user);
+        }
+
+        $mode = $object->getMode();
+        $modeDto = null;
+        if ($mode) {
+            $modeDto = $this->modeService->mapToDto($mode);
+        }
+
         $gameDto->setGameId($object->getGameId() ?? null);
-        $gameDto->setUser($object->getUser() ?? null);
-        $gameDto->setMode($object->getMode() ?? null);
+        $gameDto->setUser($userDto);
+        $gameDto->setMode($modeDto);
         $gameDto->setTimestamp($object->getTimestamp() ?? null);
         $gameDto->setScore($object->getScore() ?? null);
 

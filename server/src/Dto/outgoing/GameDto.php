@@ -2,17 +2,15 @@
 
 namespace App\Dto\outgoing;
 
-use App\Entity\Mode;
-use App\Entity\User;
 use DateTime;
 
 class GameDto
 {
     private int $game_id;
 
-    private User $user;
+    private UserDto $user;
 
-    private Mode $mode;
+    private ModeDto $mode;
 
     private DateTime $timestamp;
 
@@ -35,33 +33,33 @@ class GameDto
     }
 
     /**
-     * @return User
+     * @return UserDto
      */
-    public function getUser(): User
+    public function getUser(): UserDto
     {
         return $this->user;
     }
 
     /**
-     * @param User $user
+     * @param UserDto $user
      */
-    public function setUser(User $user): void
+    public function setUser(UserDto $user): void
     {
         $this->user = $user;
     }
 
     /**
-     * @return Mode
+     * @return ModeDto
      */
-    public function getMode(): Mode
+    public function getMode(): ModeDto
     {
         return $this->mode;
     }
 
     /**
-     * @param Mode $mode
+     * @param ModeDto $mode
      */
-    public function setMode(Mode $mode): void
+    public function setMode(ModeDto $mode): void
     {
         $this->mode = $mode;
     }
