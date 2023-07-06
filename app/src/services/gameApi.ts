@@ -1,4 +1,5 @@
 import { UserResource } from './userApi';
+import { ModeResource } from './modeApi';
 
 export interface GameGrid {
   rows: Array<Array<number>>;
@@ -12,14 +13,29 @@ export interface NumberSelection {
 
 export interface GameResource {
   gameId: number;
-  userId: number;
-  modeId: number;
+  user: UserResource;
+  mode: ModeResource;
   timestamp: Date;
   score: number;
 }
 
+// export interface GameResource {
+//   gameId: number;
+//   userId: number;
+//   modeId: number;
+//   timestamp: Date;
+//   score: number;
+// }
+
+// export interface GameDto {
+//   userId: number;
+//   modeId: number;
+//   timestamp: any;
+//   score: number;
+// }
+
 export interface GameDto {
-  userId: number;
+  userToken: string;
   modeId: number;
   timestamp: any;
   score: number;
@@ -75,11 +91,11 @@ export async function getAllGamesOrderedByScore(): Promise<GameResource[]> {
   })
     .then(response => response.json())
     .then((data: GameResource[]) => {
-      console.log('gameApi: Success getAllGamesByUser():', data);
+      console.log('gameApi: Success getAllGamesOrderByScore():', data);
       return data;
     })
     .catch(error => {
-      console.error('gameApi: Error getAllGamesByUser():', error);
+      console.error('gameApi: Error getAllGamesOrderByScore():', error);
       throw error;
     });
 }

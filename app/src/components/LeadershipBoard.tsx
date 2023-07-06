@@ -29,18 +29,26 @@ const LeadershipBoard = () => {
     );
   } else if (gamesData) {
     return (
-      <div>
-        <table>
+      <div className="p-5">
+        <table className="bg-blue-500 p-5">
+          <tr className="p-5 font-bold text-white">
+            <th></th>
+            <th>Score</th>
+            <th>User</th>
+          </tr>
+
           {gamesData.map((game, index) => (
             <tr>
-              <td>{index}</td>
-              <td>{game.score}</td>
-              <td>{game.user_id}</td>
+              <td className="p-5 text-white">{index}</td>
+              <td className="p-5 font-bold text-white">{game.score}</td>
+              <td className="p-5 font-bold text-white">{game.user.username}</td>
             </tr>
           ))}
         </table>
       </div>
     );
+  } else {
+    return <></>;
   }
 };
 

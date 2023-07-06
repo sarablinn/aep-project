@@ -5,6 +5,8 @@ import { ModeResource } from '../services/modeApi';
 import { getUserByToken } from '../services/userApi';
 import useGame from '../hooks/useGame';
 import Countdown from 'react-countdown';
+import UserEndGameResults from './UserEndGameResults';
+import GuestEndGameResults from './GuestEndGameResults';
 
 export type GameComponentProps = {
   selected_mode: ModeResource;
@@ -12,7 +14,7 @@ export type GameComponentProps = {
 };
 
 const GameComponent = ({ selected_mode, user }: GameComponentProps) => {
-  const [currentGame, setCurrentGame] = useState<GameDto | null>(null);
+  const [currentGame, setCurrentGame] = useState(null);
 
   const {
     data: createGameResults,
@@ -53,15 +55,6 @@ const GameComponent = ({ selected_mode, user }: GameComponentProps) => {
     handleSelection,
   } = useGame(selected_mode);
 
-  // useEffect(() => {
-  //   if (start_time) {
-  //     const timer = setTimeout(() => {
-  //       setShowGame(false);
-  //     }, selected_mode.timeLimit * 1000 + 1000);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [start_time]);
-
   useEffect(() => {
     if (isComplete) {
       // build a gameDTO here
@@ -80,24 +73,19 @@ const GameComponent = ({ selected_mode, user }: GameComponentProps) => {
   function saveCompletedGame() {
     if (user != undefined && user.sub && selected_mode) {
       const userToken = user.sub;
-      getUserByTokenMutate(userToken);
 
-      if (getUserByTokenResults) {
-        const userId = getUserByTokenResults.userId;
-        const gameDto: GameDto = {
-          userId: userId,
-          modeId: selected_mode.modeId,
-          timestamp: Math.round(new Date(Date.now()).getTime() / 1000),
-          score: score,
-        };
-        console.log('GAME TO SAVE: ', gameDto);
+      const gameDto: GameDto = {
+        userToken: userToken,
+        modeId: selected_mode.modeId,
+        timestamp: Math.round(new Date(Date.now()).getTime() / 1000),
+        score: score,
+      };
+      console.log('GAME TO SAVE: ', gameDto);
 
-        // createGameMutate(gameDto);
+      createGameMutate(gameDto);
 
-        // reset gameboard
-        // maybe create an isComplete state for game -- to determine when to show board
-        // display end of game leadership board
-      }
+      // reset gameboard
+      // display end of game leadership board
     }
   }
 
@@ -145,6 +133,18 @@ const GameComponent = ({ selected_mode, user }: GameComponentProps) => {
           })}
         </div>
         {/*</div>*/}
+      </div>
+    );
+  } else if (isComplete && user && createGameResults) {
+    return (
+      <div>
+        <UserEndGameResults user={user} game={createGameResults} />
+      </div>
+    );
+  } else if (isComplete && !user) {
+    return (
+      <div>
+        <GuestEndGameResults score={score} />
       </div>
     );
   } else {
