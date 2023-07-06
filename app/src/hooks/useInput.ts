@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import React from 'react';
 
-const useInput = (validateInput, startingValue: string) => {
+const useInput = (validateInput: any, startingValue: string) => {
   const [initialValue] = useState(startingValue);
   const [enteredValue, setEnteredValue] = useState(startingValue);
   const [errorMessage, setErrorMessage] = useState('');
@@ -20,9 +20,10 @@ const useInput = (validateInput, startingValue: string) => {
     // setIsValid(errorMessage == '');
   };
 
-  const setIsFocused = () => {
+  const setIsFocused = (focused: boolean) => {
     // console.log('Element has been set to focus.');
-    setToFocused(true);
+    console.log('Input in focus: ', isFocused);
+    setToFocused(focused);
   };
 
   const reset = () => {
