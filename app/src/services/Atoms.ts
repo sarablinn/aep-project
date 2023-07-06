@@ -1,7 +1,6 @@
 import { atom } from 'jotai';
 import { UserResource } from './userApi';
 import { Role } from './roleApi';
-import { GameGrid } from './gameApi';
 
 const defaultUser = {
   userId: 0,
