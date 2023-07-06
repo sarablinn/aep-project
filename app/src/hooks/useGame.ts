@@ -1,9 +1,9 @@
-import { GameDto, GameGrid, NumberSelection } from '../services/gameApi';
+import { GameGrid, NumberSelection } from '../services/gameApi';
 import { useEffect, useState } from 'react';
 import { ModeResource } from '../services/modeApi';
 
 const useGame = (gameMode: ModeResource) => {
-  const [currentGame, setCurrentGame] = useState<GameDto | null>(null);
+  // const [currentGame, setCurrentGame] = useState<GameDto | null>(null);
 
   const initialGameGrid: GameGrid = { rows: [] };
   const [gameGrid, setGameGrid] = useState(initialGameGrid);
@@ -24,7 +24,6 @@ const useGame = (gameMode: ModeResource) => {
   const totalScore = baseScore + rowScore;
 
   const [start_time, setStartTime] = useState<Date>(new Date());
-  const [end_time, setEndTime] = useState(null);
   const [hasBegun, setHasBegun] = useState(false);
 
   const createGameGrid = () => {
