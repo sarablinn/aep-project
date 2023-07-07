@@ -58,17 +58,19 @@ const useGame = (gameMode: ModeResource) => {
   };
 
   const addNewRows = (numberOfRows: number) => {
+    const rows = [];
     for (let rowNum = 0; rowNum < numberOfRows; rowNum++) {
       const row = [];
       // fill the row with random ints
       for (let col = 0; col < 9; col++) {
         row[col] = Math.floor(Math.random() * 9) + 1;
       }
-      // add row to the game grid
-      gameGrid.rows[gameGrid.rows.length] = row;
+
+      rows[rows.length] = row;
     }
 
-    setGameGrid(gameGrid);
+    const updatedGrid = gameGrid.rows.concat(rows);
+    setGameGrid({ rows: updatedGrid });
   };
 
   /**
@@ -381,12 +383,17 @@ const useGame = (gameMode: ModeResource) => {
     }
   }, [hasBegun, gameMode.timeLimit]);
 
+  const addRow = () => {
+    addNewRows(1);
+  };
+
   return {
     gameGrid,
     firstSelection,
     secondSelection,
     start_time,
     beginGame,
+    addRow,
     score: totalScore,
     isComplete,
     isSelection,

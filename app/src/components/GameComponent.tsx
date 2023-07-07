@@ -49,6 +49,7 @@ const GameComponent = ({ selected_mode, user }: GameComponentProps) => {
     gameGrid,
     start_time,
     beginGame,
+    addRow,
     score,
     isComplete,
     isSelection,
@@ -102,6 +103,12 @@ const GameComponent = ({ selected_mode, user }: GameComponentProps) => {
               zeroPadDays={undefined}
             />
           </div>
+          <button
+            onClick={addRow}
+            className="m-5 rounded bg-pink-500 px-4 py-2 font-bold font-bold text-white text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600"
+          >
+            +
+          </button>
         </div>
         <div className="min-w-4/5 container flex w-4/5 flex-col items-center bg-blue-400 p-5">
           {gameGrid.rows.map((row: number[], rowIndex: number) => {
