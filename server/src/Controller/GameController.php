@@ -66,6 +66,49 @@ class GameController extends ApiController
     }
 
     /**
+     * Returns an associative array containing arrays of games,
+     * indexed by mode ids, and ordered by score in descending order.
+     * @param string $mode_id
+     * @return Response
+     */
+    #[Route('/games/topscores/modes/{mode_id}', methods: ['GET'])]
+    public function getGamesByMode(string $mode_id): Response
+    {
+
+        $games = $this->gameService->getGamesByMode($mode_id);
+        $gameDtos = $this->gameService->mapToDtos($games);
+
+        return $this->json($gameDtos);
+    }
+
+    /**
+     * Returns an associative array containing arrays of GameDtos,
+     * indexed by mode ids, and ordered by score in descending order.
+     * @return Response
+     */
+    #[Route('/games/topscores/modes', methods: ['GET'])]
+    public function getAllGamesByModes(): Response
+    {
+        $dtoModeGames = $this->gameService->getAllGamesByModes();
+        return $this->json($dtoModeGames);
+    }
+
+    /**
+     * Return an associative array containing arrays of games from
+     * a given event, indexed by mode and in descending score order,
+     * for a given event.
+     * @param string $event_id
+     * @return Response
+     */
+    #[Route('/games/topscores/event/{event_id}', methods: ['GET'])]
+    public function getAllGamesByEvent(string $event_id): Response
+    {
+        $dtoEventGames = $this->gameService->getAllGamesByEvent($event_id);
+        return $this->json($dtoEventGames);
+    }
+
+
+    /**
      * @param Request $request
      * @return Response
      * @throws InvalidRequestDataException
