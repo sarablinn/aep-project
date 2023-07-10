@@ -19,6 +19,16 @@ export interface GameResource {
   score: number;
 }
 
+export interface GamesByMode {
+  // modes: ModeGames[];
+  modeGames: Array<Array<GameResource>>;
+}
+
+export interface ModeGames {
+  mode: number;
+  games: GameResource[];
+}
+
 // export interface GameResource {
 //   gameId: number;
 //   userId: number;
@@ -96,6 +106,66 @@ export async function getAllGamesOrderedByScore(): Promise<GameResource[]> {
     })
     .catch(error => {
       console.error('gameApi: Error getAllGamesOrderByScore():', error);
+      throw error;
+    });
+}
+
+// ordered by scores desc
+export async function getGamesByMode(mode_id: number): Promise<GameResource[]> {
+  const url = 'http://localhost:8000/games/topscores/modes/' + mode_id;
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'GET',
+  })
+    .then(response => response.json())
+    .then((data: GameResource[]) => {
+      console.log('gameApi: Success getAllGamesByModeOrderByScore():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('gameApi: Error getAllGamesByModeOrderByScore():', error);
+      throw error;
+    });
+}
+
+export async function getAllGamesByModes(): Promise<GamesByMode> {
+  const url = 'http://localhost:8000/games/topscores/modes';
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'GET',
+  })
+    .then(response => response.json())
+    .then((data: GamesByMode) => {
+      console.log('gameApi: Success getAllGamesByModes():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('gameApi: Error getAllGamesByModes():', error);
+      throw error;
+    });
+}
+
+export async function getAllGamesByEvent(
+  event_id: number,
+): Promise<GamesByMode> {
+  const url = 'http://localhost:8000/games/topscores/event/' + event_id;
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'GET',
+  })
+    .then(response => response.json())
+    .then((data: GamesByMode) => {
+      console.log('gameApi: Success getAllGamesByEvent():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('gameApi: Error getAllGamesByEvent():', error);
       throw error;
     });
 }

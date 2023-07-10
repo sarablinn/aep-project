@@ -5,8 +5,10 @@ namespace App\Service;
 use App\Dto\incoming\CreateGameDto;
 use App\Dto\incoming\UpdateGameDto;
 use App\Dto\outgoing\GameDto;
+use App\Dto\outgoing\ModeGamesDto;
 use App\Entity\Game;
 use App\Exception\EntityNotFoundException;
+use App\Repository\EventRepository;
 use App\Repository\GameRepository;
 use App\Repository\ModeRepository;
 use App\Repository\UserRepository;
@@ -21,6 +23,7 @@ class GameService implements ObjectMapperInterface
     private GameRepository $gameRepository;
     private UserRepository $userRepository;
     private ModeRepository $modeRepository;
+    private EventRepository $eventRepository;
     private UserService $userService;
     private ModeService $modeService;
     private LoggerInterface $logger;
@@ -29,6 +32,7 @@ class GameService implements ObjectMapperInterface
                          GameRepository $gameRepository,
                          UserRepository $userRepository,
                          ModeRepository $modeRepository,
+                         EventRepository $eventRepository,
                          UserService $userService,
                          ModeService $modeService,
                          LoggerInterface $logger)
@@ -37,6 +41,7 @@ class GameService implements ObjectMapperInterface
         $this->gameRepository = $gameRepository;
         $this->userRepository = $userRepository;
         $this->modeRepository = $modeRepository;
+        $this->eventRepository = $eventRepository;
         $this->userService = $userService;
         $this->modeService = $modeService;
         $this->logger = $logger;
@@ -183,6 +188,71 @@ class GameService implements ObjectMapperInterface
         return $this->gameRepository->findBy([], ['score' => 'DESC']);
     }
 
+    /**
+     * Returns a single array of games played in the specified mode,
+     * by score in descending order.
+     * @param int $mode_id
+     * @return Game []
+     */
+    public function getGamesByMode(int $mode_id): iterable {
+        return $this->gameRepository->findBy(
+            ['mode' => $mode_id], ['score' => 'DESC']);
+    }
+
+    /**
+     * Returns an associative array containing arrays of GameDtos,
+     * indexed by mode ids, and ordered by score in descending order.
+     * @return ModeGamesDto
+     */
+    public function getAllGamesByModes(): ModeGamesDto {
+        $dto_games_by_mode = new ModeGamesDto();
+
+
+        $modes = $this->modeRepository->findAll();
+        if ($modes) {
+            foreach ($modes as $mode) {
+                $mode_id = $mode->getModeId();
+                $modeGames = $this->gameRepository->findBy(
+                    ['mode' => $mode_id], ['score' => 'DESC']);
+
+                $dtoModeGames = $this->mapToDtos($modeGames);
+                $dto_games_by_mode->addGames($dtoModeGames);
+            }
+        }
+
+        return $dto_games_by_mode;
+    }
+
+    /**
+     * Return an associative array containing arrays of games from
+     * a given event, indexed by mode and in descending score order,
+     * for a given event.
+     * @param int $event_id
+     * @return iterable
+     */
+    public function getAllGamesByEvent(int $event_id): iterable {
+        $games_by_event_mode = [];
+
+        $modes = $this->modeRepository->findAll();
+        $event = $this->eventRepository->find($event_id);
+        $event_games = $event->getEventGames();
+
+        if ($modes) {
+            if ($event_games != []) {
+                foreach ($modes as $mode) {
+                    $mode_id = $mode->getModeId();
+                    $modeGames = $this->gameRepository->findBy(
+                        ['mode' => $mode_id, 'event' => $event_id],
+                        ['score' => 'DESC']);
+
+                    $dtoEventModeGames = $this->mapToDtos($modeGames);
+                    $games_by_event_mode[$mode_id] = $dtoEventModeGames;
+                }
+            }
+        }
+
+        return $games_by_event_mode;
+    }
 
     ##################################################################################
     ####################### OBJECT MAPPER IMPLEMENTATIONS ############################
