@@ -7,6 +7,7 @@ import userProfileRoute from './userProfileRoute';
 import LoadingPage from '../components/LoadingPage';
 import gameComponentRoute from './gameComponentRoute';
 import leadershipBoardRoute from './leadershipBoardRoute';
+import eventsRoute from './eventsRoute';
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -15,6 +16,7 @@ const routeTree = rootRoute.addChildren([
   userProfileRoute,
   gameComponentRoute,
   leadershipBoardRoute,
+  eventsRoute,
 ]);
 
 export const router = new Router({
