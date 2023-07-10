@@ -151,7 +151,13 @@ const GameComponent = ({ selected_mode, user }: GameComponentProps) => {
   } else if (isComplete && !user) {
     return (
       <div>
-        <GuestEndGameResults score={score} />
+        <GuestEndGameResults
+          game={{
+            mode: selected_mode,
+            timestamp: new Date(),
+            score: score,
+          }}
+        />
       </div>
     );
   } else {

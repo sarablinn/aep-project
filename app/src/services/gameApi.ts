@@ -20,12 +20,11 @@ export interface GameResource {
 }
 
 export interface GamesByMode {
-  // modes: ModeGames[];
   modeGames: Array<Array<GameResource>>;
 }
 
 export interface ModeGames {
-  mode: number;
+  mode: ModeResource;
   games: GameResource[];
 }
 
@@ -48,6 +47,12 @@ export interface GameDto {
   userToken: string;
   modeId: number;
   timestamp: any;
+  score: number;
+}
+
+export interface GuestGameDto {
+  mode: ModeResource;
+  timestamp: Date;
   score: number;
 }
 
