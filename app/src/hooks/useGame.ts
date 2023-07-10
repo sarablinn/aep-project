@@ -237,6 +237,15 @@ const useGame = (gameMode: ModeResource) => {
                 rowNum < highestRowNum + 1;
                 rowNum++
               ) {
+                console.log(
+                  'rowNum: ' +
+                    rowNum +
+                    ', lowestRowNum: ' +
+                    lowestRowNum +
+                    ', ' +
+                    'highestRowNum: ' +
+                    highestRowNum,
+                );
                 // iterate each row checking for non-zero values
                 // iteration is different for:
                 // starting row (lowestRowNum) and ending row (highestRowNum)
@@ -247,19 +256,22 @@ const useGame = (gameMode: ModeResource) => {
                     colNum < currentRow.length;
                     colNum++
                   ) {
-                    if (currentRow[colNum] === 0) {
+                    if (currentRow[colNum] != 0) {
+                      resetSelections();
                       return false;
                     }
                   }
                 } else if (rowNum === highestRowNum) {
                   for (let colNum = 0; colNum < secondRowColNum; colNum++) {
-                    if (currentRow[colNum] === 0) {
+                    if (currentRow[colNum] != 0) {
+                      resetSelections();
                       return false;
                     }
                   }
                 } else {
                   for (let colNum = 0; colNum < currentRow.length; colNum++) {
-                    if (currentRow[colNum] === 0) {
+                    if (currentRow[colNum] != 0) {
+                      resetSelections();
                       return false;
                     }
                   }
@@ -267,7 +279,7 @@ const useGame = (gameMode: ModeResource) => {
               }
               console.log('VALUES NOT ADJACENT BUT SEPARATED ONLY BY MATCHES');
               return true;
-            }
+            } // end first if statement
           }
           // else {
           //   console.log('NOT ADJACENT VERTICALLY OR HORIZONTALLY');
