@@ -8,6 +8,7 @@ use App\Exception\EntityNotFoundException;
 use App\Exception\InvalidRequestDataException;
 use App\Serialization\SerializationService;
 use App\Service\EventService;
+use Exception;
 use JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -53,8 +54,6 @@ class EventController extends ApiController
     /**
      * @param Request $request
      * @return Response
-     * @throws InvalidRequestDataException
-     * @throws JsonException
      */
     #[Route('/events', methods: ('POST'))]
     public function createEvent(Request $request): Response
@@ -66,6 +65,15 @@ class EventController extends ApiController
             $eventDto = $this->eventService->mapToDto($event);
         } catch (EntityNotFoundException $entityNotFoundException) {
             return $this->json($entityNotFoundException->getMessage());
+        } catch (InvalidRequestDataException $invalidRequestDataException) {
+            return $this->json($invalidRequestDataException->getMessage()
+                . ' VALIDATION ERRORS: '
+                . $invalidRequestDataException->getValidationErrors());
+        } catch (JsonException $jsonException) {
+            return $this->json($jsonException->getMessage());
+        } catch (Exception $e) {
+            return $this->json($e->getMessage()
+                . ' Check DateTime conversions.');
         }
 
         return $this->json($eventDto);

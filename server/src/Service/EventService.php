@@ -10,27 +10,30 @@ use App\Entity\Game;
 use App\Exception\EntityNotFoundException;
 use App\Repository\EventRepository;
 use App\Repository\UserRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Validator\Constraints\Date;
 
 class EventService implements ObjectMapperInterface
 {
     private EntityManagerInterface $entityManager;
     private EventRepository $eventRepository;
     private UserRepository $userRepository;
-//    private GameRepository $gameRepository;
+    private GameService $gameService;
     private LoggerInterface $logger;
 
     function __construct(EntityManagerInterface $entityManager,
                         EventRepository $eventRepository,
                         UserRepository $userRepository,
-//                         GameRepository $gameRepository,
+                        GameService $gameService,
                         LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
         $this->eventRepository = $eventRepository;
         $this->userRepository = $userRepository;
-//        $this->gameRepository = $gameRepository;
+        $this->gameService = $gameService;
         $this->logger = $logger;
     }
 
@@ -55,15 +58,20 @@ class EventService implements ObjectMapperInterface
      * @param CreateEventDto $createEventDto
      * @return Event|null
      * @throws EntityNotFoundException
+     * @throws Exception caused by DateTime conversion
      */
     public function createEvent(CreateEventDto $createEventDto): ?Event
     {
         $newEvent = new Event();
-        #empty event_games is set when new Event is created
+        # empty event_games is set when new Event is created
 
         $newEvent->setEventName($createEventDto->getEventName());
-        $newEvent->setStartDate($createEventDto->getStartDate());
-        $newEvent->setEndDate($createEventDto->getEndDate());
+
+        # convert unix time string to DateTime
+        $start_date = new DateTime("@{$createEventDto->getStartDate()}");
+        $end_date = new DateTime("@{$createEventDto->getEndDate()}");
+        $newEvent->setStartDate($start_date);
+        $newEvent->setEndDate($end_date);
 
         $event_creator = $this->userRepository->find($createEventDto->getEventCreatorUserId());
         if (!$event_creator) {
@@ -76,7 +84,7 @@ class EventService implements ObjectMapperInterface
         $this->eventRepository->save($newEvent, true);
 
         $created_event = $this->eventRepository->findOneBy([
-            'start_date' => $createEventDto->getStartDate(),
+            'start_date' => $start_date,
             'event_name' => $createEventDto->getEventName()]
         );
 
@@ -159,8 +167,12 @@ class EventService implements ObjectMapperInterface
         $eventDto->setEventName($object->getEventName());
         $eventDto->setStartDate($object->getStartDate());
         $eventDto->setEndDate($object->getEndDate());
-        $eventDto->setEventCreator($object->getEventCreator());
-        $eventDto->setEventGames($object->getEventGames());
+        $eventDto->setEventCreatorId($object->getEventCreator()->getUserId());
+
+        $event_games = $object->getEventGames();
+        $eventDto_games = $this->gameService->mapToDtos($event_games->toArray());
+
+        $eventDto->setEventGames($eventDto_games);
 
         return $eventDto;
     }

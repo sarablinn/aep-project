@@ -27,7 +27,7 @@ class Event
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?DateTime $end_date = null;
 
-    #[ORM\ManyToOne(targetEntity: 'user')]
+    #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'created_by_user_id',
         referencedColumnName: 'user_id',
         nullable: false)]

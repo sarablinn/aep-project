@@ -2,10 +2,7 @@
 
 namespace App\Dto\outgoing;
 
-use App\Entity\User;
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 
 
 class EventDto
@@ -18,13 +15,13 @@ class EventDto
 
     private DateTime $end_date;
 
-    private User $event_creator;
+    private int $event_creator_id;
 
-    private Collection $event_games;
+    private array $event_games;
 
 
     public function __construct() {
-        $this->event_games = new ArrayCollection();
+        $this->event_games = [];
     }
 
     /**
@@ -92,33 +89,33 @@ class EventDto
     }
 
     /**
-     * @return User
+     * @return int
      */
-    public function getEventCreator(): User
+    public function getEventCreatorId(): int
     {
-        return $this->event_creator;
+        return $this->event_creator_id;
     }
 
     /**
-     * @param User $event_creator
+     * @param int $event_creator_id
      */
-    public function setEventCreator(User $event_creator): void
+    public function setEventCreatorId(int $event_creator_id): void
     {
-        $this->event_creator = $event_creator;
+        $this->event_creator_id = $event_creator_id;
     }
 
     /**
-     * @return Collection
+     * @return GameDto[]
      */
-    public function getEventGames(): Collection
+    public function getEventGames(): array
     {
         return $this->event_games;
     }
 
     /**
-     * @param Collection $event_games
+     * @param GameDto[] $event_games
      */
-    public function setEventGames(Collection $event_games): void
+    public function setEventGames(array $event_games): void
     {
         $this->event_games = $event_games;
     }
