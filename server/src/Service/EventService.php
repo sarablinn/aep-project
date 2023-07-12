@@ -120,10 +120,16 @@ class EventService implements ObjectMapperInterface
             $existing_event->setEventName($event_name);
         }
         if ($start_date) {
-            $existing_event->setStartDate($start_date);
+            # convert unix time string to DateTime
+            $converted_start_date = new DateTime(
+                "@{$updateEventDto->getStartDate()}");
+            $existing_event->setStartDate($converted_start_date);
         }
         if ($end_date) {
-            $existing_event->setEndDate($end_date);
+            # convert unix time string to DateTime
+            $converted_end_date = new DateTime(
+                "@{$updateEventDto->getEndDate()}");
+            $existing_event->setEndDate($converted_end_date);
         }
         if ($event_creator) {
             $existing_event->setEventCreator($event_creator);
