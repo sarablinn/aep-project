@@ -18,18 +18,26 @@ class UpdateEventDto
     private string $event_name;
 
     #[NotNull]
-    #[Type('DateTime')]
-    private DateTime $start_date;
+    #[Type('string')]
+    private string $start_date;
 
     #[NotNull]
-    #[Type('DateTime')]
-    private DateTime $end_date;
+    #[Type('string')]
+    private string $end_date;
 
     #[NotNull]
     #[Type('int')]
     private int $event_creator_user_id;
 
+//    #[NotNull]
+//    #[Type('array')]
+//    private array $event_games;
 
+
+    function __construct()
+    {
+//        $this->event_games = [];
+    }
 
     /**
      * @return int
@@ -64,33 +72,33 @@ class UpdateEventDto
     }
 
     /**
-     * @return DateTime|null
+     * @return string|null
      */
-    public function getStartDate(): ?DateTime
+    public function getStartDate(): ?string
     {
         return $this->start_date;
     }
 
     /**
-     * @param DateTime $start_date
+     * @param string $start_date
      */
-    public function setStartDate(DateTime $start_date): void
+    public function setStartDate(string $start_date): void
     {
         $this->start_date = $start_date;
     }
 
     /**
-     * @return DateTime|null
+     * @return string|null
      */
-    public function getEndDate(): ?DateTime
+    public function getEndDate(): ?string
     {
         return $this->end_date;
     }
 
     /**
-     * @param DateTime $end_date
+     * @param string $end_date
      */
-    public function setEndDate(DateTime $end_date): void
+    public function setEndDate(string $end_date): void
     {
         $this->end_date = $end_date;
     }
