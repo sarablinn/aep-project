@@ -13,7 +13,11 @@ export interface EventDto {
   eventName: string;
   startDate: string;
   endDate: string;
-  eventCreatorId: number;
+  eventCreatorUserId: number;
+}
+
+export interface EventDate {
+  date: Date;
 }
 
 export async function getAllEvents(): Promise<EventResource[]> {
