@@ -5,7 +5,12 @@ import { selectedUser } from '../../services/Atoms';
 import { useEffect, useState } from 'react';
 import Loading from '../../utilities/Loading';
 import ErrorMessage from '../../utilities/ErrorMessage';
-import { createEvent, EventDto, getAllEvents } from '../../services/eventApi';
+import {
+  createEvent,
+  EventDto,
+  EventResource,
+  getAllEvents,
+} from '../../services/eventApi';
 import {
   faTrashCan,
   faPenToSquare,
@@ -13,13 +18,21 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CreateEventPopup from './CreateEventPopup';
+import DeleteEventConfirmationPopup from './DeleteEventConfirmationPopup';
 
 const EventsPage = () => {
   const { isAuthenticated } = useAuth0();
   const [currentUser] = useAtom(selectedUser);
+  const [selectedEvent, setSelectedEvent] = useState<EventResource | null>(
+    null,
+  );
 
   const [showCreateEventPopup, setShowCreateEventPopup] = useState(false);
+  const [showDeleteEventPopup, setShowDeleteEventPopup] = useState(false);
 
+  /**
+   * Toggles the visibility status of the popup.
+   */
   const handleCreateEventPopup = () => {
     showCreateEventPopup
       ? setShowCreateEventPopup(false)
@@ -27,8 +40,18 @@ const EventsPage = () => {
     console.log('EventsPage: showCreateEventPopup: ' + showCreateEventPopup);
   };
 
+  /**
+   * Toggles the visibility status of the popup.
+   */
+  const handleDeleteEventPopup = () => {
+    showDeleteEventPopup
+      ? setShowDeleteEventPopup(false)
+      : setShowDeleteEventPopup(true);
+    console.log('EventsPage: showDeleteEventPopup: ' + showDeleteEventPopup);
+  };
+
   useEffect(() => {
-    console.log('EventsPage: showCreateEventPopup: ' + showCreateEventPopup);
+    console.log('EventsPage: showDeleteEventPopup: ' + showDeleteEventPopup);
   }, [showCreateEventPopup]);
 
   const {
@@ -84,6 +107,12 @@ const EventsPage = () => {
           {showCreateEventPopup ? (
             <CreateEventPopup showPopup={showCreateEventPopup} />
           ) : null}
+          {showDeleteEventPopup ? (
+            <DeleteEventConfirmationPopup
+              showPopup={showDeleteEventPopup}
+              eventResource={selectedEvent}
+            />
+          ) : null}
           <div className="p-12 text-center text-white">
             <h1 className="p-3 pb-10 text-xl">Events Management</h1>
             <div className="flex flex-col content-center">
@@ -135,6 +164,10 @@ const EventsPage = () => {
                         <FontAwesomeIcon
                           className="fa-2x p-5 text-white hover:text-pink-400 active:text-pink-600"
                           icon={faTrashCan}
+                          onClick={() => {
+                            setSelectedEvent(eventResource);
+                            handleDeleteEventPopup();
+                          }}
                         />
                       </td>
                     </tr>
