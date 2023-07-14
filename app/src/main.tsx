@@ -4,6 +4,8 @@ import { Auth0Provider } from '@auth0/auth0-react';
 // import './../.env';
 import App from './App.tsx';
 import './index.css';
+import 'react-datepicker/dist/react-datepicker.css';
+import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 
 const domain = import.meta.env.VITE_AUTH0_DOMAIN;
 const client_id = import.meta.env.VITE_AUTH0_CLIENT_ID;
