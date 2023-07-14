@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import React from 'react';
 
 const useInput = (validateInput: any, startingValue: string) => {
-  const [initialValue] = useState(startingValue);
+  const [initialValue] = useState(startingValue || '');
   const [enteredValue, setEnteredValue] = useState(startingValue);
   const [errorMessage, setErrorMessage] = useState('');
-  const [isValid, setIsValid] = useState(true);
+  const [isValid, setIsValid] = useState(errorMessage === '');
   const [isFocused, setToFocused] = useState(false);
 
   const setStartValue = () => {
@@ -33,7 +33,7 @@ const useInput = (validateInput: any, startingValue: string) => {
 
   useEffect(() => {
     setErrorMessage(validateInput(initialValue, enteredValue));
-    // setIsValid(errorMessage == '');
+    // setIsValid(errorMessage === '');
 
     // console.log(
     //   'Input Validation useEffect: enteredValue: ' +
@@ -44,9 +44,9 @@ const useInput = (validateInput: any, startingValue: string) => {
   }, [enteredValue]);
 
   useEffect(() => {
-    setIsValid(errorMessage == '');
+    setIsValid(errorMessage === '');
     // console.log('IsValid set to: ' + isValid);
-  }, [validateInput]);
+  }, [errorMessage]);
 
   return {
     input: enteredValue,
