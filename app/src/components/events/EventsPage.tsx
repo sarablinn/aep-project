@@ -37,11 +37,14 @@ const EventsPage = () => {
     console.log('EventsPage: showCreateEventPopup: ' + showCreateEventPopup);
   };
 
-  const handleEditEventPopup = () => {
+  const handleEditEventPopup = (eventResource: EventResource) => {
+    console.log(eventResource.eventCreatorUserId);
+    setSelectedEvent(eventResource);
     showEditEventPopup
       ? setShowEditEventPopup(false)
       : setShowEditEventPopup(true);
     console.log('EventsPage: showEditEventPopup: ' + showEditEventPopup);
+    console.log('EventsPage: selectedEvent: ', selectedEvent);
   };
 
   /**
@@ -152,8 +155,7 @@ const EventsPage = () => {
                             className="fa-2x p-5 text-white hover:text-pink-400 active:text-pink-600"
                             icon={faPenToSquare}
                             onClick={() => {
-                              setSelectedEvent(eventResource);
-                              handleEditEventPopup();
+                              handleEditEventPopup(eventResource);
                             }}
                           />
                         </td>

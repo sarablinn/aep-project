@@ -5,14 +5,22 @@ export interface EventResource {
   eventName: string;
   startDate: Date;
   endDate: Date;
-  eventCreatorId: number;
+  eventCreatorUserId: number;
   eventGames: GameResource[];
 }
 
 export interface EventDto {
   eventName: string;
-  startDate: string;
-  endDate: string;
+  startDate: number;
+  endDate: number;
+  eventCreatorUserId: number;
+}
+
+export interface UpdateEventDto {
+  eventId: number;
+  eventName: string;
+  startDate: number;
+  endDate: number;
   eventCreatorUserId: number;
 }
 
@@ -82,15 +90,15 @@ export async function createEvent(eventDto: EventDto): Promise<EventResource> {
 }
 
 export async function updateEvent(
-  eventResource: EventResource,
+  updateEventDto: UpdateEventDto,
 ): Promise<EventResource> {
-  const url = 'http://localhost:8000/events/' + eventResource.eventId;
+  const url = 'http://localhost:8000/events/' + updateEventDto.eventId;
   return await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
     },
     method: 'PUT',
-    body: JSON.stringify(eventResource),
+    body: JSON.stringify(updateEventDto),
   })
     .then(response => {
       console.log('RESPONSE', response);

@@ -15,7 +15,7 @@ class EventDto
 
     private DateTime $end_date;
 
-    private int $event_creator_id;
+    private int $event_creator_user_id;
 
     private array $event_games;
 
@@ -91,17 +91,17 @@ class EventDto
     /**
      * @return int
      */
-    public function getEventCreatorId(): int
+    public function getEventCreatorUserId(): int
     {
-        return $this->event_creator_id;
+        return $this->event_creator_user_id;
     }
 
     /**
-     * @param int $event_creator_id
+     * @param int $event_creator_user_id
      */
-    public function setEventCreatorId(int $event_creator_id): void
+    public function setEventCreatorUserId(int $event_creator_user_id): void
     {
-        $this->event_creator_id = $event_creator_id;
+        $this->event_creator_user_id = $event_creator_user_id;
     }
 
     /**

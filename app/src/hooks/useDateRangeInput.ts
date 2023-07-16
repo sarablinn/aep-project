@@ -16,7 +16,7 @@ const useDateRangeInput = (
   const [isValid, setIsValid] = useState(errorMessage === '');
 
   const handleStartDateInputChange = (date: Date) => {
-    console.log('input date: ' + date);
+    // console.log('input date: ' + date);
     setStartDate({ date: new Date(date) });
   };
 
@@ -32,18 +32,20 @@ const useDateRangeInput = (
     let errMsg = '';
     if (startDate && endDate) {
       // remove time from start and end date
-      const epoch_startDate = new Date(startDate.date.toDateString());
-      const epoch_endDate = new Date(endDate.date.toDateString());
-      const today = new Date(new Date().toDateString());
+      const startDate_notime = new Date(startDate.date).toDateString();
+      const endDate_notime = new Date(endDate.date).toDateString();
 
-      console.log('today: ' + today);
-      console.log('epoch_startDate: ' + epoch_startDate);
-      console.log('epoch_endDate: ' + epoch_endDate);
+      const epoch_startDate = new Date(startDate_notime);
+      const epoch_endDate = new Date(endDate_notime);
+      const today = new Date();
 
-      if (epoch_startDate < today) {
+      // console.log('today: ' + today);
+      // console.log('epoch_startDate: ' + epoch_startDate);
+      // console.log('epoch_endDate: ' + epoch_endDate);
+
+      if (epoch_startDate <= today) {
         errMsg += ' Event dates must be future dates.';
-      }
-      if (epoch_startDate >= epoch_endDate) {
+      } else if (epoch_startDate >= epoch_endDate) {
         errMsg += '\n End date must be a date after the start date.';
       }
 
@@ -52,7 +54,7 @@ const useDateRangeInput = (
   };
 
   useEffect(() => {
-    if (startDate && endDate) {
+    if (startDate || endDate) {
       validateDateRange();
     }
   }, [startDate, endDate]);

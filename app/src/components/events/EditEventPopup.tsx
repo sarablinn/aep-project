@@ -1,4 +1,9 @@
-import { createEvent, EventDate, EventDto } from '../../services/eventApi';
+import {
+  EventDate,
+  EventResource,
+  updateEvent,
+  UpdateEventDto,
+} from '../../services/eventApi';
 import { useMutation } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
@@ -7,28 +12,25 @@ import { selectedUser } from '../../services/Atoms';
 import { useAtom } from 'jotai';
 import useDateRangeInput from '../../hooks/useDateRangeInput';
 import useInput from '../../hooks/useInput';
-import { valueOf } from 'react-loadable';
 
-export type CreateEventPopupProps = {
+export type EditEventPopupProps = {
   showPopup: boolean;
+  eventResource: EventResource;
 };
 
-const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
+const EditEventPopup = ({ showPopup, eventResource }: EditEventPopupProps) => {
   const [currentUser] = useAtom(selectedUser);
   const [showModal, setShowModal] = useState(showPopup);
 
-  const [eventName, setEventName] = useState<string | null>(null);
-
-  // 86400 seconds in a day
-  // set the initial dates for new events
-  const startUnixTime = Math.floor(+new Date().getTime() / 1000 + 86400);
-  const endUnixTime = Math.floor(+new Date().getTime() / 1000 + 172800);
-
-  const [startDate] = useState<EventDate>({
-    date: new Date(startUnixTime * 1000),
+  const [eventCreatorUserId] = useState(eventResource.eventCreatorUserId);
+  const [oldEventName, setOldEventName] = useState<string | null>(
+    eventResource.eventName,
+  );
+  const [oldStartDate, setOldStartDate] = useState<EventDate>({
+    date: eventResource.startDate,
   });
-  const [endDate] = useState<EventDate>({
-    date: new Date(endUnixTime * 1000),
+  const [oldEndDate, setOldEndDate] = useState<EventDate>({
+    date: eventResource.endDate,
   });
 
   const [eventNameErrorState, setEventNameErrorState] = useState('hidden');
@@ -37,7 +39,7 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
   const handleEventNameChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    setEventName(event.target.value);
+    setOldEventName(event.target.value);
   };
 
   const validateEventName = (initialValue: string, event_name: string) => {
@@ -55,7 +57,7 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
     handleInputChange: handleEventNameInputChange,
     errorMessage: eventNameErrorMessage,
     isValid: isValidEventName,
-  } = useInput(validateEventName, eventName || '');
+  } = useInput(validateEventName, eventResource.eventName || '');
 
   const {
     startDateInput,
@@ -64,7 +66,7 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
     handleEndDateInputChange,
     errorMessage: dateRangeErrorMessage,
     isValid: isValidDateRange,
-  } = useDateRangeInput(startDate, endDate);
+  } = useDateRangeInput(oldStartDate, oldEndDate);
 
   useEffect(() => {
     if (isValidEventName) {
@@ -82,60 +84,73 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
     }
   }, [isValidDateRange]);
 
+  useEffect(() => {
+    setOldStartDate(startDateInput);
+  }, [startDateInput]);
+
+  useEffect(() => {
+    setOldEndDate(endDateInput);
+  }, [endDateInput]);
+
   const {
-    data: createdEventResults,
-    mutate: createEventMutation,
-    isLoading: loadingCreateEvent,
+    data: updateEventResults,
+    mutate: updateEventMutation,
+    isLoading: loadingUpdateEvent,
   } = useMutation({
-    mutationFn: (eventDto: EventDto) => createEvent(eventDto),
-    onMutate: () => console.log('EventsPage: Mutate: createEventMutation'),
+    mutationFn: (updateEventDto: UpdateEventDto) => updateEvent(updateEventDto),
+    onMutate: () => console.log('EventsPage: Mutate: updateEventMutation'),
     onError: (err, variables, context) => {
       console.log(err, variables, context);
     },
     onSuccess: data => {
-      console.log('EventsPage: Success: createEventMutation:', data);
+      console.log('EventsPage: Success: updateEventMutation:', data);
     },
-    onSettled: () => console.log('EventsPage: Settled: createEventMutation.'),
+    onSettled: () => console.log('EventsPage: Settled: updateEventMutation.'),
   });
 
   const saveChangesAndReload = () => {
-    if (eventName && startDate && endDate && isValidDateRange) {
-      // console.log(
-      //   'CREATING EVENT START DATE: ',
-      //   Math.floor(new Date(startDateInput.date).getTime()),
-      // );
-      // console.log(
-      //   'CREATING EVENT END DATE: ',
-      //   Math.floor(new Date(endDateInput.date).getTime()),
-      // );
+    console.log(
+      eventResource.eventCreatorUserId,
+      oldEventName,
+      oldStartDate,
+      oldEndDate,
+      isValidDateRange,
+      isValidEventName,
+    );
 
-      const eventDto: EventDto = {
-        eventName: eventName,
+    if (
+      eventCreatorUserId &&
+      oldEventName &&
+      oldStartDate &&
+      oldEndDate &&
+      isValidDateRange &&
+      isValidEventName
+    ) {
+      console.log(
+        'UPDATING EVENT START DATE: ',
+        Math.floor(new Date(startDateInput.date).getTime()),
+      );
+      console.log(
+        'UPDATING EVENT END DATE: ',
+        Math.floor(new Date(endDateInput.date).getTime()),
+      );
+      const updateEventDto: UpdateEventDto = {
+        eventId: eventResource.eventId,
+        eventName: eventNameInput,
         startDate: Math.floor(new Date(startDateInput.date).getTime()),
         endDate: Math.floor(new Date(endDateInput.date).getTime()),
-        eventCreatorUserId: currentUser.userId,
+        eventCreatorUserId: eventCreatorUserId,
       };
-      console.log('EVENT CREATED: ', eventDto);
 
-      createEventMutation(eventDto);
+      updateEventMutation(updateEventDto);
     }
 
     window.location.reload();
   };
 
-  // useEffect(() => {
-  //   setStartDate({ date: startDateInput.date });
-  //   console.log('CURRENT START DATE: ', startDate);
-  // }, [startDateInput]);
-  //
-  // useEffect(() => {
-  //   setEndDate({ date: endDateInput.date });
-  //   console.log('CURRENT END DATE: ', endDateInput);
-  // }, [endDateInput]);
-
   return (
     <>
-      {showModal ? (
+      {showModal && eventResource && currentUser.roleId === 2 ? (
         <div>
           <>
             <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
@@ -144,7 +159,7 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
                 <div className="relative flex w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none focus:outline-none">
                   {/*header*/}
                   <h2 className="mb-1 bg-pink-500 px-6 py-3 text-center text-sm font-bold uppercase text-white">
-                    Create New Event
+                    Edit Event
                   </h2>
                   <div className="m-3 p-3">
                     <form>
@@ -187,7 +202,7 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
                                 : 'rounded-sm border border-gray-500'
                             }
                             name="start-date-input"
-                            selected={startDateInput.date}
+                            selected={new Date(oldStartDate.date) || null}
                             onChange={date => {
                               date ? handleStartDateInputChange(date) : null;
                             }}
@@ -208,7 +223,7 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
                                 : 'rounded-sm border border-gray-500'
                             }
                             name="end-date-input"
-                            selected={endDateInput.date}
+                            selected={new Date(oldEndDate.date) || null}
                             onChange={date => {
                               date ? handleEndDateInputChange(date) : null;
                             }}
@@ -299,4 +314,4 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
   );
 };
 
-export default CreateEventPopup;
+export default EditEventPopup;

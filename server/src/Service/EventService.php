@@ -68,8 +68,10 @@ class EventService implements ObjectMapperInterface
         $newEvent->setEventName($createEventDto->getEventName());
 
         # convert unix time string to DateTime
-        $start_date = new DateTime("@{$createEventDto->getStartDate()}");
-        $end_date = new DateTime("@{$createEventDto->getEndDate()}");
+        $unix_start_date = $createEventDto->getStartDate() /1000;
+        $unix_end_date = $createEventDto->getEndDate() /1000;
+        $start_date = new DateTime("@{$unix_start_date}");
+        $end_date = new DateTime("@{$unix_end_date}");
         $newEvent->setStartDate($start_date);
         $newEvent->setEndDate($end_date);
 
@@ -121,14 +123,14 @@ class EventService implements ObjectMapperInterface
         }
         if ($start_date) {
             # convert unix time string to DateTime
-            $converted_start_date = new DateTime(
-                "@{$updateEventDto->getStartDate()}");
+            $unix_start_date = $updateEventDto->getStartDate() /1000;
+            $converted_start_date = new DateTime("@{$unix_start_date}");
             $existing_event->setStartDate($converted_start_date);
         }
         if ($end_date) {
             # convert unix time string to DateTime
-            $converted_end_date = new DateTime(
-                "@{$updateEventDto->getEndDate()}");
+            $unix_end_date = $updateEventDto->getEndDate() /1000;
+            $converted_end_date = new DateTime("@{$unix_end_date}");
             $existing_event->setEndDate($converted_end_date);
         }
         if ($event_creator) {
@@ -173,7 +175,7 @@ class EventService implements ObjectMapperInterface
         $eventDto->setEventName($object->getEventName());
         $eventDto->setStartDate($object->getStartDate());
         $eventDto->setEndDate($object->getEndDate());
-        $eventDto->setEventCreatorId($object->getEventCreator()->getUserId());
+        $eventDto->setEventCreatorUserId($object->getEventCreator()->getUserId());
 
         $event_games = $object->getEventGames();
         $eventDto_games = $this->gameService->mapToDtos($event_games->toArray());
