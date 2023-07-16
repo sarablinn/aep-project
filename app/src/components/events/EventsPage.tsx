@@ -1,16 +1,11 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
 import { selectedUser } from '../../services/Atoms';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Loading from '../../utilities/Loading';
 import ErrorMessage from '../../utilities/ErrorMessage';
-import {
-  createEvent,
-  EventDto,
-  EventResource,
-  getAllEvents,
-} from '../../services/eventApi';
+import { EventResource, getAllEvents } from '../../services/eventApi';
 import {
   faTrashCan,
   faPenToSquare,
@@ -19,6 +14,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CreateEventPopup from './CreateEventPopup';
 import DeleteEventConfirmationPopup from './DeleteEventConfirmationPopup';
+import EditEventPopup from './EditEventPopup';
 
 const EventsPage = () => {
   const { isAuthenticated } = useAuth0();
@@ -28,6 +24,7 @@ const EventsPage = () => {
   );
 
   const [showCreateEventPopup, setShowCreateEventPopup] = useState(false);
+  const [showEditEventPopup, setShowEditEventPopup] = useState(false);
   const [showDeleteEventPopup, setShowDeleteEventPopup] = useState(false);
 
   /**
@@ -40,6 +37,13 @@ const EventsPage = () => {
     console.log('EventsPage: showCreateEventPopup: ' + showCreateEventPopup);
   };
 
+  const handleEditEventPopup = () => {
+    showEditEventPopup
+      ? setShowEditEventPopup(false)
+      : setShowEditEventPopup(true);
+    console.log('EventsPage: showEditEventPopup: ' + showEditEventPopup);
+  };
+
   /**
    * Toggles the visibility status of the popup.
    */
@@ -49,26 +53,6 @@ const EventsPage = () => {
       : setShowDeleteEventPopup(true);
     console.log('EventsPage: showDeleteEventPopup: ' + showDeleteEventPopup);
   };
-
-  useEffect(() => {
-    console.log('EventsPage: showDeleteEventPopup: ' + showDeleteEventPopup);
-  }, [showCreateEventPopup]);
-
-  const {
-    data: createdEventResults,
-    mutate: createEventMutation,
-    isLoading: loadingCreateEvent,
-  } = useMutation({
-    mutationFn: (eventDto: EventDto) => createEvent(eventDto),
-    onMutate: () => console.log('EventsPage: Mutate: createEventMutation'),
-    onError: (err, variables, context) => {
-      console.log(err, variables, context);
-    },
-    onSuccess: data => {
-      console.log('EventsPage: Success: createEventMutation:', data);
-    },
-    onSettled: () => console.log('EventsPage: Settled: createEventMutation.'),
-  });
 
   const {
     isLoading: isLoadingEvents,
@@ -107,7 +91,13 @@ const EventsPage = () => {
           {showCreateEventPopup ? (
             <CreateEventPopup showPopup={showCreateEventPopup} />
           ) : null}
-          {showDeleteEventPopup ? (
+          {showEditEventPopup && selectedEvent ? (
+            <EditEventPopup
+              showPopup={showEditEventPopup}
+              eventResource={selectedEvent}
+            />
+          ) : null}
+          {showDeleteEventPopup && selectedEvent ? (
             <DeleteEventConfirmationPopup
               showPopup={showDeleteEventPopup}
               eventResource={selectedEvent}
@@ -134,49 +124,60 @@ const EventsPage = () => {
                   <p>Create Event</p>
                 </div>
               </div>
-              <table className="mt-5">
-                <thead>
-                  <tr>
-                    <th>Event Name</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Games Played</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {eventsData.map((eventResource, index) => (
-                    <tr key={'event-' + index}>
-                      <td className="p-5">{eventResource.eventName}</td>
-                      <td className="p-5">
-                        {formatDate(eventResource.startDate)}
-                      </td>
-                      <td className="p-5">
-                        {formatDate(eventResource.endDate)}
-                      </td>
-                      <td className="p-5">{eventResource.eventGames.length}</td>
-                      <td className="p-5">
-                        <FontAwesomeIcon
-                          className="fa-2x p-5 text-white hover:text-pink-400 active:text-pink-600"
-                          icon={faPenToSquare}
-                        />
-                      </td>
-                      <td className="p-5">
-                        <FontAwesomeIcon
-                          className="fa-2x p-5 text-white hover:text-pink-400 active:text-pink-600"
-                          icon={faTrashCan}
-                          onClick={() => {
-                            setSelectedEvent(eventResource);
-                            handleDeleteEventPopup();
-                          }}
-                        />
-                      </td>
+              {eventsData.length > 0 ? (
+                <table className="mt-5">
+                  <thead>
+                    <tr>
+                      <th>Event Name</th>
+                      <th>Start Date</th>
+                      <th>End Date</th>
+                      <th>Games Played</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {eventsData.map((eventResource, index) => (
+                      <tr key={'event-' + index}>
+                        <td className="p-5">{eventResource.eventName}</td>
+                        <td className="p-5">
+                          {formatDate(eventResource.startDate)}
+                        </td>
+                        <td className="p-5">
+                          {formatDate(eventResource.endDate)}
+                        </td>
+                        <td className="p-5">
+                          {eventResource.eventGames.length}
+                        </td>
+                        <td className="p-5">
+                          <FontAwesomeIcon
+                            className="fa-2x p-5 text-white hover:text-pink-400 active:text-pink-600"
+                            icon={faPenToSquare}
+                            onClick={() => {
+                              setSelectedEvent(eventResource);
+                              handleEditEventPopup();
+                            }}
+                          />
+                        </td>
+                        <td className="p-5">
+                          <FontAwesomeIcon
+                            className="fa-2x p-5 text-white hover:text-pink-400 active:text-pink-600"
+                            icon={faTrashCan}
+                            onClick={() => {
+                              setSelectedEvent(eventResource);
+                              handleDeleteEventPopup();
+                            }}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div>
+                  <h3>No Events Yet.</h3>
+                </div>
+              )}
             </div>
           </div>
-          )
         </div>
       );
     }
