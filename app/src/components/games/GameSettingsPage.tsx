@@ -1,9 +1,9 @@
-import Loading from '../utilities/Loading';
-import ErrorMessage from '../utilities/ErrorMessage';
+import Loading from '../../utilities/Loading';
+import ErrorMessage from '../../utilities/ErrorMessage';
 import { useQuery } from '@tanstack/react-query';
-import { getModes, ModeResource } from '../services/modeApi';
+import { getModes, ModeResource } from '../../services/modeApi';
 import { useState } from 'react';
-import GameComponent from './games/GameComponent';
+import GameComponent from './GameComponent';
 import { useAuth0 } from '@auth0/auth0-react';
 
 const GameSettingsPage = () => {

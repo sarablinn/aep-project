@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { getGamesByMode, GuestGameDto } from '../services/gameApi';
-import Loading from '../utilities/Loading';
-import ErrorMessage from '../utilities/ErrorMessage';
+import { getGamesByMode, GuestGameDto } from '../../services/gameApi';
+import Loading from '../../utilities/Loading';
+import ErrorMessage from '../../utilities/ErrorMessage';
 
 export type GuestEndGameResultsProps = {
   game: GuestGameDto;

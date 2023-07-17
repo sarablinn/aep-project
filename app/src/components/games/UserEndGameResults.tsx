@@ -1,7 +1,7 @@
-import { GameResource, getGamesByMode } from '../services/gameApi';
+import { GameResource, getGamesByMode } from '../../services/gameApi';
 import { useQuery } from '@tanstack/react-query';
-import Loading from '../utilities/Loading';
-import ErrorMessage from '../utilities/ErrorMessage';
+import Loading from '../../utilities/Loading';
+import ErrorMessage from '../../utilities/ErrorMessage';
 
 export type UserEndGameResultsProps = {
   user: any;
