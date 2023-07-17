@@ -55,6 +55,16 @@ class EventService implements ObjectMapperInterface
     }
 
     /**
+     * Returns an array of current Events.
+     * @return Event[]
+     */
+    public function getCurrentEvents(): iterable
+    {
+        $today = new DateTime();
+        return $this->eventRepository->findByCurrentDate($today);
+    }
+
+    /**
      * @param CreateEventDto $createEventDto
      * @return Event|null
      * @throws EntityNotFoundException

@@ -40,6 +40,17 @@ class EventController extends ApiController
     }
 
     /**
+     * @return Response
+     */
+    #[Route('/events/current_events', methods: ('GET'))]
+    public function getCurrentEvents(): Response
+    {
+        $events = $this->eventService->getCurrentEvents();
+        $eventDtos = $this->eventService->mapToDtos($events);
+        return $this->json($eventDtos);
+    }
+
+    /**
      * @param string $event_id
      * @return Response
      */

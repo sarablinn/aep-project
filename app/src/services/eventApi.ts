@@ -47,6 +47,25 @@ export async function getAllEvents(): Promise<EventResource[]> {
     });
 }
 
+export async function getCurrentEvents(): Promise<EventResource[]> {
+  const url = 'http://localhost:8000/events/current_events';
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'GET',
+  })
+    .then(response => response.json())
+    .then((data: EventResource[]) => {
+      console.log('eventApi: Success getCurrentEvents():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('eventApi: Error getCurrentEvents():', error);
+      throw error;
+    });
+}
+
 export async function getEventById(eventId: number): Promise<EventResource> {
   const url = 'http://localhost:8000/events/' + eventId;
   return await fetch(url, {
