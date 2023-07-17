@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { createGame, GameDto } from '../services/gameApi';
+import { createGame, GameDto } from '../../services/gameApi';
 import { useMutation } from '@tanstack/react-query';
-import { ModeResource } from '../services/modeApi';
-import { getUserByToken } from '../services/userApi';
-import useGame from '../hooks/useGame';
+import { ModeResource } from '../../services/modeApi';
+import { getUserByToken } from '../../services/userApi';
+import useGame from '../../hooks/useGame';
 import Countdown from 'react-countdown';
-import UserEndGameResults from './UserEndGameResults';
-import GuestEndGameResults from './GuestEndGameResults';
+import UserEndGameResults from '../UserEndGameResults';
+import GuestEndGameResults from '../GuestEndGameResults';
 
 export type GameComponentProps = {
   selected_mode: ModeResource;
