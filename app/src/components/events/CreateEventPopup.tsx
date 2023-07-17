@@ -7,7 +7,6 @@ import { selectedUser } from '../../services/Atoms';
 import { useAtom } from 'jotai';
 import useDateRangeInput from '../../hooks/useDateRangeInput';
 import useInput from '../../hooks/useInput';
-import { valueOf } from 'react-loadable';
 
 export type CreateEventPopupProps = {
   showPopup: boolean;
@@ -47,7 +46,6 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
     }
 
     return errMsg;
-    // optionally add validation to check for duplicate events
   };
 
   const {
