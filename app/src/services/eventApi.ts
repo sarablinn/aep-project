@@ -16,12 +16,21 @@ export interface EventDto {
   eventCreatorUserId: number;
 }
 
+/**
+ * For updating eventId, eventName, startDate, endDate, eventCreatorUserId,
+ * excluding eventGames. See EventGameDto for updating eventGames.
+ */
 export interface UpdateEventDto {
   eventId: number;
   eventName: string;
   startDate: number;
   endDate: number;
   eventCreatorUserId: number;
+}
+
+export interface EventGameDto {
+  eventId: number;
+  gameId: number;
 }
 
 export interface EventDate {
@@ -129,6 +138,35 @@ export async function updateEvent(
     })
     .catch(error => {
       console.error('eventApi: Error updateEvent():', error);
+      throw error;
+    });
+}
+
+export async function addEventGame(
+  eventGameDto: EventGameDto,
+): Promise<EventResource> {
+  const url =
+    'http://localhost:8000/events/' +
+    eventGameDto.eventId +
+    '/games/' +
+    eventGameDto.gameId;
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'PUT',
+    body: JSON.stringify(eventGameDto),
+  })
+    .then(response => {
+      console.log('RESPONSE', response);
+      return response.json();
+    })
+    .then((data: EventResource) => {
+      console.log('eventApi: Success updateEventGames():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('eventApi: Error updateEventGames():', error);
       throw error;
     });
 }

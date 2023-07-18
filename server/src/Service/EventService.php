@@ -2,37 +2,40 @@
 
 namespace App\Service;
 
+use App\Dto\incoming\AddEventGameDto;
 use App\Dto\incoming\CreateEventDto;
 use App\Dto\incoming\UpdateEventDto;
 use App\Dto\outgoing\EventDto;
 use App\Entity\Event;
-use App\Entity\Game;
 use App\Exception\EntityNotFoundException;
 use App\Repository\EventRepository;
+use App\Repository\GameRepository;
 use App\Repository\UserRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Validator\Constraints\Date;
 
 class EventService implements ObjectMapperInterface
 {
     private EntityManagerInterface $entityManager;
     private EventRepository $eventRepository;
     private UserRepository $userRepository;
+    private GameRepository $gameRepository;
     private GameService $gameService;
     private LoggerInterface $logger;
 
     function __construct(EntityManagerInterface $entityManager,
                         EventRepository $eventRepository,
                         UserRepository $userRepository,
+                        GameRepository $gameRepository,
                         GameService $gameService,
                         LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
         $this->eventRepository = $eventRepository;
         $this->userRepository = $userRepository;
+        $this->gameRepository = $gameRepository;
         $this->gameService = $gameService;
         $this->logger = $logger;
     }
@@ -165,6 +168,34 @@ class EventService implements ObjectMapperInterface
 
         $this->eventRepository->remove($event, true);
         return true;
+    }
+
+    /**
+     * @param AddEventGameDto $addEventGameDto
+     * @return Event
+     * @throws EntityNotFoundException
+     */
+    public function addGameToEvent(AddEventGameDto $addEventGameDto): Event
+    {
+        $event_id = $addEventGameDto->getEventId();
+        $game_id = $addEventGameDto->getGameId();
+
+        $existing_event = $this->eventRepository->find($event_id);
+        if (!$existing_event) {
+            throw new EntityNotFoundException('ERROR: No event by id ' . $event_id);
+        }
+
+        $existing_game = $this->gameRepository->find($game_id);
+        if (!$existing_game) {
+            throw new EntityNotFoundException('ERROR: No game by id ' . $game_id);
+        }
+
+        if (!$existing_event->getEventGames()->contains($existing_game)) {
+            $existing_event->addEventGame($existing_game);
+            $this->eventRepository->save($existing_event, true);
+        }
+
+        return $this->eventRepository->find($event_id);
     }
 
 

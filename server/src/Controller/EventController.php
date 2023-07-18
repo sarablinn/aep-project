@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Dto\incoming\AddEventGameDto;
 use App\Dto\incoming\CreateEventDto;
 use App\Dto\incoming\UpdateEventDto;
 use App\Exception\EntityNotFoundException;
@@ -120,6 +121,29 @@ class EventController extends ApiController
     public function deleteEvent(string $event_id): Response
     {
         return $this->json($this->eventService->deleteEvent($event_id));
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    #[Route('/events/{event_id}/games/{game_id}', methods: ['PUT', 'PATCH'])]
+    public function addEventGame(Request $request): Response
+    {
+        try {
+            /** @var AddEventGameDto $addEventGameDto */
+            $addEventGameDto = $this->getValidatedDto($request, AddEventGameDto::class);
+            $event = $this->eventService->addGameToEvent($addEventGameDto);
+            $eventDto = $this->eventService->mapToDto($event);
+        } catch (EntityNotFoundException $entityNotFoundException) {
+            return $this->json($entityNotFoundException->getMessage());
+        } catch (InvalidRequestDataException $invalidRequestDataException) {
+            return $this->json($invalidRequestDataException->getMessage());
+        } catch (JsonException $jsonException) {
+            return $this->json($jsonException->getMessage());
+        }
+
+        return $this->json($eventDto);
     }
 
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { createGame, GameDto } from '../../services/gameApi';
+import { createGame, GameDto, GameResource } from '../../services/gameApi';
 import { useMutation } from '@tanstack/react-query';
 import { ModeResource } from '../../services/modeApi';
 import { getUserByToken } from '../../services/userApi';
@@ -7,13 +7,23 @@ import useGame from '../../hooks/useGame';
 import Countdown from 'react-countdown';
 import UserEndGameResults from './UserEndGameResults';
 import GuestEndGameResults from './GuestEndGameResults';
+import {
+  addEventGame,
+  EventGameDto,
+  EventResource,
+} from '../../services/eventApi';
 
 export type GameComponentProps = {
   selected_mode: ModeResource;
+  selected_event: EventResource | null | undefined;
   user: any | undefined;
 };
 
-const GameComponent = ({ selected_mode, user }: GameComponentProps) => {
+const GameComponent = ({
+  selected_mode,
+  selected_event,
+  user,
+}: GameComponentProps) => {
   const [currentGame, setCurrentGame] = useState(null);
 
   const {
@@ -46,6 +56,23 @@ const GameComponent = ({ selected_mode, user }: GameComponentProps) => {
     });
 
   const {
+    data: addEventGameResults,
+    mutate: addEventGameMutate,
+    isLoading: isLoadingGameEventMutation,
+    error: addGameEventError,
+  } = useMutation({
+    mutationFn: (eventGameDto: EventGameDto) => addEventGame(eventGameDto),
+    onMutate: () => console.log('GameComponent: Mutate: addEventGame Mutation'),
+    onError: (err, variables, context) => {
+      console.log(err, variables, context);
+    },
+    onSuccess: data => {
+      setCurrentGame(data);
+      console.log('GameComponent: Success: addEventGame Mutation: ', data);
+    },
+  });
+
+  const {
     gameGrid,
     start_time,
     beginGame,
@@ -61,7 +88,6 @@ const GameComponent = ({ selected_mode, user }: GameComponentProps) => {
       // build a gameDTO here
       console.log('final score: ' + score);
       saveCompletedGame();
-      console.log('end of handleGameComplete()');
     }
   }, [isComplete]);
 
@@ -85,10 +111,41 @@ const GameComponent = ({ selected_mode, user }: GameComponentProps) => {
 
       createGameMutate(gameDto);
 
-      // reset gameboard
-      // display end of game leadership board
+      // add completed game to the event's games
+      // if (createGameResults && selected_event) {
+      //   const games = [createGameResults];
+      //
+      //   const eventGameDto: EventGameDto = {
+      //     eventId: selected_event.eventId,
+      //     eventName: selected_event.eventName,
+      //     startDate: selected_event.startDate,
+      //     endDate: selected_event.endDate,
+      //     eventCreatorUserId: selected_event.eventCreatorUserId,
+      //     eventGames: games,
+      //   };
+      //
+      //   addEventGameMutate(eventGameDto);
+      // }
     }
   }
+
+  useEffect(() => {
+    console.log(
+      'GAME SHOULD BE ADDED TO EVENT: ',
+      createGameResults,
+      selected_event,
+    );
+
+    if (createGameResults && selected_event) {
+      const eventGameDto: EventGameDto = {
+        eventId: selected_event.eventId,
+        gameId: createGameResults.gameId,
+      };
+
+      addEventGameMutate(eventGameDto);
+      console.log('GAME ADDED TO EVENT?');
+    }
+  }, [createGameResults != undefined]);
 
   if (selected_mode && !isComplete) {
     return (
@@ -144,13 +201,13 @@ const GameComponent = ({ selected_mode, user }: GameComponentProps) => {
     );
   } else if (isComplete && user && createGameResults) {
     return (
-      <div>
+      <div className="container-fluid flex justify-center">
         <UserEndGameResults user={user} game={createGameResults} />
       </div>
     );
   } else if (isComplete && !user) {
     return (
-      <div>
+      <div className="container-fluid flex justify-center">
         <GuestEndGameResults
           game={{
             mode: selected_mode,

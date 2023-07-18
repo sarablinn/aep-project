@@ -41,11 +41,9 @@ const UserEndGameResults = ({ user, game }: UserEndGameResultsProps) => {
         <div className="container-fluid flex flex-col p-5">
           <div className="container flex px-10 py-5">
             <table className="p-5">
-              <thead>
-                <tr className="text-left font-bold text-white">
-                  <th></th>
-                </tr>
-              </thead>
+              <caption className="p-4 text-center font-bold text-white">
+                {game.mode.modeName}
+              </caption>
               <tbody>
                 {gamesData.map((modeGame, index) => {
                   if (modeGame.gameId === game.gameId) {

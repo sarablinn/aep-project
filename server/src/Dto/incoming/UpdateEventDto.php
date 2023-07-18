@@ -2,6 +2,7 @@
 
 namespace App\Dto\incoming;
 
+use App\Entity\Game;
 use DateTime;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Type;
@@ -36,7 +37,7 @@ class UpdateEventDto
 
     function __construct()
     {
-//        $this->event_games = [];
+        $this->event_games = [];
     }
 
     /**
@@ -118,5 +119,21 @@ class UpdateEventDto
     {
         $this->event_creator_user_id = $event_creator_user_id;
     }
+
+//    /**
+//     * @return array|null
+//     */
+//    public function getEventGames(): ?array
+//    {
+//        return $this->event_games;
+//    }
+//
+//    /**
+//     * @param array $event_games
+//     */
+//    public function setEventGames(array $event_games): void
+//    {
+//        $this->event_games = $event_games;
+//    }
 
 }
