@@ -121,36 +121,144 @@ const UserProfile = () => {
 
   if (isAuthenticated && userResource) {
     return (
-      <div className="container-fluid m-3 p-3">
-        <div className="m-3 p-3">
-          {/*<p>User token: {user?.sub}</p>*/}
-          {/*<p>User id: {userResource?.userId}</p>*/}
-          <p>Email: {userResource?.email}</p>
-          <p>Username: {userResource?.username}</p>
-          <p>First Name: {userResource?.firstName}</p>
-          <p>Last Name: {userResource?.lastName}</p>
-        </div>
-
+      <div className="container-fluid m-5 p-3">
         <div>
-          <button
-            className="m-1 rounded bg-pink-500 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600"
-            onClick={displayUserInfoPopup}
+          <h2
+            className={'text-center'}
+            style={{
+              fontSize: '2em',
+              fontWeight: 'bold',
+              color: currentUser.foregroundColor,
+            }}
           >
-            UPDATE PROFILE
-          </button>
-        </div>
+            User Information
+          </h2>
+          <div
+            className="m-5 mb-10 flex justify-evenly p-5"
+            style={{
+              backgroundColor: currentUser.backgroundColor,
+              border: '3px solid',
+              borderRadius: '20px',
+              borderColor: currentUser.foregroundColor,
+            }}
+          >
+            <div className="m-3 p-3">
+              {/*<p>User token: {user?.sub}</p>*/}
+              {/*<p>User id: {userResource?.userId}</p>*/}
+              <p>
+                <span
+                  style={{
+                    fontWeight: 'bolder',
+                    fontSize: '1.25em',
+                    marginRight: '1.25em',
+                    color: currentUser.foregroundColor,
+                  }}
+                >
+                  Email:{' '}
+                </span>
+                <span
+                  style={{
+                    fontSize: '1.25em',
+                    color: currentUser.foregroundColor,
+                  }}
+                >
+                  {userResource?.email}
+                </span>
+              </p>
+              <p>
+                <span
+                  style={{
+                    fontWeight: 'bolder',
+                    fontSize: '1.25em',
+                    marginRight: '1.25em',
+                    color: currentUser.foregroundColor,
+                  }}
+                >
+                  Username:{' '}
+                </span>
+                <span
+                  style={{
+                    fontSize: '1.25em',
+                    color: currentUser.foregroundColor,
+                  }}
+                >
+                  {userResource?.username}
+                </span>
+              </p>
+              <p>
+                <span
+                  style={{
+                    fontWeight: 'bolder',
+                    fontSize: '1.25em',
+                    marginRight: '1.25em',
+                    color: currentUser.foregroundColor,
+                  }}
+                >
+                  First Name:{' '}
+                </span>
+                <span
+                  style={{
+                    fontSize: '1.25em',
+                    color: currentUser.foregroundColor,
+                  }}
+                >
+                  {userResource?.firstName}
+                </span>
+              </p>
+              <p>
+                <span
+                  style={{
+                    fontWeight: 'bolder',
+                    fontSize: '1.25em',
+                    marginRight: '1.25em',
+                    color: currentUser.foregroundColor,
+                  }}
+                >
+                  Last Name:{' '}
+                </span>
+                <span
+                  style={{
+                    fontSize: '1.25em',
+                    color: currentUser.foregroundColor,
+                  }}
+                >
+                  {userResource?.lastName}
+                </span>
+              </p>
+            </div>
+            <div
+              className="m-3"
+              style={{
+                position: 'relative',
+                top: '2em',
+                height: 'fit-content',
+              }}
+            >
+              <button
+                className="m-3 rounded bg-pink-500 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600"
+                onClick={displayUserInfoPopup}
+              >
+                UPDATE PROFILE
+              </button>
+            </div>
+          </div>
 
-        {showPopup ? (
-          <UserInfoPopup
-            userResource={currentUser}
-            isVisible={true}
-            isButtonAlwaysVisible={true}
-          />
-        ) : null}
+          {showPopup ? (
+            <UserInfoPopup userResource={currentUser} isVisible={true} />
+          ) : null}
+        </div>
 
         <div className="m-3 flex flex-row justify-center p-3">
           <div>
-            <p>Background Color</p>
+            <p
+              className={'text-center'}
+              style={{
+                fontSize: '1.25em',
+                color: currentUser.foregroundColor,
+              }}
+            >
+              Background Color
+            </p>
             <SwatchesPicker
               className="user-profile-sketchpicker m-3 p-3"
               color={currentUser?.backgroundColor}
@@ -158,7 +266,15 @@ const UserProfile = () => {
             />
           </div>
           <div>
-            <p>Foreground Color</p>
+            <p
+              className={'text-center'}
+              style={{
+                fontSize: '1.25em',
+                color: currentUser.foregroundColor,
+              }}
+            >
+              Foreground Color
+            </p>
             <SwatchesPicker
               className="user-profile-sketchpicker m-3 p-3"
               color={currentUser?.foregroundColor}

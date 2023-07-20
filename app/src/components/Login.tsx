@@ -1,12 +1,11 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import '../styles/navbar.css';
 import { useMutation } from '@tanstack/react-query';
 import { UserDto, createUser, getUserByToken } from '../services/userApi';
 import { useEffect, useState } from 'react';
 import { ThreeDots } from 'react-loader-spinner';
 import { useAtom } from 'jotai/index';
 import { selectedUser } from '../services/Atoms';
-import { changeColor, LightenColor } from '../services/colorChanger';
+import { LightenColor } from '../services/colorChanger';
 
 const Login = () => {
   const { user, isLoading, isAuthenticated, error, loginWithRedirect, logout } =
