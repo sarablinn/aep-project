@@ -6,11 +6,7 @@ import { useEffect, useState } from 'react';
 import { ThreeDots } from 'react-loader-spinner';
 import { useAtom } from 'jotai/index';
 import { selectedUser } from '../services/Atoms';
-import {
-  changeColor,
-  LightenColor,
-  LightenDarkenColor,
-} from '../services/colorChanger';
+import { changeColor, LightenColor } from '../services/colorChanger';
 
 const Login = () => {
   const { user, isLoading, isAuthenticated, error, loginWithRedirect, logout } =
@@ -20,18 +16,11 @@ const Login = () => {
 
   const [isHover, setIsHover] = useState(false);
 
-  const darken_bg = changeColor(currentUser.backgroundColor, -200);
-  const darken_fg = changeColor(currentUser.backgroundColor, -200);
-
-  const lighten_bg = LightenColor(currentUser.backgroundColor, 50);
-
-  const [bgDarker] = useState(darken_bg);
-  const [fgDarker] = useState(darken_fg);
-  const [bgLighter] = useState(lighten_bg);
+  const lighten_fg_5 = LightenColor(currentUser.foregroundColor, 5);
+  const [fgLighter_5] = useState(lighten_fg_5);
 
   const handleMouseOver = () => {
     setIsHover(true);
-    console.log(bgDarker);
   };
 
   const handleMouseLeave = () => {
@@ -168,7 +157,7 @@ const Login = () => {
           style={{
             fontSize: '1.75em',
             fontWeight: 'bold',
-            color: isHover ? fgDarker : currentUser.foregroundColor,
+            color: isHover ? fgLighter_5 : currentUser.foregroundColor,
           }}
           onMouseOver={handleMouseOver}
           onMouseLeave={handleMouseLeave}
@@ -190,7 +179,7 @@ const Login = () => {
         style={{
           fontSize: '1.75em',
           fontWeight: 'bold',
-          color: isHover ? fgDarker : currentUser.foregroundColor,
+          color: isHover ? fgLighter_5 : currentUser.foregroundColor,
         }}
         onClick={() => {
           loginWithRedirect().then();

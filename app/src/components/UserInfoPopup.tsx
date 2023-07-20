@@ -16,14 +16,14 @@ import useInput from '../hooks/useInput';
 
 export type UserInfoPopupProps = {
   userResource: UserResource;
-  isVisible: string;
+  isVisible: boolean;
 };
 
 const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
   const { user, isLoading, error } = useAuth0();
 
   const [showModal, setShowModal] = useState(false);
-  const [visibility, setVisibility] = useState(isVisible || 'VISIBLE');
+  const [visibility, setVisibility] = useState(isVisible || false);
 
   const [currentUser, setCurrentUser] = useAtom(selectedUser);
 
@@ -153,11 +153,11 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
 
   useEffect(() => {
     console.log('USERINFOPOPUP: UseEffect set visibility: ', visibility);
-    if (visibility === 'VISIBLE') {
+    if (visibility) {
       setShowModal(true);
     }
 
-    if (visibility === 'INVISIBLE') {
+    if (!visibility) {
       setShowModal(false);
     }
   }, [isVisible]);
@@ -245,16 +245,8 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
 
   return (
     <>
-      {showModal ? (
-        <div>
-          <button
-            className="mb-1 mr-1 rounded bg-pink-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-pink-600"
-            type="button"
-            onClick={() => setShowModal(true)}
-          >
-            Update User Profile
-          </button>
-
+      <div>
+        {showModal ? (
           <>
             <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
               <div className="relative mx-auto my-6 w-auto max-w-3xl">
@@ -360,7 +352,9 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
                         <span
                           className="relative mb-1 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700"
                           role="alert"
-                          style={{ visibility: lastNameErrorState || 'hidden' }}
+                          style={{
+                            visibility: lastNameErrorState || 'hidden',
+                          }}
                         >
                           <strong className="font-bold">Error:</strong>
                           <span className="block sm:inline">
@@ -417,18 +411,18 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
             </div>
             <div className="fixed inset-0 z-40 bg-black opacity-25"></div>
           </>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </>
   );
 };
 
 UserInfoPopup.propTypes = {
-  isVisible: PropTypes.oneOf(['VISIBLE', 'INVISIBLE']).isRequired,
+  isVisible: PropTypes.oneOf([true, false]).isRequired,
 };
 
 UserInfoPopup.defaultProps = {
-  isVisible: 'VISIBLE',
+  isVisible: false,
 };
 
 export default UserInfoPopup;

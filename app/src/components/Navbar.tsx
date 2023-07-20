@@ -20,7 +20,11 @@ const Navbar = () => {
             }}
           >
             <Link
-              style={{ color: currentUser.foregroundColor, fontWeight: 'bold' }}
+              style={{
+                color: currentUser.foregroundColor,
+                fontWeight: 'bold',
+                height: 'fit-content',
+              }}
               to={routes.BASE}
               search={{}}
               params={{}}
@@ -28,7 +32,11 @@ const Navbar = () => {
               home
             </Link>
             <Link
-              style={{ color: currentUser.foregroundColor, fontWeight: 'bold' }}
+              style={{
+                color: currentUser.foregroundColor,
+                fontWeight: 'bold',
+                height: 'fit-content',
+              }}
               to={routes.EVENTS}
               search={{}}
               params={{}}
@@ -36,7 +44,11 @@ const Navbar = () => {
               events
             </Link>
             <Link
-              style={{ color: currentUser.foregroundColor, fontWeight: 'bold' }}
+              style={{
+                color: currentUser.foregroundColor,
+                fontWeight: 'bold',
+                height: 'fit-content',
+              }}
               to={routes.LEADERSHIP_BOARD}
               search={{}}
               params={{}}
@@ -44,7 +56,11 @@ const Navbar = () => {
               leadership board
             </Link>
             <Link
-              style={{ color: currentUser.foregroundColor, fontWeight: 'bold' }}
+              style={{
+                color: currentUser.foregroundColor,
+                fontWeight: 'bold',
+                height: 'fit-content',
+              }}
               to={routes.PROFILE}
               search={{}}
               params={{}}
@@ -67,7 +83,11 @@ const Navbar = () => {
             }}
           >
             <Link
-              style={{ color: currentUser.foregroundColor, fontWeight: 'bold' }}
+              style={{
+                color: currentUser.foregroundColor,
+                fontWeight: 'bold',
+                height: 'fit-content',
+              }}
               to={routes.BASE}
               search={{}}
               params={{}}
@@ -75,7 +95,11 @@ const Navbar = () => {
               home
             </Link>
             <Link
-              style={{ color: currentUser.foregroundColor, fontWeight: 'bold' }}
+              style={{
+                color: currentUser.foregroundColor,
+                fontWeight: 'bold',
+                height: 'fit-content',
+              }}
               to={routes.LEADERSHIP_BOARD}
               search={{}}
               params={{}}
@@ -87,6 +111,7 @@ const Navbar = () => {
                 style={{
                   color: currentUser.foregroundColor,
                   fontWeight: 'bold',
+                  height: 'fit-content',
                 }}
                 to={routes.PROFILE}
                 search={{}}

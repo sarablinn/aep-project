@@ -12,6 +12,7 @@ const UserProfile = () => {
   const { user, isLoading, isAuthenticated, error } = useAuth0();
 
   const [currentUser, setCurrentUser] = useAtom(selectedUser);
+  const [showPopup, setShowPopup] = useState(false);
 
   const [bgColor, setBackgroundColor] = useState(currentUser.backgroundColor);
   const [fgColor, setForegroundColor] = useState(currentUser.foregroundColor);
@@ -110,7 +111,12 @@ const UserProfile = () => {
   }
 
   const displayUserInfoPopup = () => {
-    return <UserInfoPopup userResource={currentUser} isVisible={'VISIBLE'} />;
+    if (showPopup) {
+      setShowPopup(false);
+    }
+    if (!showPopup) {
+      setShowPopup(true);
+    }
   };
 
   if (isAuthenticated && userResource) {
@@ -126,8 +132,21 @@ const UserProfile = () => {
         </div>
 
         <div>
-          <button onClick={displayUserInfoPopup}>UPDATE PROFILE</button>
+          <button
+            className="m-1 rounded bg-pink-500 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600"
+            onClick={displayUserInfoPopup}
+          >
+            UPDATE PROFILE
+          </button>
         </div>
+
+        {showPopup ? (
+          <UserInfoPopup
+            userResource={currentUser}
+            isVisible={true}
+            isButtonAlwaysVisible={true}
+          />
+        ) : null}
 
         <div className="m-3 flex flex-row justify-center p-3">
           <div>
@@ -166,9 +185,6 @@ const UserProfile = () => {
             style={{ backgroundColor: bgColor }}
           ></div>
         </div>
-        {/*<div className="flex flex-row justify-center">*/}
-        {/*  <UserInfoPopup userResource={userResource} isVisible="VISIBLE" />*/}
-        {/*</div>*/}
       </div>
     );
   }
