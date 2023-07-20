@@ -2,16 +2,41 @@ import { useAuth0 } from '@auth0/auth0-react';
 import '../styles/navbar.css';
 import { useMutation } from '@tanstack/react-query';
 import { UserDto, createUser, getUserByToken } from '../services/userApi';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ThreeDots } from 'react-loader-spinner';
 import { useAtom } from 'jotai/index';
 import { selectedUser } from '../services/Atoms';
+import {
+  changeColor,
+  LightenColor,
+  LightenDarkenColor,
+} from '../services/colorChanger';
 
 const Login = () => {
   const { user, isLoading, isAuthenticated, error, loginWithRedirect, logout } =
     useAuth0();
 
   const [currentUser, setCurrentUser] = useAtom(selectedUser);
+
+  const [isHover, setIsHover] = useState(false);
+
+  const darken_bg = changeColor(currentUser.backgroundColor, -200);
+  const darken_fg = changeColor(currentUser.backgroundColor, -200);
+
+  const lighten_bg = LightenColor(currentUser.backgroundColor, 50);
+
+  const [bgDarker] = useState(darken_bg);
+  const [fgDarker] = useState(darken_fg);
+  const [bgLighter] = useState(lighten_bg);
+
+  const handleMouseOver = () => {
+    setIsHover(true);
+    console.log(bgDarker);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHover(false);
+  };
 
   /**
    * getUserMutation --> getUserByToken(userToken)
@@ -42,11 +67,6 @@ const Login = () => {
           addNewUser();
         }
       }
-      // if (!data) {
-      //   if (isAuthenticated) {
-      //     return new Error('No User Found.');
-      //   }
-      // }
     },
   });
 
@@ -145,7 +165,13 @@ const Login = () => {
     return (
       <div>
         <button
-          className="login-btn"
+          style={{
+            fontSize: '1.75em',
+            fontWeight: 'bold',
+            color: isHover ? fgDarker : currentUser.foregroundColor,
+          }}
+          onMouseOver={handleMouseOver}
+          onMouseLeave={handleMouseLeave}
           onClick={() =>
             logout({
               logoutParams: {
@@ -161,7 +187,11 @@ const Login = () => {
   } else {
     return (
       <button
-        className="login-btn"
+        style={{
+          fontSize: '1.75em',
+          fontWeight: 'bold',
+          color: isHover ? fgDarker : currentUser.foregroundColor,
+        }}
         onClick={() => {
           loginWithRedirect().then();
         }}

@@ -107,7 +107,6 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
     setIsFocused: setUsernameFocus,
     errorMessage: usernameErrMsg,
     isValid: isValidUsername,
-    reset: resetUsernameInput,
   } = useInput(validateUsername, username);
 
   const {
@@ -117,7 +116,6 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
     setIsFocused: setFirstNameFocus,
     errorMessage: firstNameErrMsg,
     isValid: isValidFirstName,
-    reset: resetFirstNameInput,
   } = useInput(validateName, firstName);
 
   const {
@@ -127,7 +125,6 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
     setIsFocused: setLastNameFocus,
     errorMessage: lastNameErrMsg,
     isValid: isValidLastName,
-    reset: resetLastNameInput,
   } = useInput(validateName, lastName);
 
   useEffect(() => {
