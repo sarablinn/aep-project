@@ -7,9 +7,11 @@ use App\Dto\incoming\CreateEventDto;
 use App\Dto\incoming\UpdateEventDto;
 use App\Dto\outgoing\EventDto;
 use App\Entity\Event;
+use App\Entity\Game;
 use App\Exception\EntityNotFoundException;
 use App\Repository\EventRepository;
 use App\Repository\GameRepository;
+use App\Repository\ModeRepository;
 use App\Repository\UserRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,13 +24,16 @@ class EventService implements ObjectMapperInterface
     private EventRepository $eventRepository;
     private UserRepository $userRepository;
     private GameRepository $gameRepository;
+    private ModeRepository $modeRepository;
     private GameService $gameService;
     private LoggerInterface $logger;
+
 
     function __construct(EntityManagerInterface $entityManager,
                         EventRepository $eventRepository,
                         UserRepository $userRepository,
                         GameRepository $gameRepository,
+                        ModeRepository $modeRepository,
                         GameService $gameService,
                         LoggerInterface $logger)
     {
@@ -36,6 +41,7 @@ class EventService implements ObjectMapperInterface
         $this->eventRepository = $eventRepository;
         $this->userRepository = $userRepository;
         $this->gameRepository = $gameRepository;
+        $this->modeRepository = $modeRepository;
         $this->gameService = $gameService;
         $this->logger = $logger;
     }
@@ -65,6 +71,45 @@ class EventService implements ObjectMapperInterface
     {
         $today = new DateTime();
         return $this->eventRepository->findByCurrentDate($today);
+    }
+
+    /**
+     * Return an array of games from a given event, indexed by mode and in
+     * descending score order, for a given event.
+     * @param int $event_id
+     * @param int $mode_id
+     * @return Game[]
+     * @throws EntityNotFoundException
+     */
+    public function getAllGamesByModeEvent(int $event_id, int $mode_id): iterable {
+        $games_by_event_mode = [];
+
+        $mode = $this->modeRepository->find($mode_id);
+        $event = $this->eventRepository->find($event_id);
+        $event_games = $event->getEventGames();
+
+        if (!$mode) {
+            throw new EntityNotFoundException('ERROR: No mode by id ' . $mode_id);
+        }
+
+        if ($event_games->count() > 0) {
+            $modeGames = $this->gameRepository->findBy(
+                ['mode' => $mode_id],
+                ['score' => 'DESC']);
+
+            foreach ($event_games as $event_game) {
+                foreach ($modeGames as $mode_game) {
+                    if ($mode_game->getGameId() === $event_game->getGameId()) {
+                        $games_by_event_mode[] = $event_game;
+                    }
+                }
+            }
+
+//            $games_by_event_mode = $this->mapToDtos($games_by_event_mode);
+        }
+
+
+        return $games_by_event_mode;
     }
 
     /**

@@ -33,6 +33,11 @@ export interface EventGameDto {
   gameId: number;
 }
 
+export interface EventModeDto {
+  eventId: number;
+  modeId: number;
+}
+
 export interface EventDate {
   date: Date;
 }
@@ -71,6 +76,31 @@ export async function getCurrentEvents(): Promise<EventResource[]> {
     })
     .catch(error => {
       console.error('eventApi: Error getCurrentEvents():', error);
+      throw error;
+    });
+}
+
+export async function getModeEventGames(
+  eventModeDto: EventModeDto,
+): Promise<GameResource[]> {
+  const url =
+    'http://localhost:8000/event/' +
+    eventModeDto.eventId +
+    '/mode/' +
+    eventModeDto.modeId;
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'GET',
+  })
+    .then(response => response.json())
+    .then((data: GameResource[]) => {
+      console.log('gameApi: Success getModeEventGames():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('gameApi: Error getModeEventGames():', error);
       throw error;
     });
 }

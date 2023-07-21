@@ -9,6 +9,7 @@ use App\Exception\EntityNotFoundException;
 use App\Exception\InvalidRequestDataException;
 use App\Serialization\SerializationService;
 use App\Service\EventService;
+use App\Service\GameService;
 use Exception;
 use JsonException;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,14 +19,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class EventController extends ApiController
 {
     private EventService $eventService;
+    private GameService $gameService;
     private SerializationService $serializationService;
 
     public function __construct(EventService $eventService,
+                                GameService $gameService,
                                 SerializationService $serializationService)
     {
         parent::__construct($serializationService);
 
         $this->eventService = $eventService;
+        $this->gameService = $gameService;
     }
 
 
@@ -49,6 +53,26 @@ class EventController extends ApiController
         $events = $this->eventService->getCurrentEvents();
         $eventDtos = $this->eventService->mapToDtos($events);
         return $this->json($eventDtos);
+    }
+
+    /**
+     * Get the games played in a given event and a given mode.
+     * @param string $event_id
+     * @param string $mode_id
+     * @return Response
+     */
+    #[Route('/event/{event_id}/mode/{mode_id}', methods: ('GET'))]
+    public function getModeEventGames(string $event_id, string $mode_id): Response
+    {
+        $eventGameDtos = [];
+        try {
+            $eventGames = $this->eventService->getAllGamesByModeEvent($event_id, $mode_id);
+            $eventGameDtos = $this->gameService->mapToDtos($eventGames);
+        } catch (EntityNotFoundException $entityNotFoundException) {
+            return $this->json($entityNotFoundException->getMessage());
+        }
+
+        return $this->json($eventGameDtos);
     }
 
     /**

@@ -93,20 +93,6 @@ class GameController extends ApiController
         return $this->json($dtoModeGames);
     }
 
-    /**
-     * Return an associative array containing arrays of games from
-     * a given event, indexed by mode and in descending score order,
-     * for a given event.
-     * @param string $event_id
-     * @return Response
-     */
-    #[Route('/games/topscores/event/{event_id}', methods: ['GET'])]
-    public function getAllGamesByEvent(string $event_id): Response
-    {
-        $dtoEventGames = $this->gameService->getAllGamesByEvent($event_id);
-        return $this->json($dtoEventGames);
-    }
-
 
     /**
      * @param Request $request

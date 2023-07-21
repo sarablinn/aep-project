@@ -223,36 +223,6 @@ class GameService implements ObjectMapperInterface
         return $dto_games_by_mode;
     }
 
-    /**
-     * Return an associative array containing arrays of games from
-     * a given event, indexed by mode and in descending score order,
-     * for a given event.
-     * @param int $event_id
-     * @return iterable
-     */
-    public function getAllGamesByEvent(int $event_id): iterable {
-        $games_by_event_mode = [];
-
-        $modes = $this->modeRepository->findAll();
-        $event = $this->eventRepository->find($event_id);
-        $event_games = $event->getEventGames();
-
-        if ($modes) {
-            if ($event_games != []) {
-                foreach ($modes as $mode) {
-                    $mode_id = $mode->getModeId();
-                    $modeGames = $this->gameRepository->findBy(
-                        ['mode' => $mode_id, 'event' => $event_id],
-                        ['score' => 'DESC']);
-
-                    $dtoEventModeGames = $this->mapToDtos($modeGames);
-                    $games_by_event_mode[$mode_id] = $dtoEventModeGames;
-                }
-            }
-        }
-
-        return $games_by_event_mode;
-    }
 
     ##################################################################################
     ####################### OBJECT MAPPER IMPLEMENTATIONS ############################
@@ -265,7 +235,7 @@ class GameService implements ObjectMapperInterface
      */
     public function mapToDto($object): GameDto
     {
-        $gameDto = new GameDto;
+        $gameDto = new GameDto();
 
         $user = $object->getUser();
         $userDto = null;

@@ -154,27 +154,6 @@ export async function getAllGamesByModes(): Promise<GamesByMode> {
     });
 }
 
-export async function getAllGamesByEvent(
-  event_id: number,
-): Promise<GamesByMode> {
-  const url = 'http://localhost:8000/games/topscores/event/' + event_id;
-  return await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    method: 'GET',
-  })
-    .then(response => response.json())
-    .then((data: GamesByMode) => {
-      console.log('gameApi: Success getAllGamesByEvent():', data);
-      return data;
-    })
-    .catch(error => {
-      console.error('gameApi: Error getAllGamesByEvent():', error);
-      throw error;
-    });
-}
-
 export async function createGame(gameDto: GameDto): Promise<GameResource> {
   const url = 'http://localhost:8000/games';
   return await fetch(url, {
