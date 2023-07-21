@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { createGame, GameDto, GameResource } from '../../services/gameApi';
+import { createGame, GameDto } from '../../services/gameApi';
 import { useMutation } from '@tanstack/react-query';
 import { ModeResource } from '../../services/modeApi';
 import { getUserByToken } from '../../services/userApi';
@@ -12,6 +12,9 @@ import {
   EventGameDto,
   EventResource,
 } from '../../services/eventApi';
+import { useAtom } from 'jotai';
+import { selectedUser } from '../../services/Atoms';
+import { changeColor, LightenColor } from '../../services/colorChanger';
 
 export type GameComponentProps = {
   selected_mode: ModeResource;
@@ -25,6 +28,10 @@ const GameComponent = ({
   user,
 }: GameComponentProps) => {
   const [currentGame, setCurrentGame] = useState(null);
+  const [currentUser] = useAtom(selectedUser);
+
+  const lighten_bg_5 = LightenColor(currentUser.backgroundColor, 5);
+  const [bgLighter_5] = useState(lighten_bg_5);
 
   const {
     data: createGameResults,
@@ -67,7 +74,7 @@ const GameComponent = ({
       console.log(err, variables, context);
     },
     onSuccess: data => {
-      setCurrentGame(data);
+      setCurrentGame({ data });
       console.log('GameComponent: Success: addEventGame Mutation: ', data);
     },
   });
@@ -87,7 +94,7 @@ const GameComponent = ({
     if (isComplete) {
       // build a gameDTO here
       console.log('final score: ' + score);
-      saveCompletedGame();
+      // saveCompletedGame();
     }
   }, [isComplete]);
 
@@ -110,22 +117,6 @@ const GameComponent = ({
       console.log('GAME TO SAVE: ', gameDto);
 
       createGameMutate(gameDto);
-
-      // add completed game to the event's games
-      // if (createGameResults && selected_event) {
-      //   const games = [createGameResults];
-      //
-      //   const eventGameDto: EventGameDto = {
-      //     eventId: selected_event.eventId,
-      //     eventName: selected_event.eventName,
-      //     startDate: selected_event.startDate,
-      //     endDate: selected_event.endDate,
-      //     eventCreatorUserId: selected_event.eventCreatorUserId,
-      //     eventGames: games,
-      //   };
-      //
-      //   addEventGameMutate(eventGameDto);
-      // }
     }
   }
 
@@ -149,25 +140,39 @@ const GameComponent = ({
 
   if (selected_mode && !isComplete) {
     return (
-      <div className="container-fluid flex">
-        {/*<div className="container-fluid bg-blue-350 flex p-5">*/}
-        <div className="min-w-1/5 container flex w-1/5 flex-col items-center bg-blue-300 p-5">
-          <h3 className="font-bold text-white">Score</h3>
-          <h2 className="pb-2 text-lg font-bold text-white">{score}</h2>
-          <div className="font-bold text-white">
-            <Countdown
-              date={start_time.getTime() + selected_mode.timeLimit * 1000}
-              zeroPadDays={undefined}
-            />
-          </div>
-          <button
-            onClick={addRow}
-            className="m-5 rounded bg-pink-500 px-4 py-2 font-bold font-bold text-white text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600"
+      <div className="container-fluid m-10 flex">
+        <div className="container flex w-1/5 min-w-max p-5">
+          <div
+            className="flex h-max w-1/5 min-w-max flex-col items-center p-5"
+            style={{
+              backgroundColor: bgLighter_5,
+              border: '3px solid',
+              borderRadius: '20px',
+              borderColor: currentUser.foregroundColor,
+              position: 'fixed',
+              top: '40vh',
+            }}
           >
-            +
-          </button>
+            <h3 className="font-bold text-white">Score</h3>
+            <h2 className="pb-2 text-lg font-bold text-white">{score}</h2>
+            <div className="font-bold text-white">
+              <Countdown
+                date={start_time.getTime() + selected_mode.timeLimit * 1000}
+                zeroPadDays={undefined}
+              />
+            </div>
+            <button
+              onClick={addRow}
+              className="m-5 rounded bg-pink-500 px-4 py-2 font-bold font-bold text-white text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600"
+            >
+              +
+            </button>
+          </div>
         </div>
-        <div className="min-w-4/5 container flex w-4/5 flex-col items-center bg-blue-400 p-5">
+        <div
+          className="min-w-4/5 container flex w-4/5 flex-col items-center p-5"
+          style={{ backgroundColor: currentUser.backgroundColor }}
+        >
           {gameGrid.rows.map((row: number[], rowIndex: number) => {
             return (
               <div key={'row-' + rowIndex}>
@@ -180,6 +185,18 @@ const GameComponent = ({
                           ? 'isActive m-1 h-12 w-12 rounded bg-pink-600 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600'
                           : 'm-1 h-12 w-12 rounded bg-pink-500 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600'
                       }
+                      style={{
+                        color: isSelection(rowIndex, colIndex, column)
+                          ? 'white'
+                          : column === 0
+                          ? '#DB2777'
+                          : 'white',
+                        backgroundColor: isSelection(rowIndex, colIndex, column)
+                          ? '#DB2777'
+                          : column === 0
+                          ? '#DB2777'
+                          : '#EC4899',
+                      }}
                       onClick={() =>
                         handleSelection({
                           rowNum: rowIndex,
@@ -196,13 +213,16 @@ const GameComponent = ({
             );
           })}
         </div>
-        {/*</div>*/}
       </div>
     );
   } else if (isComplete && user && createGameResults) {
     return (
       <div className="container-fluid flex justify-center">
-        <UserEndGameResults user={user} game={createGameResults} />
+        <UserEndGameResults
+          user={user}
+          game={createGameResults}
+          event={selected_event}
+        />
       </div>
     );
   } else if (isComplete && !user) {
