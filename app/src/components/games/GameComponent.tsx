@@ -92,9 +92,8 @@ const GameComponent = ({
 
   useEffect(() => {
     if (isComplete) {
-      // build a gameDTO here
       console.log('final score: ' + score);
-      // saveCompletedGame();
+      saveCompletedGame();
     }
   }, [isComplete]);
 
