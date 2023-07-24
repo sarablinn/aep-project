@@ -119,11 +119,11 @@ const GameSettingsPage = () => {
                         ? 'isActive m-1 rounded bg-pink-600 p-3 font-bold text-white hover:shadow-lg focus:outline-none active:bg-pink-600'
                         : 'm-1 rounded bg-pink-500 p-3 font-bold text-white hover:shadow-lg focus:outline-none active:bg-pink-600'
                     }
-                    style={{
-                      color: isSelectedEvent(eventResource)
-                        ? 'white'
-                        : currentUser.backgroundColor,
-                    }}
+                    // style={{
+                    //   color: isSelectedEvent(eventResource)
+                    //     ? 'white'
+                    //     : currentUser.backgroundColor,
+                    // }}
                     onClick={() => {
                       setSelectedEvent(eventResource);
                     }}
@@ -140,11 +140,11 @@ const GameSettingsPage = () => {
                       ? 'isActive m-1 rounded bg-pink-600 p-3 font-bold text-white hover:shadow-lg focus:outline-none active:bg-pink-600'
                       : 'm-1 rounded bg-pink-500 p-3 font-bold text-white hover:shadow-lg focus:outline-none active:bg-pink-600'
                   }
-                  style={{
-                    color: isSelectedEvent(null)
-                      ? 'white'
-                      : currentUser.backgroundColor,
-                  }}
+                  // style={{
+                  //   color: isSelectedEvent(null)
+                  //     ? 'white'
+                  //     : currentUser.backgroundColor,
+                  // }}
                   onClick={() => {
                     setSelectedEvent(null);
                   }}
@@ -188,11 +188,11 @@ const GameSettingsPage = () => {
                           ? 'isActive m-1 rounded bg-pink-600 p-3 font-bold text-white hover:shadow-lg focus:outline-none active:bg-pink-600'
                           : 'm-1 rounded bg-pink-500 p-3 font-bold text-white hover:shadow-lg focus:outline-none active:bg-pink-600'
                       }
-                      style={{
-                        color: isSelectedMode(mode)
-                          ? 'white'
-                          : currentUser.backgroundColor,
-                      }}
+                      // style={{
+                      //   color: isSelectedMode(mode)
+                      //     ? 'white'
+                      //     : currentUser.backgroundColor,
+                      // }}
                       onClick={() => {
                         setSelectedMode(mode);
                       }}
@@ -212,13 +212,13 @@ const GameSettingsPage = () => {
               <button
                 className="m-1 mr-20 rounded bg-pink-500 p-3 font-bold text-white shadow hover:shadow-lg"
                 onClick={handleShowDemo}
-                style={{ color: currentUser.backgroundColor }}
+                // style={{ color: currentUser.backgroundColor }}
               >
                 learn how to play
               </button>
               <button
                 className="m-1 rounded bg-pink-500 p-3 px-10 font-bold text-white shadow hover:shadow-lg"
-                style={{ fontSize: '2em', color: currentUser.backgroundColor }}
+                style={{ fontSize: '2em' }}
                 onClick={handleStartGame}
               >
                 PLAY
@@ -286,11 +286,11 @@ const GameSettingsPage = () => {
                       ? 'isActive m-1 rounded bg-pink-600 p-3 font-bold text-white hover:shadow-lg focus:outline-none active:bg-pink-600'
                       : 'm-1 rounded bg-pink-500 p-3 font-bold text-white hover:shadow-lg focus:outline-none active:bg-pink-600'
                   }
-                  style={{
-                    color: isSelectedMode(mode)
-                      ? 'white'
-                      : currentUser.backgroundColor,
-                  }}
+                  // style={{
+                  //   color: isSelectedMode(mode)
+                  //     ? 'white'
+                  //     : currentUser.backgroundColor,
+                  // }}
                   onClick={() => {
                     setSelectedMode(mode);
                   }}
@@ -306,13 +306,13 @@ const GameSettingsPage = () => {
               <button
                 className="m-1 mr-20 rounded bg-pink-500 p-3 font-bold text-white shadow hover:shadow-lg"
                 onClick={handleShowDemo}
-                style={{ color: currentUser.backgroundColor }}
+                // style={{ color: currentUser.backgroundColor }}
               >
                 learn how to play
               </button>
               <button
                 className="m-1 rounded bg-pink-500 p-3 px-10 font-bold text-white shadow hover:shadow-lg"
-                style={{ fontSize: '2em', color: currentUser.backgroundColor }}
+                style={{ fontSize: '2em' }}
                 onClick={handleStartGame}
               >
                 PLAY
