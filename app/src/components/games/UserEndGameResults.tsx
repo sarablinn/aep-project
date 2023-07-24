@@ -5,6 +5,9 @@ import Loading from '../../utilities/Loading';
 import ErrorMessage from '../../utilities/ErrorMessage';
 import { useAtom } from 'jotai';
 import { selectedUser } from '../../services/Atoms';
+import PaginatedGames from './PaginatedGames';
+import { LightenColor } from '../../services/colorChanger';
+import { useState } from 'react';
 
 export type UserEndGameResultsProps = {
   user: any;
@@ -23,6 +26,9 @@ export type UserEndGameResultsProps = {
  */
 const UserEndGameResults = ({ user, game, event }: UserEndGameResultsProps) => {
   const [currentUser] = useAtom(selectedUser);
+
+  const lighten_bg_5 = LightenColor(currentUser.backgroundColor, 5);
+  const [bgLighter_5] = useState(lighten_bg_5);
 
   const {
     isLoading: isLoadingGames,
@@ -47,7 +53,7 @@ const UserEndGameResults = ({ user, game, event }: UserEndGameResultsProps) => {
       }),
   });
 
-  if (isLoadingGames || isLoadingEventGames) {
+  if (isLoadingGames || (event && isLoadingEventGames)) {
     return (
       <div>
         <Loading />
@@ -59,15 +65,23 @@ const UserEndGameResults = ({ user, game, event }: UserEndGameResultsProps) => {
         <ErrorMessage errorMessage={'An error has occurred.'} />
       </div>
     );
-  } else if (gamesData) {
+  } else if ((gamesData && event && eventGamesData) || (gamesData && !event)) {
     return (
       <div>
-        <div className="container flex flex-col items-center p-10">
+        <div
+          className="container flex flex-col items-center p-10"
+          style={{
+            backgroundColor: bgLighter_5,
+            border: '3px solid',
+            borderRadius: '20px',
+            borderColor: currentUser.foregroundColor,
+          }}
+        >
           <h2
             className="p-5 font-bold"
             style={{ color: currentUser.foregroundColor }}
           >
-            You Died.
+            YOU DIED.
           </h2>
           <h1
             className="font-bold text-white"
@@ -85,95 +99,40 @@ const UserEndGameResults = ({ user, game, event }: UserEndGameResultsProps) => {
 
         <div className="container-fluid flex p-5">
           <div
-            className="container flex px-10 py-5"
-            style={{ height: 'max-content' }}
+            className="container m-5 flex px-10 py-5"
+            style={{
+              backgroundColor: currentUser.backgroundColor,
+              border: '3px solid',
+              borderRadius: '20px',
+              borderColor: currentUser.foregroundColor,
+              height: 'max-content',
+            }}
           >
-            <table className="p-5">
-              <caption className="p-4 text-center font-bold text-white">
-                {game.mode.modeName}
-              </caption>
-              <tbody>
-                {gamesData.map((modeGame, index) => {
-                  if (modeGame.gameId === game.gameId) {
-                    return (
-                      <tr key={'modeGame-' + index}>
-                        <td className="bg-blue-400 py-2 pl-5 pr-10 font-bold text-white">
-                          {index + 1}
-                        </td>
-                        <td className="bg-blue-400 py-2 pr-5 font-bold text-white">
-                          {modeGame.user.username}
-                        </td>
-                        <td className="bg-blue-400 py-2 pr-5 font-bold text-white">
-                          {modeGame.score}
-                        </td>
-                      </tr>
-                    );
-                  } else {
-                    return (
-                      <tr key={'modeGame-' + index}>
-                        <td className="py-2 pl-5 pr-10 text-white">
-                          {index + 1}
-                        </td>
-                        <td className="py-2 pr-5 font-bold text-white">
-                          {modeGame.user.username}
-                        </td>
-                        <td className="py-2 font-bold text-white">
-                          {modeGame.score}
-                        </td>
-                      </tr>
-                    );
-                  }
-                })}
-              </tbody>
-            </table>
+            <PaginatedGames
+              tableTitle={game.mode.modeName}
+              completedGame={game}
+              games={gamesData}
+              gamesPerPage={10}
+            />
           </div>
 
           {event && eventGamesData ? (
             <div
-              className="container flex px-10 py-5"
-              style={{ height: 'max-content' }}
+              className="container m-5 flex px-10 py-5"
+              style={{
+                backgroundColor: currentUser.backgroundColor,
+                border: '3px solid',
+                borderRadius: '20px',
+                borderColor: currentUser.foregroundColor,
+                height: 'max-content',
+              }}
             >
-              <table className="p-5">
-                <caption className="p-4 text-center font-bold text-white">
-                  {event.eventName} {game.mode.modeName}
-                </caption>
-                <tbody>
-                  {eventGamesData.map((eventGame, index) => {
-                    if (eventGame.gameId === game.gameId) {
-                      return (
-                        <tr key={'modeGame-' + index}>
-                          <td className="bg-blue-400 py-2 pl-5 pr-10 font-bold text-white">
-                            {index + 1}
-                          </td>
-                          <td className="bg-blue-400 py-2 pr-5 font-bold text-white">
-                            {eventGame.user.username}
-                          </td>
-                          <td className="bg-blue-400 py-2 pr-5 font-bold text-white">
-                            {eventGame.score}
-                          </td>
-                          <td className="bg-blue-400 py-2 pr-5 font-bold text-white">
-                            {eventGame.mode.modeName}
-                          </td>
-                        </tr>
-                      );
-                    } else {
-                      return (
-                        <tr key={'modeGame-' + index}>
-                          <td className="py-2 pl-5 pr-10 text-white">
-                            {index + 1}
-                          </td>
-                          <td className="py-2 pr-5 font-bold text-white">
-                            {eventGame.user.username}
-                          </td>
-                          <td className="py-2 font-bold text-white">
-                            {eventGame.score}
-                          </td>
-                        </tr>
-                      );
-                    }
-                  })}
-                </tbody>
-              </table>
+              <PaginatedGames
+                tableTitle={event.eventName + ':  ' + game.mode.modeName}
+                completedGame={game}
+                games={eventGamesData}
+                gamesPerPage={10}
+              />
             </div>
           ) : null}
         </div>
