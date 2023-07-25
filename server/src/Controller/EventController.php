@@ -56,6 +56,30 @@ class EventController extends ApiController
     }
 
     /**
+     * Returns all events that ended within a week from today.
+     * @return Response
+     */
+    #[Route('/events/past_events_week', methods: ('GET'))]
+    public function getEventsEndedWeekPrior(): Response
+    {
+        $events = $this->eventService->getEventsEndedWeekPrior();
+        $eventDtos = $this->eventService->mapToDtos($events);
+        return $this->json($eventDtos);
+    }
+
+    /**
+     * Returns all events with that start after today.
+     * @return Response
+     */
+    #[Route('/events/future_events', methods: ('GET'))]
+    public function getFutureEvents(): Response
+    {
+        $events = $this->eventService->getFutureEvents();
+        $eventDtos = $this->eventService->mapToDtos($events);
+        return $this->json($eventDtos);
+    }
+
+    /**
      * Get the games played in a given event and a given mode.
      * @param string $event_id
      * @param string $mode_id

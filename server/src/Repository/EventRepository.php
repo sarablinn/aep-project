@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Event;
+use Cassandra\Date;
+use DateInterval;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -41,6 +43,8 @@ class EventRepository extends ServiceEntityRepository
     }
 
     /**
+     * Returns an array of Events that are in progress.
+     *
      * @return Event[] Returns an array of Event objects
      */
     public function findByCurrentDate(DateTime $datetime): array
@@ -52,6 +56,40 @@ class EventRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
         ;
+    }
+
+    /**
+     * Returns an array of Events that ended within 7 days from system date.
+     *
+     * @return Event[] Returns an array of Event objects
+     */
+    public function findEventsEndedWeekPrior(): array
+    {
+//        $dateInterval = new DateInterval('P7D');
+//        $priorWeek = $endPeriod->sub($dateInterval);
+
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.end_date between (current_date() - 7) and current_date()')
+            ->orderBy('e.end_date', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * Returns an array of Events that start after the given date.
+     *
+     * @return Event[] Returns an array of Event objects
+     */
+    public function findFutureEvents(DateTime $startDate): array
+    {
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.start_date > :startDate')
+            ->setParameter('startDate', $startDate)
+            ->orderBy('e.start_date', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
     }
 
 //    /**

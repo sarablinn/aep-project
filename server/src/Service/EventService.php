@@ -74,6 +74,25 @@ class EventService implements ObjectMapperInterface
     }
 
     /**
+     * Returns an array of Events that ended within 1 week from today.
+     * @return Event[]
+     */
+    public function getEventsEndedWeekPrior(): iterable
+    {
+        return $this->eventRepository->findEventsEndedWeekPrior();
+    }
+
+    /**
+     * Returns an array of Events that start after today.
+     * @return Event[]
+     */
+    public function getFutureEvents(): iterable
+    {
+        $today = new DateTime();
+        return $this->eventRepository->findFutureEvents($today);
+    }
+
+    /**
      * Return an array of games from a given event, indexed by mode and in
      * descending score order, for a given event.
      * @param int $event_id
