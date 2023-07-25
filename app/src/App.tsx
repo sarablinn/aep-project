@@ -4,7 +4,6 @@ import { queryClientAtom } from 'jotai-tanstack-query';
 import { useHydrateAtoms } from 'jotai/react/utils';
 
 import './App.css';
-import './styles/navbar.css';
 import Footer from './components/Footer';
 import AppContent from './components/AppContent';
 
