@@ -80,6 +80,44 @@ export async function getCurrentEvents(): Promise<EventResource[]> {
     });
 }
 
+export async function getPriorWeekEvents(): Promise<EventResource[]> {
+  const url = 'http://localhost:8000/events/past_events_week';
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'GET',
+  })
+    .then(response => response.json())
+    .then((data: EventResource[]) => {
+      console.log('eventApi: Success getWeekPriorEvents():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('eventApi: Error getWeekPriorEvents():', error);
+      throw error;
+    });
+}
+
+export async function getFutureEvents(): Promise<EventResource[]> {
+  const url = 'http://localhost:8000/events/future_events';
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'GET',
+  })
+    .then(response => response.json())
+    .then((data: EventResource[]) => {
+      console.log('eventApi: Success getFutureEvents():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('eventApi: Error getFutureEvents():', error);
+      throw error;
+    });
+}
+
 export async function getModeEventGames(
   eventModeDto: EventModeDto,
 ): Promise<GameResource[]> {
