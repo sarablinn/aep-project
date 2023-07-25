@@ -7,14 +7,14 @@ import { faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 import { useAtom } from 'jotai';
 
 export type PaginatedGamesProps = {
-  tableTitle: string;
-  completedGame: GameResource | GuestGameDto;
+  tableTitle?: string;
+  completedGame?: GameResource | GuestGameDto;
   games: GameResource[];
   gamesPerPage: number;
 };
 
 const PaginatedGames = ({
-  tableTitle,
+  tableTitle = '',
   completedGame,
   games,
   gamesPerPage,
@@ -41,82 +41,98 @@ const PaginatedGames = ({
     setCurrentItems(games.slice(itemOffset, endOffset));
   }, [itemOffset]);
 
-  return (
-    <div>
+  if (currentItems.length > 0) {
+    return (
       <div>
-        <table className="p-5">
-          <caption className="m-4 p-4 text-center font-bold text-white">
-            {tableTitle}
-          </caption>
-          <tbody>
-            {currentItems.map((modeGame, index) => {
-              if (modeGame.gameId === completedGame.gameId) {
-                return (
-                  <tr key={'modeGame-' + index}>
-                    <td
-                      className="rounded-sm bg-pink-500 py-2 pl-5 pr-10 font-bold text-white"
-                      // style={{ backgroundColor: bgLighter_5 }}
-                    >
-                      {games.indexOf(modeGame) + 1}
-                    </td>
-                    <td
-                      className="bg-pink-500 py-2 pr-5 font-bold text-white"
-                      // style={{ backgroundColor: bgLighter_5 }}
-                    >
-                      {modeGame.user.username}
-                    </td>
-                    <td
-                      className="bg-pink-500 py-2 pr-5 font-bold text-white"
-                      // style={{ backgroundColor: bgLighter_5 }}
-                    >
-                      {modeGame.score}
-                    </td>
-                  </tr>
-                );
-              } else {
-                return (
-                  <tr key={'modeGame-' + index}>
-                    <td className="py-2 pl-5 pr-10 text-white">
-                      {games.indexOf(modeGame) + 1}
-                    </td>
-                    <td className="py-2 pr-5 font-bold text-white">
-                      {modeGame.user.username}
-                    </td>
-                    <td className="py-2 font-bold text-white">
-                      {modeGame.score}
-                    </td>
-                  </tr>
-                );
-              }
-            })}
-          </tbody>
-        </table>
+        <div>
+          <table className="p-5">
+            <caption className="m-4 p-4 text-center font-bold text-white">
+              {tableTitle}
+            </caption>
+            <tbody>
+              {currentItems.map((modeGame, index) => {
+                if (
+                  completedGame &&
+                  (completedGame as GameResource).gameId != null
+                ) {
+                  if (modeGame.gameId === completedGame.gameId) {
+                    return (
+                      <tr key={'modeGame-' + index}>
+                        <td
+                          className="rounded-sm bg-pink-500 py-2 pl-5 pr-10 font-bold text-white"
+                          // style={{ backgroundColor: bgLighter_5 }}
+                        >
+                          {games.indexOf(modeGame) + 1}
+                        </td>
+                        <td
+                          className="bg-pink-500 py-2 pr-5 font-bold text-white"
+                          // style={{ backgroundColor: bgLighter_5 }}
+                        >
+                          {modeGame.user.username}
+                        </td>
+                        <td
+                          className="bg-pink-500 py-2 pr-10 font-bold text-white"
+                          // style={{ backgroundColor: bgLighter_5 }}
+                        >
+                          {modeGame.score}
+                        </td>
+                      </tr>
+                    );
+                  }
+                } else {
+                  return (
+                    <tr key={'modeGame-' + index}>
+                      <td className="py-2 pl-5 pr-10 text-white">
+                        {games.indexOf(modeGame) + 1}
+                      </td>
+                      <td className="py-2 pr-5 font-bold text-white">
+                        {modeGame.user.username}
+                      </td>
+                      <td className="py-2 pr-10 font-bold text-white">
+                        {modeGame.score}
+                      </td>
+                    </tr>
+                  );
+                }
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div className="my-5" style={{}}>
+          <ReactPaginate
+            containerClassName="flex justify-evenly text-center text-white text-lg"
+            activeClassName="flex justify-evenly text-center text-white bg-pink-500 px-2 mx-1 font-bold border rounded-xl border-pink-500"
+            breakLabel="..."
+            nextLabel={
+              <FontAwesomeIcon
+                className="fa-beat-fade fa-xl px-5 text-white"
+                icon={faCaretRight}
+              />
+            }
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={3}
+            pageCount={pageCount}
+            previousLabel={
+              <FontAwesomeIcon
+                className="fa-xl px-5 text-white"
+                icon={faCaretLeft}
+              />
+            }
+            renderOnZeroPageCount={null}
+          />
+        </div>
       </div>
-      <div className="my-5" style={{}}>
-        <ReactPaginate
-          containerClassName="flex justify-evenly text-center text-white text-lg"
-          activeClassName="flex justify-evenly text-center text-white bg-pink-500 px-2 mx-1 font-bold border rounded-xl border-pink-500"
-          breakLabel="..."
-          nextLabel={
-            <FontAwesomeIcon
-              className="fa-beat-fade fa-xl px-5 text-white"
-              icon={faCaretRight}
-            />
-          }
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={3}
-          pageCount={pageCount}
-          previousLabel={
-            <FontAwesomeIcon
-              className="fa-xl px-5 text-white"
-              icon={faCaretLeft}
-            />
-          }
-          renderOnZeroPageCount={null}
-        />
+    );
+  } else if (currentItems.length === 0 && tableTitle && tableTitle != '') {
+    return (
+      <div className="m-4 p-5 text-center">
+        <h2 className="mb-5 pb-2 font-bold text-white">{tableTitle}</h2>
+        <p className="text-white">No Games Played Yet!</p>
       </div>
-    </div>
-  );
+    );
+  }
+
+  return <></>;
 };
 
 export default PaginatedGames;
