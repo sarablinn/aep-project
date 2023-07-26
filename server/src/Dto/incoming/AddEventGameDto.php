@@ -16,6 +16,10 @@ class AddEventGameDto
     #[Type('int')]
     private int $game_id;
 
+    public function __construct(int $eventId, int $gameId) {
+        $this->event_id = $eventId;
+        $this->game_id = $gameId;
+    }
 
     /**
      * @return int

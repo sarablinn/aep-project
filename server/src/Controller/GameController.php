@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Dto\incoming\AddEventGameDto;
 use App\Dto\incoming\CreateGameDto;
 use App\Exception\EntityNotFoundException;
 use App\Exception\InvalidRequestDataException;
 use App\Serialization\SerializationService;
+use App\Service\EventService;
 use App\Service\GameService;
 use App\Service\ModeService;
 use Exception;
@@ -18,16 +20,19 @@ class GameController extends ApiController
 {
     private GameService $gameService;
     private ModeService $modeService;
+    private EventService $eventService;
     private SerializationService $serializationService;
 
     public function __construct(GameService $gameService,
                                 ModeService $modeService,
+                                EventService $eventService,
                                 SerializationService $serializationService)
     {
         parent::__construct($serializationService);
 
         $this->gameService = $gameService;
         $this->modeService = $modeService;
+        $this->eventService = $eventService;
     }
 
 
@@ -113,6 +118,33 @@ class GameController extends ApiController
         }
 
         return $this->json($gameDto);
+    }
+
+    /**
+     * @param Request $request
+     * @param string $eventId
+     * @return Response
+     * @throws InvalidRequestDataException
+     * @throws JsonException
+     */
+    #[Route('/games/event/{eventId}', methods: ['POST'])]
+    public function createGameAndAddToEvent(Request $request, string $eventId): Response
+    {
+        try {
+            /** @var CreateGameDto $createGameDto */
+            $createGameDto = $this->getValidatedDto($request, CreateGameDto::class);
+            $game = $this->gameService->createGame($createGameDto);
+
+            if ($game && $eventId) {
+                $this->eventService->addGameToEvent(
+                    new AddEventGameDto($eventId, $game->getGameId()));
+            }
+
+            $gameDto = $this->gameService->mapToDto($game);
+            return $this->json($gameDto);
+        } catch (EntityNotFoundException $entityNotFoundException) {
+            return $this->json($entityNotFoundException->getMessage());
+        }
     }
 
     /**

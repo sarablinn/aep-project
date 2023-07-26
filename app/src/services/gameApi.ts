@@ -1,5 +1,6 @@
 import { UserResource } from './userApi';
 import { ModeResource } from './modeApi';
+import { EventResource } from './eventApi';
 
 export interface GameGrid {
   rows: Array<Array<number>>;
@@ -48,6 +49,11 @@ export interface GameDto {
   modeId: number;
   timestamp: any;
   score: number;
+}
+
+export interface GameAndEventDto {
+  gameDto: GameDto;
+  eventResource: EventResource;
 }
 
 export interface GuestGameDto {
@@ -162,6 +168,33 @@ export async function createGame(gameDto: GameDto): Promise<GameResource> {
     },
     method: 'POST',
     body: JSON.stringify(gameDto),
+  })
+    .then(response => {
+      console.log('RESPONSE', response);
+      return response.json();
+    })
+    .then((data: GameResource) => {
+      console.log('gameApi: Success createGame():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('gameApi: Error createGame():', error);
+      throw error;
+    });
+}
+
+export async function createGameAndAddToEvent(
+  gameAndEventDto: GameAndEventDto,
+): Promise<GameResource> {
+  const url =
+    'http://localhost:8000/games/event/' +
+    gameAndEventDto.eventResource.eventId;
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify(gameAndEventDto.gameDto),
   })
     .then(response => {
       console.log('RESPONSE', response);

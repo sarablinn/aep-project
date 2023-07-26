@@ -1,20 +1,21 @@
 import { useEffect, useState } from 'react';
-import { createGame, GameDto } from '../../services/gameApi';
+import {
+  createGame,
+  createGameAndAddToEvent,
+  GameAndEventDto,
+  GameDto,
+} from '../../services/gameApi';
 import { useMutation } from '@tanstack/react-query';
 import { ModeResource } from '../../services/modeApi';
-import { getUserByToken } from '../../services/userApi';
 import useGame from '../../hooks/useGame';
 import Countdown from 'react-countdown';
 import UserEndGameResults from './UserEndGameResults';
 import GuestEndGameResults from './GuestEndGameResults';
-import {
-  addEventGame,
-  EventGameDto,
-  EventResource,
-} from '../../services/eventApi';
+import { EventResource } from '../../services/eventApi';
 import { useAtom } from 'jotai';
 import { selectedUser } from '../../services/Atoms';
-import { changeColor, LightenColor } from '../../services/colorChanger';
+import { LightenColor } from '../../services/colorChanger';
+import Loading from '../../utilities/Loading';
 
 export type GameComponentProps = {
   selected_mode: ModeResource;
@@ -27,7 +28,6 @@ const GameComponent = ({
   selected_event,
   user,
 }: GameComponentProps) => {
-  const [currentGame, setCurrentGame] = useState(null);
   const [currentUser] = useAtom(selectedUser);
 
   const lighten_bg_5 = LightenColor(currentUser.backgroundColor, 5);
@@ -36,8 +36,7 @@ const GameComponent = ({
   const {
     data: createGameResults,
     mutate: createGameMutate,
-    error: createGameError,
-    isLoading: createGameLoading,
+    isLoading: isLoadingCreateGame,
   } = useMutation({
     mutationFn: (gameDto: GameDto) => createGame(gameDto),
     onMutate: () => console.log('GameComponent: Mutate: createGame Mutation'),
@@ -49,33 +48,23 @@ const GameComponent = ({
     },
   });
 
-  const { data: getUserByTokenResults, mutate: getUserByTokenMutate } =
-    useMutation({
-      mutationFn: (userToken: string) => getUserByToken(userToken),
-      onMutate: () =>
-        console.log('GameComponent: Mutate: getUserByToken Mutation'),
-      onError: (err, variables, context) => {
-        console.log(err, variables, context);
-      },
-      onSuccess: data => {
-        console.log('GameComponent: Success: getUserByToken Mutation: ', data);
-      },
-    });
-
   const {
-    data: addEventGameResults,
-    mutate: addEventGameMutate,
-    isLoading: isLoadingGameEventMutation,
-    error: addGameEventError,
+    data: createGameWithEventResults,
+    mutate: createGameWithEventMutate,
+    isLoading: isLoadingCreateGameWithEvent,
   } = useMutation({
-    mutationFn: (eventGameDto: EventGameDto) => addEventGame(eventGameDto),
-    onMutate: () => console.log('GameComponent: Mutate: addEventGame Mutation'),
+    mutationFn: (gameAndEventDto: GameAndEventDto) =>
+      createGameAndAddToEvent(gameAndEventDto),
+    onMutate: () =>
+      console.log('GameComponent: Mutate: createGameWithEvent Mutation'),
     onError: (err, variables, context) => {
       console.log(err, variables, context);
     },
     onSuccess: data => {
-      setCurrentGame({ data });
-      console.log('GameComponent: Success: addEventGame Mutation: ', data);
+      console.log(
+        'GameComponent: Success: createGameWithEvent Mutation: ',
+        data,
+      );
     },
   });
 
@@ -113,29 +102,31 @@ const GameComponent = ({
         timestamp: Math.round(new Date(Date.now()).getTime() / 1000),
         score: score,
       };
-      console.log('GAME TO SAVE: ', gameDto);
 
-      createGameMutate(gameDto);
+      if (selected_event) {
+        createGameWithEventMutate({
+          gameDto: gameDto,
+          eventResource: selected_event,
+        });
+        console.log(
+          'GAME SHOULD BE SAVED & ADDED TO EVENT: ',
+          createGameWithEventResults,
+          selected_event,
+        );
+      } else if (!selected_event) {
+        createGameMutate(gameDto);
+        console.log('GAME SHOULD BE SAVED: ', gameDto);
+      }
     }
   }
 
-  useEffect(() => {
-    console.log(
-      'GAME SHOULD BE ADDED TO EVENT: ',
-      createGameResults,
-      selected_event,
+  if (isLoadingCreateGame || isLoadingCreateGameWithEvent) {
+    return (
+      <div>
+        <Loading />
+      </div>
     );
-
-    if (createGameResults && selected_event) {
-      const eventGameDto: EventGameDto = {
-        eventId: selected_event.eventId,
-        gameId: createGameResults.gameId,
-      };
-
-      addEventGameMutate(eventGameDto);
-      console.log('GAME ADDED TO EVENT?');
-    }
-  }, [createGameResults != undefined]);
+  }
 
   if (selected_mode && !isComplete) {
     return (
@@ -214,16 +205,6 @@ const GameComponent = ({
         </div>
       </div>
     );
-  } else if (isComplete && user && createGameResults) {
-    return (
-      <div className="container-fluid flex justify-center">
-        <UserEndGameResults
-          user={user}
-          game={createGameResults}
-          event={selected_event}
-        />
-      </div>
-    );
   } else if (isComplete && !user) {
     return (
       <div className="container-fluid flex justify-center">
@@ -233,6 +214,21 @@ const GameComponent = ({
             timestamp: new Date(),
             score: score,
           }}
+        />
+      </div>
+    );
+  } else if (isComplete && user && createGameResults) {
+    return (
+      <div className="container-fluid flex justify-center">
+        <UserEndGameResults game={createGameResults} event={selected_event} />
+      </div>
+    );
+  } else if (isComplete && user && createGameWithEventResults) {
+    return (
+      <div className="container-fluid flex justify-center">
+        <UserEndGameResults
+          game={createGameWithEventResults}
+          event={selected_event}
         />
       </div>
     );
