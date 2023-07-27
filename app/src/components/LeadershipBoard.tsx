@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { getAllGamesByModes } from '../services/gameApi';
 import Loading from '../utilities/Loading';
 import ErrorMessage from '../utilities/ErrorMessage';
@@ -8,29 +8,38 @@ import { useAtom } from 'jotai';
 import { selectedUser } from '../services/Atoms';
 import {
   EventResource,
+  getAllEventModeGames,
   getCurrentEvents,
   getPriorWeekEvents,
+  ModeGamesDto,
 } from '../services/eventApi';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import EventLeadershipBoard from './EventLeadershipBoard';
 
 const LeadershipBoard = () => {
   const [currentUser] = useAtom(selectedUser);
 
   const [showAllScores, setShowAllScores] = useState(true);
+  const [showCurrentEventsOptions, setShowCurrentEventsOptions] =
+    useState(false);
+  const [showEventGames, setShowEventGames] = useState(false);
 
   const [selectedEvent, setSelectedEvent] = useState<EventResource | null>(
     null,
   );
-  const [showCurrentEventsOptions, setShowCurrentEventsOptions] =
-    useState(false);
+  const [eventModeGames, setEventModeGames] = useState<ModeGamesDto[]>([]);
 
+  const handleShowAllScores = () => {
+    setShowAllScores(true);
+    setSelectedEvent(null);
+    setShowEventGames(false);
+  };
   const handleEventSelection = (event: EventResource) => {
     setSelectedEvent(event);
-    console.log('selectedEvent: ', selectedEvent);
+    setShowAllScores(false);
   };
+
   const handleShowCurrentEventsOptions = () => {
     setShowCurrentEventsOptions(true);
   };
@@ -69,19 +78,56 @@ const LeadershipBoard = () => {
     queryFn: () => getCurrentEvents(),
   });
 
+  // const {
+  //   isLoading: isLoadingPriorWeekEvents,
+  //   error: priorWeekEventsError,
+  //   data: priorWeekEventsData,
+  // } = useQuery({
+  //   queryKey: [`pastEvents`],
+  //   queryFn: () => getPriorWeekEvents(),
+  // });
+
   const {
-    isLoading: isLoadingPriorWeekEvents,
-    error: priorWeekEventsError,
-    data: priorWeekEventsData,
-  } = useQuery({
-    queryKey: [`pastEvents`],
-    queryFn: () => getPriorWeekEvents(),
+    data: resultsFromGetAllEventModeGames,
+    mutate: getAllEventModeGamesMutation,
+    error: getAllEventModeGamesError,
+    isLoading: isLoadingGetAllEventModeGames,
+    onSuccess: isSuccessGetAllEventModeGames,
+  } = useMutation({
+    mutationFn: (eventId: number) => getAllEventModeGames(eventId),
+    onMutate: () =>
+      console.log('LeadershipBoard: Mutate: getAllEventModeGamesMutation'),
+    onError: (err, variables, context) => {
+      console.log(err, variables, context);
+    },
+    onSettled: data => {
+      setEventModeGames(data!);
+      console.log('LeadershipBoard: Settled: getAllEventModeGamesMutation');
+    },
   });
+
+  useEffect(() => {
+    if (selectedEvent && modesData) {
+      getAllEventModeGamesMutation(selectedEvent.eventId);
+    }
+  }, [selectedEvent, modesData]);
+
+  useEffect(() => {
+    console.log('SELECTEDEVENT: ', selectedEvent);
+    if (resultsFromGetAllEventModeGames && eventModeGames != undefined) {
+      setShowEventGames(true);
+      setShowAllScores(false);
+    }
+
+    console.log('SHOWEVENTGAMES: ', showEventGames);
+    console.log('EVENTMODEGAMES: ', eventModeGames);
+  }, [eventModeGames]);
 
   if (
     isLoadingModes ||
     isLoadingGames ||
-    isLoadingCurrentEvents
+    isLoadingCurrentEvents ||
+    isLoadingGetAllEventModeGames
     // isLoadingPriorWeekEvents
   ) {
     return (
@@ -101,47 +147,81 @@ const LeadershipBoard = () => {
     gamesData.modeGames &&
     currentEventsData
   ) {
-    if (!selectedEvent) {
-      return (
-        <div className="container-fluid p-5">
-          <h2 className="text-center text-lg font-bold text-white">
-            All Top Scores
+    return (
+      <div className="container-fluid p-5">
+        <div className="">
+          <h2 className="p-10 text-center text-3xl font-bold text-white">
+            {showAllScores ? 'All Top Scores' : 'Event Scores'}
           </h2>
-          <div
-            className="dropdown flex flex-col text-white"
-            onMouseLeave={handleBlurCurrentEventsOptions}
-          >
-            <label className="mr-2" htmlFor="events-dropdown">
-              <button className="" onClick={handleShowCurrentEventsOptions}>
-                Event Scores
-                <FontAwesomeIcon
-                  className="fa-beat-fade fa-xl px-5 text-white"
-                  icon={faCaretDown}
-                />
-              </button>
-            </label>
-            {showCurrentEventsOptions ? (
-              <div>
-                {currentEventsData?.map(currentEvent => {
-                  return (
-                    <button
-                      name="events-dropdown"
-                      className="h-min rounded-sm border-pink-500 bg-pink-500 px-2 py-1"
-                      onClick={() => {
-                        handleEventSelection(currentEvent);
-                      }}
-                    >
-                      {currentEvent.eventName}
-                    </button>
-                  );
-                })}
-              </div>
-            ) : null}
+          <div className="w-50 flex justify-center text-center">
+            <button
+              className={
+                showAllScores
+                  ? 'm-1 rounded bg-pink-600 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600'
+                  : 'm-1 rounded bg-pink-500 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600'
+              }
+              onClick={handleShowAllScores}
+            >
+              ALL SCORES
+            </button>
+
+            <div
+              className="dropdown flex flex-col text-white"
+              onMouseLeave={handleBlurCurrentEventsOptions}
+            >
+              <label className="pr-2" htmlFor="events-dropdown">
+                <button
+                  className={
+                    selectedEvent
+                      ? 'm-1 rounded bg-pink-600 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600'
+                      : 'm-1 rounded bg-pink-500 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600'
+                  }
+                  onClick={handleShowCurrentEventsOptions}
+                >
+                  {showAllScores ? 'EVENT SCORES' : 'EVENTS'}
+                  <FontAwesomeIcon
+                    className="fa-beat-fade fa-xl pl-5 text-white"
+                    icon={faCaretDown}
+                  />
+                </button>
+              </label>
+              {showCurrentEventsOptions ? (
+                <div className="container-fluid relative flex justify-center">
+                  <div className="absolute z-50">
+                    <div className="flex w-max flex-col">
+                      {currentEventsData?.map((currentEvent, index) => {
+                        return (
+                          <button
+                            key={currentEvent.eventName + '-' + index}
+                            name="events-dropdown"
+                            className={
+                              selectedEvent &&
+                              selectedEvent.eventId === currentEvent.eventId
+                                ? 'h-min rounded-sm border-pink-600 bg-pink-600 px-2 py-1'
+                                : 'h-min rounded-sm border-pink-600 bg-pink-500 px-2 py-1'
+                            }
+                            onClick={() => {
+                              handleEventSelection(currentEvent);
+                            }}
+                          >
+                            {currentEvent.eventName}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+            </div>
           </div>
+        </div>
+
+        {showAllScores ? (
           <div className="container-fluid flex flex-wrap justify-center self-stretch px-10 py-5">
             {gamesData.modeGames.map((games, mode_id) => {
               return (
                 <div
+                  key={'modeId-' + mode_id}
                   className="container m-5 h-min w-fit items-center p-5"
                   style={{
                     border: '3px solid',
@@ -158,58 +238,41 @@ const LeadershipBoard = () => {
               );
             })}
           </div>
-        </div>
-      );
-    } else if (selectedEvent) {
-      return (
-        <div className="container-fluid p-5">
-          <h2 className="text-center text-lg font-bold text-white">
-            Event Scores
-          </h2>
-          <div
-            className="dropdown flex flex-col text-white"
-            onMouseLeave={handleBlurCurrentEventsOptions}
-          >
-            <label className="mr-2" htmlFor="events-dropdown">
-              <button className="" onClick={handleShowCurrentEventsOptions}>
-                Event Scores
-                <FontAwesomeIcon
-                  className="fa-beat-fade fa-xl px-5 text-white"
-                  icon={faCaretDown}
-                />
-              </button>
-            </label>
-            {showCurrentEventsOptions ? (
-              <div>
-                {currentEventsData?.map(currentEvent => {
-                  return (
-                    <button
-                      name="events-dropdown"
-                      className="h-min rounded-sm border-pink-500 bg-pink-500 px-2 py-1"
-                      onClick={() => {
-                        handleEventSelection(currentEvent);
-                      }}
-                    >
-                      {currentEvent.eventName}
-                    </button>
-                  );
-                })}
-              </div>
-            ) : null}
-          </div>
+        ) : null}
 
-          <div>
-            <EventLeadershipBoard
-              eventResource={selectedEvent}
-              modeResources={modesData}
-            />
+        {showEventGames && selectedEvent && eventModeGames ? (
+          <div className="container-fluid flex flex-wrap justify-center self-stretch px-10 py-5">
+            {eventModeGames.map((modeGamesDto, index) => {
+              return (
+                <div
+                  key={'modegamesdto-' + index}
+                  className="container-fluid flex flex-col flex-wrap"
+                >
+                  <div
+                    className="m-5 h-min w-fit p-5"
+                    style={{
+                      border: '3px solid',
+                      borderRadius: '20px',
+                      borderColor: currentUser.foregroundColor,
+                    }}
+                  >
+                    <PaginatedGames
+                      tableTitle={modeGamesDto.mode.modeName}
+                      completedGame={null}
+                      games={modeGamesDto.games}
+                      gamesPerPage={10}
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        </div>
-      );
-    }
-  } else {
-    return <></>;
+        ) : null}
+      </div>
+    );
   }
+
+  return <></>;
 };
 
 export default LeadershipBoard;
