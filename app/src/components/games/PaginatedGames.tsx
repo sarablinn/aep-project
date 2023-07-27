@@ -7,8 +7,8 @@ import { faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 import { useAtom } from 'jotai';
 
 export type PaginatedGamesProps = {
-  tableTitle?: string;
-  completedGame?: GameResource | GuestGameDto;
+  tableTitle: string;
+  completedGame: GameResource | GuestGameDto | null;
   games: GameResource[];
   gamesPerPage: number;
 };
@@ -16,7 +16,7 @@ export type PaginatedGamesProps = {
 const PaginatedGames = ({
   tableTitle = '',
   completedGame,
-  games,
+  games = [],
   gamesPerPage,
 }: PaginatedGamesProps) => {
   const [currentUser] = useAtom(selectedUser);
@@ -51,34 +51,29 @@ const PaginatedGames = ({
             </caption>
             <tbody>
               {currentItems.map((modeGame, index) => {
-                if (
-                  completedGame &&
-                  (completedGame as GameResource).gameId != null
-                ) {
-                  if (modeGame.gameId === completedGame.gameId) {
-                    return (
-                      <tr key={'modeGame-' + index}>
-                        <td
-                          className="rounded-sm bg-pink-500 py-2 pl-5 pr-10 font-bold text-white"
-                          // style={{ backgroundColor: bgLighter_5 }}
-                        >
-                          {games.indexOf(modeGame) + 1}
-                        </td>
-                        <td
-                          className="bg-pink-500 py-2 pr-5 font-bold text-white"
-                          // style={{ backgroundColor: bgLighter_5 }}
-                        >
-                          {modeGame.user.username}
-                        </td>
-                        <td
-                          className="bg-pink-500 py-2 pr-10 font-bold text-white"
-                          // style={{ backgroundColor: bgLighter_5 }}
-                        >
-                          {modeGame.score}
-                        </td>
-                      </tr>
-                    );
-                  }
+                if (completedGame && modeGame.gameId === completedGame.gameId) {
+                  return (
+                    <tr key={'modeGame-' + index}>
+                      <td
+                        className="rounded-sm bg-pink-500 py-2 pl-5 pr-10 font-bold text-white"
+                        // style={{ backgroundColor: bgLighter_5 }}
+                      >
+                        {games.indexOf(modeGame) + 1}
+                      </td>
+                      <td
+                        className="bg-pink-500 py-2 pr-5 font-bold text-white"
+                        // style={{ backgroundColor: bgLighter_5 }}
+                      >
+                        {modeGame.user.username}
+                      </td>
+                      <td
+                        className="bg-pink-500 py-2 pr-10 font-bold text-white"
+                        // style={{ backgroundColor: bgLighter_5 }}
+                      >
+                        {modeGame.score}
+                      </td>
+                    </tr>
+                  );
                 } else {
                   return (
                     <tr key={'modeGame-' + index}>
@@ -100,7 +95,7 @@ const PaginatedGames = ({
         </div>
         <div className="my-5" style={{}}>
           <ReactPaginate
-            containerClassName="flex justify-evenly text-center text-white text-lg"
+            containerClassName="flex justify-between text-center text-white text-lg"
             activeClassName="flex justify-evenly text-center text-white bg-pink-500 px-2 mx-1 font-bold border rounded-xl border-pink-500"
             breakLabel="..."
             nextLabel={
@@ -110,7 +105,7 @@ const PaginatedGames = ({
               />
             }
             onPageChange={handlePageClick}
-            pageRangeDisplayed={3}
+            pageRangeDisplayed={1}
             pageCount={pageCount}
             previousLabel={
               <FontAwesomeIcon
