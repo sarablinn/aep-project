@@ -56,7 +56,7 @@ export interface EventDate {
  */
 export interface ModeGamesDto {
   mode: ModeResource;
-  games: GameResource[];
+  modeGames: GameResource[];
 }
 
 export async function getAllEvents(): Promise<EventResource[]> {

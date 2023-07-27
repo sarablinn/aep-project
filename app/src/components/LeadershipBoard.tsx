@@ -10,7 +10,6 @@ import {
   EventResource,
   getAllEventModeGames,
   getCurrentEvents,
-  getPriorWeekEvents,
   ModeGamesDto,
 } from '../services/eventApi';
 import { useEffect, useState } from 'react';
@@ -243,6 +242,7 @@ const LeadershipBoard = () => {
         {showEventGames && selectedEvent && eventModeGames ? (
           <div className="container-fluid flex flex-wrap justify-center self-stretch px-10 py-5">
             {eventModeGames.map((modeGamesDto, index) => {
+              console.log('inside: ', modeGamesDto);
               return (
                 <div
                   key={'modegamesdto-' + index}
@@ -259,7 +259,7 @@ const LeadershipBoard = () => {
                     <PaginatedGames
                       tableTitle={modeGamesDto.mode.modeName}
                       completedGame={null}
-                      games={modeGamesDto.games}
+                      games={modeGamesDto.modeGames}
                       gamesPerPage={10}
                     />
                   </div>
