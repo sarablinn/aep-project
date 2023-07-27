@@ -1,4 +1,5 @@
 import { GameResource } from './gameApi';
+import { ModeResource } from './modeApi';
 
 export interface EventResource {
   eventId: number;
@@ -38,8 +39,24 @@ export interface EventModeDto {
   modeId: number;
 }
 
+/**
+ * Event and array of all modes.
+ */
+export interface EventModesDto {
+  event: EventResource;
+  modes: ModeResource[];
+}
+
 export interface EventDate {
   date: Date;
+}
+
+/**
+ * Mode and array of Games.
+ */
+export interface ModeGamesDto {
+  mode: ModeResource;
+  games: GameResource[];
 }
 
 export async function getAllEvents(): Promise<EventResource[]> {
@@ -134,11 +151,32 @@ export async function getModeEventGames(
   })
     .then(response => response.json())
     .then((data: GameResource[]) => {
-      console.log('gameApi: Success getModeEventGames():', data);
+      console.log('eventApi: Success getModeEventGames():', data);
       return data;
     })
     .catch(error => {
-      console.error('gameApi: Error getModeEventGames():', error);
+      console.error('eventApi: Error getModeEventGames():', error);
+      throw error;
+    });
+}
+
+export async function getAllEventModeGames(
+  eventId: number,
+): Promise<ModeGamesDto[]> {
+  const url = 'http://localhost:8000/event/' + eventId + '/modes';
+  return await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'GET',
+  })
+    .then(response => response.json())
+    .then((data: ModeGamesDto[]) => {
+      console.log('eventApi: Success getAllEventModeGames():', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('eventApi: Error getAllEventModeGames():', error);
       throw error;
     });
 }
