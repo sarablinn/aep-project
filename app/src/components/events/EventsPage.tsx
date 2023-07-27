@@ -62,7 +62,7 @@ const EventsPage = () => {
     error: eventsError,
     data: eventsData,
   } = useQuery({
-    queryKey: [`events`],
+    queryKey: [`eventsPage`],
     queryFn: () => getAllEvents(),
   });
 
