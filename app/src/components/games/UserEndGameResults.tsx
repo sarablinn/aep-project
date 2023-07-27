@@ -53,7 +53,7 @@ const UserEndGameResults = ({ game, event }: UserEndGameResultsProps) => {
     queryFn: () => getGamesByMode(game.mode.modeId),
   });
 
-  if (isLoadingGames || isLoadingEventGames) {
+  if (isLoadingGames || (hasEvent && isLoadingEventGames)) {
     console.log('IS LOADING: ', isLoadingGames, isLoadingEventGames);
     return (
       <div>
