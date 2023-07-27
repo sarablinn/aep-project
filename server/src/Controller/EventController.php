@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Dto\incoming\AddEventGameDto;
 use App\Dto\incoming\CreateEventDto;
+use App\Dto\incoming\GetEventModeGamesDto;
 use App\Dto\incoming\UpdateEventDto;
 use App\Exception\EntityNotFoundException;
 use App\Exception\InvalidRequestDataException;
@@ -90,13 +91,35 @@ class EventController extends ApiController
     {
         $eventGameDtos = [];
         try {
-            $eventGames = $this->eventService->getAllGamesByModeEvent($event_id, $mode_id);
+            $eventGames = $this->eventService->getGamesByEventMode($event_id, $mode_id);
             $eventGameDtos = $this->gameService->mapToDtos($eventGames);
         } catch (EntityNotFoundException $entityNotFoundException) {
             return $this->json($entityNotFoundException->getMessage());
         }
 
         return $this->json($eventGameDtos);
+    }
+
+    /**
+     * Get the games played in a given event and all given modes.
+     * @param string $event_id
+     * @return Response
+     */
+    #[Route('/event/{event_id}/modes', methods: ('GET'))]
+    public function getAllEventModeGames(string $event_id): Response
+    {
+        try {
+            $eventModeGamesDto =
+                $this->eventService->getAllGamesByEventModes($event_id);
+
+            return $this->json($eventModeGamesDto);
+        } catch (EntityNotFoundException $entityNotFoundException) {
+            return $this->json($entityNotFoundException->getMessage());
+        } catch (InvalidRequestDataException $invalidRequestDataException) {
+            return $this->json($invalidRequestDataException->getMessage());
+        } catch (JsonException $jsonException) {
+            return $this->json($jsonException->getMessage());
+        }
     }
 
     /**

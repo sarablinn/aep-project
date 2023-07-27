@@ -6,6 +6,8 @@ use App\Dto\incoming\AddEventGameDto;
 use App\Dto\incoming\CreateEventDto;
 use App\Dto\incoming\UpdateEventDto;
 use App\Dto\outgoing\EventDto;
+use App\Dto\outgoing\EventModeGamesDto;
+use App\Dto\outgoing\ModeDto;
 use App\Entity\Event;
 use App\Entity\Game;
 use App\Exception\EntityNotFoundException;
@@ -26,6 +28,7 @@ class EventService implements ObjectMapperInterface
     private GameRepository $gameRepository;
     private ModeRepository $modeRepository;
     private GameService $gameService;
+    private ModeService $modeService;
     private LoggerInterface $logger;
 
 
@@ -35,6 +38,7 @@ class EventService implements ObjectMapperInterface
                         GameRepository $gameRepository,
                         ModeRepository $modeRepository,
                         GameService $gameService,
+                        ModeService $modeService,
                         LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
@@ -43,6 +47,7 @@ class EventService implements ObjectMapperInterface
         $this->gameRepository = $gameRepository;
         $this->modeRepository = $modeRepository;
         $this->gameService = $gameService;
+        $this->modeService = $modeService;
         $this->logger = $logger;
     }
 
@@ -100,7 +105,7 @@ class EventService implements ObjectMapperInterface
      * @return Game[]
      * @throws EntityNotFoundException
      */
-    public function getAllGamesByModeEvent(int $event_id, int $mode_id): iterable {
+    public function getGamesByEventMode(int $event_id, int $mode_id): iterable {
         $games_by_event_mode = [];
 
         $mode = $this->modeRepository->find($mode_id);
@@ -126,9 +131,35 @@ class EventService implements ObjectMapperInterface
 
 //            $games_by_event_mode = $this->mapToDtos($games_by_event_mode);
         }
-
-
         return $games_by_event_mode;
+    }
+
+
+    /**
+     * Return an array of games from a given event, indexed by mode and in
+     * descending score order, for a given event.
+     * @param int $event_id
+     * @return EventModeGamesDto[]
+     * @throws EntityNotFoundException
+     */
+    public function getAllGamesByEventModes(int $event_id): iterable {
+        $all_games_by_event_mode = [];
+
+        $modeDtos = $this->modeService->mapToDtos(
+            $this->modeService->getModes());
+
+        foreach ($modeDtos as $modeDto) {
+            $modeGames = $this->gameService->mapToDtos(
+                $this->getGamesByEventMode($event_id, $modeDto->getModeId()));
+
+            $eventModeGamesDto = new EventModeGamesDto();
+            $eventModeGamesDto->setMode($modeDto);
+            $eventModeGamesDto->setModeGames($modeGames);
+
+            $all_games_by_event_mode[] = $eventModeGamesDto;
+        }
+
+        return $all_games_by_event_mode;
     }
 
     /**
