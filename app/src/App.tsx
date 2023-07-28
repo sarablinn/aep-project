@@ -1,3 +1,30 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Provider } from 'jotai/index';
+import { queryClientAtom } from 'jotai-tanstack-query';
+import { useHydrateAtoms } from 'jotai/react/utils';
+
+import './App.css';
+import Footer from './components/Footer';
+import AppContent from './components/AppContent';
+
+const queryClient = new QueryClient();
+
 export default function App() {
-  return <h1 className="text-3xl font-bold underline">Hi everyone.</h1>;
+  const HydrateAtoms = ({ children }) => {
+    useHydrateAtoms([[queryClientAtom, queryClient]]);
+    return children;
+  };
+
+  return (
+    <div className="min-h-screen">
+      <QueryClientProvider client={queryClient}>
+        <Provider>
+          <HydrateAtoms>
+            <AppContent />
+            <Footer />
+          </HydrateAtoms>
+        </Provider>
+      </QueryClientProvider>
+    </div>
+  );
 }

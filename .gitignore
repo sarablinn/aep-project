@@ -1,11 +1,8 @@
-<<<<<<< Updated upstream
+
 .idea
-=======
-.idea
-app/.env
 app/.env
 app/src/auth_config.json
 app/package-lock.json
 app/package.json
->>>>>>> Stashed changes
+
 .DS_Store
