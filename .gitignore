@@ -8,3 +8,4 @@ app/src/auth_config.json
 app/package-lock.json
 app/package.json
 >>>>>>> Stashed changes
+.DS_Store
