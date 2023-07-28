@@ -65,6 +65,7 @@ const Navbar = () => {
               style={{
                 color: isHoverHome ? fgLighter_5 : currentUser.foregroundColor,
                 fontWeight: 'bold',
+                fontSize: '1.5vw',
                 height: 'fit-content',
               }}
               to={routes.BASE}
@@ -81,6 +82,7 @@ const Navbar = () => {
                   ? fgLighter_5
                   : currentUser.foregroundColor,
                 fontWeight: 'bold',
+                fontSize: '1.5vw',
                 height: 'fit-content',
               }}
               to={routes.EVENTS}
@@ -97,6 +99,7 @@ const Navbar = () => {
                   ? fgLighter_5
                   : currentUser.foregroundColor,
                 fontWeight: 'bold',
+                fontSize: '1.5vw',
                 height: 'fit-content',
               }}
               to={routes.LEADERSHIP_BOARD}
@@ -113,6 +116,7 @@ const Navbar = () => {
                   ? fgLighter_5
                   : currentUser.foregroundColor,
                 fontWeight: 'bold',
+                fontSize: '1.5vw',
                 height: 'fit-content',
               }}
               to={routes.PROFILE}
@@ -142,6 +146,7 @@ const Navbar = () => {
               style={{
                 color: isHoverHome ? fgLighter_5 : currentUser.foregroundColor,
                 fontWeight: 'bold',
+                fontSize: '1.5vw',
                 height: 'fit-content',
               }}
               to={routes.BASE}
@@ -158,6 +163,7 @@ const Navbar = () => {
                   ? fgLighter_5
                   : currentUser.foregroundColor,
                 fontWeight: 'bold',
+                fontSize: '1.5vw',
                 height: 'fit-content',
               }}
               to={routes.LEADERSHIP_BOARD}
@@ -175,6 +181,7 @@ const Navbar = () => {
                     ? fgLighter_5
                     : currentUser.foregroundColor,
                   fontWeight: 'bold',
+                  fontSize: '1.5vw',
                   height: 'fit-content',
                 }}
                 to={routes.PROFILE}

@@ -41,10 +41,12 @@ const Homepage = () => {
             className="pl-10"
             style={{
               color: bgLighter_5,
-              fontSize: '10rem',
+              // fontSize: '10rem',
+              fontSize: '20vh',
               fontWeight: 'bolder',
               position: 'absolute',
-              top: '4vh',
+              top: '5vh',
+              left: '10vw',
               zIndex: '9',
             }}
           >
@@ -56,8 +58,8 @@ const Homepage = () => {
           style={{
             minWidth: '100%',
             minHeight: '40%',
-            maxHeight: '50%',
-            height: '55vh',
+            maxHeight: '60%',
+            height: '60vh',
             backgroundColor: fgDarker_10,
             position: 'absolute',
             top: '9vh',
@@ -69,10 +71,12 @@ const Homepage = () => {
             className="pl-20"
             style={{
               color: fgLighter_5,
-              fontSize: '10em',
+              // fontSize: '10rem',
+              fontSize: '19vh',
               fontWeight: 'bolder',
               position: 'relative',
-              top: '8vh',
+              top: '9vh',
+              left: '12vw',
               zIndex: '9',
             }}
           >
@@ -88,7 +92,16 @@ const Homepage = () => {
           className="container-fluid m-10 flex justify-end p-10"
           style={{ backgroundColor: '' }}
         >
-          <button className="m-1 rounded bg-pink-500 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600">
+          <button
+            style={{
+              fontSize: '5vh',
+              position: 'relative',
+              top: 'auto',
+              right: '12vw',
+              marginTop: '5rem',
+            }}
+            className="m-1 h-fit w-fit rounded bg-pink-500 p-3 px-10 font-bold text-white shadow-xl outline-none hover:drop-shadow-2xl focus:outline-none active:bg-pink-600 active:shadow-2xl"
+          >
             <Link to={routes.GAMES} search={{}} params={{}}>
               START
             </Link>

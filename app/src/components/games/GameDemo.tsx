@@ -42,7 +42,7 @@ const GameDemo = ({ showPopup }: GameDemoProps) => {
                   style={{ backgroundColor: bgLighter_5 }}
                 >
                   {/*header*/}
-                  <h2 className="mb-1 bg-pink-500 px-6 py-3 text-center text-sm font-bold uppercase text-white">
+                  <h2 className="font-xl mb-1 bg-pink-500 px-6 py-3 text-center font-bold uppercase text-white">
                     How to Play
                   </h2>
                   <div className="flex flex-col justify-center">
@@ -53,12 +53,14 @@ const GameDemo = ({ showPopup }: GameDemoProps) => {
                       >
                         <h2
                           className="my-2 uppercase"
-                          style={{ fontWeight: 'bolder' }}
+                          style={{ fontWeight: 'bolder', fontSize: '2rem' }}
                         >
                           Match Numbers
                         </h2>
-                        <p>Match the same values.</p>
-                        <p>Or match values that equal the sum of 10.</p>
+                        <p className="text-2xl">Match the same values.</p>
+                        <p className="text-2xl">
+                          Or match values that equal the sum of 10.
+                        </p>
                         <img
                           src={CrossColMatch}
                           className="my-2"
@@ -68,12 +70,12 @@ const GameDemo = ({ showPopup }: GameDemoProps) => {
                             margin: 'auto',
                           }}
                         />
-                        <p>
+                        <p className="text-2xl">
                           Matches may be directly adjacent, horizontally or
                           vertically, or indirectly adjacent across previous
                           matches.
                         </p>
-                        <p>
+                        <p className="text-2xl">
                           Matches can also be made at the end or start of two
                           rows.
                         </p>
@@ -94,11 +96,11 @@ const GameDemo = ({ showPopup }: GameDemoProps) => {
                       >
                         <h2
                           className="my-2 uppercase"
-                          style={{ fontWeight: 'bolder' }}
+                          style={{ fontWeight: 'bolder', fontSize: '2rem' }}
                         >
                           No More Matches?
                         </h2>
-                        <p>
+                        <p className="text-2xl">
                           Click the 'add row' button under the timer to add
                           another row.
                         </p>
@@ -119,17 +121,17 @@ const GameDemo = ({ showPopup }: GameDemoProps) => {
                       >
                         <h2
                           className="my-2 uppercase"
-                          style={{ fontWeight: 'bolder' }}
+                          style={{ fontWeight: 'bolder', fontSize: '2rem' }}
                         >
                           Score & Time
                         </h2>
-                        <p>Play fast!</p>
-                        <p>
+                        <p className="text-2xl">Play fast!</p>
+                        <p className="text-2xl">
                           You have until the timer runs out to make as many
                           matches as you can.
                         </p>
-                        <p>Try to complete whole rows:</p>
-                        <p>
+                        <p className="text-2xl">Try to complete whole rows:</p>
+                        <p className="text-2xl">
                           Completed rows earn additional points worth the length
                           of the row.
                         </p>

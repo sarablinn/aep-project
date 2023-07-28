@@ -266,7 +266,7 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
                             className="rounded-sm border border-black"
                             type="text"
                             name="username-input"
-                            value={usernameInput || username}
+                            value={usernameInput}
                             onClick={setInitialUsername}
                             onFocus={setUsernameFocus}
                             onChange={handleUsernameChange}
@@ -304,7 +304,7 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
                           className="rounded-sm border border-black"
                           type="text"
                           name="firstname-input"
-                          value={firstNameInput || firstName}
+                          value={firstNameInput}
                           onClick={setInitialFirstName}
                           onFocus={setFirstNameFocus}
                           onChange={handleFirstNameChange}
@@ -341,7 +341,7 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
                           className="rounded-sm border border-black"
                           type="text"
                           name="lastname-input"
-                          value={lastNameInput || lastName}
+                          value={lastNameInput}
                           onClick={setInitialLastName}
                           onFocus={setLastNameFocus}
                           onChange={handleLastNameChange}
@@ -398,8 +398,20 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
                       Close
                     </button>
                     <button
-                      className="mb-1 mr-1 rounded bg-emerald-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-emerald-600"
+                      className={
+                        !isValidUsername ||
+                        !isValidFirstName ||
+                        !isValidLastName
+                          ? 'mb-1 mr-1 rounded bg-gray-400 px-6 py-3 text-sm font-bold uppercase text-white outline-none transition-all duration-150 ease-linear'
+                          : 'mb-1 mr-1 rounded bg-emerald-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-emerald-600'
+                      }
                       type="button"
+                      disabled={
+                        (!isValidUsername ||
+                          !isValidFirstName ||
+                          !isValidLastName) ??
+                        'disabled'
+                      }
                       onClick={() => saveChangesAndReload()}
                     >
                       Save Changes
