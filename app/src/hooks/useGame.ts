@@ -50,7 +50,6 @@ const useGame = (gameMode: ModeResource) => {
       ) {
         gameGrid.rows[firstRowNum][firstColNum] = 0;
         gameGrid.rows[secondRowNum][secondColNum] = 0;
-        console.log('UPDATEGAMEGRID');
 
         resetSelections();
       }
