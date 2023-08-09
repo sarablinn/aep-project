@@ -1,6 +1,6 @@
 import { createEvent, EventDate, EventDto } from '../../services/eventApi';
 import { useMutation } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { selectedUser } from '../../services/Atoms';
@@ -30,9 +30,6 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
     date: new Date(endUnixTime * 1000),
   });
 
-  const [eventNameErrorState, setEventNameErrorState] = useState('hidden');
-  const [dateRangeErrorState, setDateRangeErrorState] = useState('hidden');
-
   const handleEventNameChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -41,6 +38,7 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
 
   const validateEventName = (initialValue: string, event_name: string) => {
     const errMsg = '';
+    console.log('Validating Event name: Initial Value: ', initialValue);
     if (event_name.trim().length === 0) {
       return ' Event name required.';
     }
@@ -64,27 +62,7 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
     isValid: isValidDateRange,
   } = useDateRangeInput(startDate, endDate);
 
-  useEffect(() => {
-    if (isValidEventName) {
-      setEventNameErrorState('hidden');
-    } else if (!isValidEventName) {
-      setEventNameErrorState('visible');
-    }
-  }, [isValidEventName]);
-
-  useEffect(() => {
-    if (dateRangeErrorMessage === '') {
-      setDateRangeErrorState('hidden');
-    } else if (dateRangeErrorMessage != '') {
-      setDateRangeErrorState('visible');
-    }
-  }, [isValidDateRange]);
-
-  const {
-    data: createdEventResults,
-    mutate: createEventMutation,
-    isLoading: loadingCreateEvent,
-  } = useMutation({
+  const { mutate: createEventMutation } = useMutation({
     mutationFn: (eventDto: EventDto) => createEvent(eventDto),
     onMutate: () => console.log('EventsPage: Mutate: createEventMutation'),
     onError: (err, variables, context) => {
@@ -98,15 +76,6 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
 
   const saveChangesAndReload = () => {
     if (eventName && startDate && endDate && isValidDateRange) {
-      // console.log(
-      //   'CREATING EVENT START DATE: ',
-      //   Math.floor(new Date(startDateInput.date).getTime()),
-      // );
-      // console.log(
-      //   'CREATING EVENT END DATE: ',
-      //   Math.floor(new Date(endDateInput.date).getTime()),
-      // );
-
       const eventDto: EventDto = {
         eventName: eventName,
         startDate: Math.floor(new Date(startDateInput.date).getTime()),
@@ -120,16 +89,6 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
 
     window.location.reload();
   };
-
-  // useEffect(() => {
-  //   setStartDate({ date: startDateInput.date });
-  //   console.log('CURRENT START DATE: ', startDate);
-  // }, [startDateInput]);
-  //
-  // useEffect(() => {
-  //   setEndDate({ date: endDateInput.date });
-  //   console.log('CURRENT END DATE: ', endDateInput);
-  // }, [endDateInput]);
 
   return (
     <>
@@ -215,13 +174,10 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
                       </div>
 
                       <div className="flex flex-col py-4">
-                        {dateRangeErrorMessage != '' ? (
+                        {!isValidEventName ? (
                           <div
                             className="relative mb-1 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700"
                             role="alert"
-                            style={{
-                              visibility: eventNameErrorState || 'hidden',
-                            }}
                           >
                             <strong className="font-bold">Error:</strong>
                             <span className="block sm:inline">
@@ -244,9 +200,6 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
                           <div
                             className="relative mb-1 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700"
                             role="alert"
-                            style={{
-                              visibility: dateRangeErrorState || 'hidden',
-                            }}
                           >
                             <strong className="font-bold">Error:</strong>
                             <span className="block sm:inline">

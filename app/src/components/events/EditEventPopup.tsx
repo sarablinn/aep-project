@@ -33,9 +33,6 @@ const EditEventPopup = ({ showPopup, eventResource }: EditEventPopupProps) => {
     date: eventResource.endDate,
   });
 
-  const [eventNameErrorState, setEventNameErrorState] = useState('hidden');
-  const [dateRangeErrorState, setDateRangeErrorState] = useState('hidden');
-
   const handleEventNameChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -44,12 +41,12 @@ const EditEventPopup = ({ showPopup, eventResource }: EditEventPopupProps) => {
 
   const validateEventName = (initialValue: string, event_name: string) => {
     const errMsg = '';
+    console.log('Validating Event name: Initial Value: ', initialValue);
     if (event_name.trim().length === 0) {
       return ' Event name required.';
     }
 
     return errMsg;
-    // optionally add validation to check for duplicate events
   };
 
   const {
@@ -69,22 +66,6 @@ const EditEventPopup = ({ showPopup, eventResource }: EditEventPopupProps) => {
   } = useDateRangeInput(oldStartDate, oldEndDate);
 
   useEffect(() => {
-    if (isValidEventName) {
-      setEventNameErrorState('hidden');
-    } else if (!isValidEventName) {
-      setEventNameErrorState('visible');
-    }
-  }, [isValidEventName]);
-
-  useEffect(() => {
-    if (dateRangeErrorMessage === '') {
-      setDateRangeErrorState('hidden');
-    } else if (dateRangeErrorMessage != '') {
-      setDateRangeErrorState('visible');
-    }
-  }, [isValidDateRange]);
-
-  useEffect(() => {
     setOldStartDate(startDateInput);
   }, [startDateInput]);
 
@@ -92,11 +73,7 @@ const EditEventPopup = ({ showPopup, eventResource }: EditEventPopupProps) => {
     setOldEndDate(endDateInput);
   }, [endDateInput]);
 
-  const {
-    data: updateEventResults,
-    mutate: updateEventMutation,
-    isLoading: loadingUpdateEvent,
-  } = useMutation({
+  const { mutate: updateEventMutation } = useMutation({
     mutationFn: (updateEventDto: UpdateEventDto) => updateEvent(updateEventDto),
     onMutate: () => console.log('EventsPage: Mutate: updateEventMutation'),
     onError: (err, variables, context) => {
@@ -232,13 +209,10 @@ const EditEventPopup = ({ showPopup, eventResource }: EditEventPopupProps) => {
                       </div>
 
                       <div className="flex flex-col py-4">
-                        {dateRangeErrorMessage != '' ? (
+                        {!isValidEventName ? (
                           <div
                             className="relative mb-1 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700"
                             role="alert"
-                            style={{
-                              visibility: eventNameErrorState || 'hidden',
-                            }}
                           >
                             <strong className="font-bold">Error:</strong>
                             <span className="block sm:inline">
@@ -261,9 +235,6 @@ const EditEventPopup = ({ showPopup, eventResource }: EditEventPopupProps) => {
                           <div
                             className="relative mb-1 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700"
                             role="alert"
-                            style={{
-                              visibility: dateRangeErrorState || 'hidden',
-                            }}
                           >
                             <strong className="font-bold">Error:</strong>
                             <span className="block sm:inline">
