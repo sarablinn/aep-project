@@ -19,10 +19,10 @@ export type UserInfoPopupProps = {
 };
 
 const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
-  const { user, isLoading, error } = useAuth0();
+  const { isLoading, error } = useAuth0();
 
   const [showModal, setShowModal] = useState(false);
-  const [visibility, setVisibility] = useState(isVisible || false);
+  const [visibility] = useState(isVisible || false);
 
   const [currentUser, setCurrentUser] = useAtom(selectedUser);
 
@@ -32,11 +32,6 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
   const [lastName, setLastName] = useState(userResource.lastName);
   const [bgColor, setBackgroundColor] = useState(userResource.backgroundColor);
   const [fgColor, setForegroundColor] = useState(userResource.foregroundColor);
-
-  // 'hidden' or 'visible' error message div
-  const [usernameErrorState, setUsernameErrorState] = useState('hidden');
-  const [firstNameErrorState, setFirstNameErrorState] = useState('hidden');
-  const [lastNameErrorState, setLastNameErrorState] = useState('hidden');
 
   /**
    * Mutation that checks if a username is available (true) or in use (false).
@@ -92,6 +87,7 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
    * @param name
    */
   const validateName = (initialValue: string, name: string) => {
+    console.log('UserInfoPopup: ValidateName: Initial Value: ' + initialValue);
     if (name.trim().length == 0) {
       return ' required.';
     }
@@ -103,7 +99,6 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
     input: usernameInput,
     setStartValue: setInitialUsername,
     handleInputChange: handleUsernameChange,
-    setIsFocused: setUsernameFocus,
     errorMessage: usernameErrMsg,
     isValid: isValidUsername,
   } = useInput(validateUsername, username);
@@ -112,7 +107,6 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
     input: firstNameInput,
     setStartValue: setInitialFirstName,
     handleInputChange: handleFirstNameChange,
-    setIsFocused: setFirstNameFocus,
     errorMessage: firstNameErrMsg,
     isValid: isValidFirstName,
   } = useInput(validateName, firstName);
@@ -121,34 +115,9 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
     input: lastNameInput,
     setStartValue: setInitialLastName,
     handleInputChange: handleLastNameChange,
-    setIsFocused: setLastNameFocus,
     errorMessage: lastNameErrMsg,
     isValid: isValidLastName,
   } = useInput(validateName, lastName);
-
-  useEffect(() => {
-    if (usernameErrMsg != '') {
-      setUsernameErrorState('visible');
-    } else {
-      setUsernameErrorState('hidden');
-    }
-  }, [usernameErrMsg, firstNameErrMsg]);
-
-  useEffect(() => {
-    if (firstNameErrMsg != '') {
-      setFirstNameErrorState('visible');
-    } else {
-      setFirstNameErrorState('hidden');
-    }
-  }, [firstNameErrMsg]);
-
-  useEffect(() => {
-    if (lastNameErrMsg != '') {
-      setLastNameErrorState('visible');
-    } else {
-      setLastNameErrorState('hidden');
-    }
-  }, [lastNameErrMsg]);
 
   useEffect(() => {
     console.log('USERINFOPOPUP: UseEffect set visibility: ', visibility);
@@ -183,13 +152,7 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
     setForegroundColor(event.hex);
   };
 
-  const {
-    data: resultsFromUpdateUser,
-    mutate: updateUserMutation,
-    isLoading: updateUserLoading,
-    error: updateUserError,
-    isSuccess: updateUserSuccessful,
-  } = useMutation({
+  const { mutate: updateUserMutation } = useMutation({
     mutationFn: (userResourceInput: UserResource) =>
       updateUser(userResourceInput),
     onMutate: () => console.log('UserInfoPopup: Mutate: updateUserMutation'),
@@ -255,6 +218,7 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
                   <h2 className="mb-1 bg-pink-500 px-6 py-3 text-center text-sm font-bold uppercase text-white">
                     Update User Profile
                   </h2>
+
                   <div className="m-3 p-3">
                     <form>
                       <div className="flex py-4">
@@ -263,26 +227,83 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
                         </div>
                         <div>
                           <input
-                            className="rounded-sm border border-black"
+                            className={
+                              usernameErrMsg != ''
+                                ? 'mb-2 rounded-sm border border-2 border-red-600'
+                                : 'mb-2 rounded-sm border border-gray-500'
+                            }
                             type="text"
                             name="username-input"
                             value={usernameInput}
                             onClick={setInitialUsername}
-                            onFocus={setUsernameFocus}
                             onChange={handleUsernameChange}
                             onBlur={changeUsername}
                             required
                           ></input>
-                          <span
-                            className="relative mb-1 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700"
-                            role="alert"
+                          {usernameErrMsg != '' ? (
+                            <span className="px-2 text-red-600"> *</span>
+                          ) : (
+                            <></>
+                          )}
+
+                          <div
                             style={{
-                              visibility: usernameErrorState || 'hidden',
+                              maxWidth: '75%',
                             }}
+                          >
+                            {!isValidUsername ? (
+                              <span
+                                className="relative mb-1 ml-1 block rounded border border-red-400 bg-red-100 px-4 py-1 text-red-700"
+                                role="alert"
+                              >
+                                <strong className="font-bold">Error:</strong>
+                                <span>{usernameErrMsg}</span>
+                                <span className="absolute bottom-0 right-0 top-0 px-4 py-3">
+                                  <svg
+                                    className="h-6 w-6 fill-current text-red-500"
+                                    role="button"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20"
+                                  ></svg>
+                                </span>
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex py-4">
+                        <div className="pr-3">
+                          <label htmlFor="firstname-input">First Name: </label>
+                        </div>
+                        <input
+                          className={
+                            firstNameErrMsg != ''
+                              ? 'rounded-sm border border-2 border-red-600'
+                              : 'rounded-sm border border-gray-500'
+                          }
+                          type="text"
+                          name="firstname-input"
+                          value={firstNameInput}
+                          onClick={setInitialFirstName}
+                          onChange={handleFirstNameChange}
+                          onBlur={changeFirstName}
+                          required
+                        ></input>
+                        {!isValidFirstName ? (
+                          <span className="px-2 text-red-600"> *</span>
+                        ) : (
+                          <></>
+                        )}
+
+                        {!isValidFirstName ? (
+                          <span
+                            className="relative mb-1 ml-1 rounded border border-red-400 bg-red-100 px-4 py-1 text-red-700"
+                            role="alert"
                           >
                             <strong className="font-bold">Error:</strong>
                             <span className="block sm:inline">
-                              {usernameErrMsg}
+                              {firstNameErrMsg}
                             </span>
                             <span className="absolute bottom-0 right-0 top-0 px-4 py-3">
                               <svg
@@ -293,44 +314,7 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
                               ></svg>
                             </span>
                           </span>
-                        </div>
-                      </div>
-
-                      <div className="flex py-4">
-                        <div className="pr-3">
-                          <label htmlFor="firstname-input">First Name: </label>
-                        </div>
-                        <input
-                          className="rounded-sm border border-black"
-                          type="text"
-                          name="firstname-input"
-                          value={firstNameInput}
-                          onClick={setInitialFirstName}
-                          onFocus={setFirstNameFocus}
-                          onChange={handleFirstNameChange}
-                          onBlur={changeFirstName}
-                          required
-                        ></input>
-                        <span
-                          className="relative mb-1 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700"
-                          role="alert"
-                          style={{
-                            visibility: firstNameErrorState || 'hidden',
-                          }}
-                        >
-                          <strong className="font-bold">Error:</strong>
-                          <span className="block sm:inline">
-                            {firstNameErrMsg}
-                          </span>
-                          <span className="absolute bottom-0 right-0 top-0 px-4 py-3">
-                            <svg
-                              className="h-6 w-6 fill-current text-red-500"
-                              role="button"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 20 20"
-                            ></svg>
-                          </span>
-                        </span>
+                        ) : null}
                       </div>
 
                       <div className="flex py-4">
@@ -338,37 +322,46 @@ const UserInfoPopup = ({ userResource, isVisible }: UserInfoPopupProps) => {
                           <label htmlFor="lastname-input">Last Name: </label>
                         </div>
                         <input
-                          className="rounded-sm border border-black"
+                          className={
+                            lastNameErrMsg != ''
+                              ? 'rounded-sm border border-2 border-red-600'
+                              : 'rounded-sm border border-gray-500'
+                          }
                           type="text"
                           name="lastname-input"
                           value={lastNameInput}
                           onClick={setInitialLastName}
-                          onFocus={setLastNameFocus}
                           onChange={handleLastNameChange}
                           onBlur={changeLastName}
                           required
                         ></input>
-                        <span
-                          className="relative mb-1 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700"
-                          role="alert"
-                          style={{
-                            visibility: lastNameErrorState || 'hidden',
-                          }}
-                        >
-                          <strong className="font-bold">Error:</strong>
-                          <span className="block sm:inline">
-                            {lastNameErrMsg}
+                        {!isValidLastName ? (
+                          <span className="px-2 text-red-600"> *</span>
+                        ) : (
+                          <></>
+                        )}
+
+                        {!isValidLastName ? (
+                          <span
+                            className="relative mb-1 rounded border border-red-400 bg-red-100 px-4 py-1 text-red-700"
+                            role="alert"
+                          >
+                            <strong className="font-bold">Error:</strong>
+                            <span className="block sm:inline">
+                              {lastNameErrMsg}
+                            </span>
+                            <span className="absolute bottom-0 right-0 top-0 px-4 py-3">
+                              <svg
+                                className="h-6 w-6 fill-current text-red-500"
+                                role="button"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                              ></svg>
+                            </span>
                           </span>
-                          <span className="absolute bottom-0 right-0 top-0 px-4 py-3">
-                            <svg
-                              className="h-6 w-6 fill-current text-red-500"
-                              role="button"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 20 20"
-                            ></svg>
-                          </span>
-                        </span>
+                        ) : null}
                       </div>
+
                       <div className="m-3 flex p-3">
                         <div>
                           <p>Background Color</p>
