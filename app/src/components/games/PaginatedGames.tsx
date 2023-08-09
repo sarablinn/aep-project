@@ -19,8 +19,6 @@ const PaginatedGames = ({
   games = [],
   gamesPerPage,
 }: PaginatedGamesProps) => {
-  const [currentUser] = useAtom(selectedUser);
-
   const [itemOffset, setItemOffset] = useState(0);
   const endOffset = itemOffset + gamesPerPage;
   const [currentItems, setCurrentItems] = useState(
@@ -29,7 +27,7 @@ const PaginatedGames = ({
   const pageCount = Math.ceil(games.length / gamesPerPage);
 
   // Invoke when user click to request another page.
-  const handlePageClick = event => {
+  const handlePageClick = (event: any) => {
     const newOffset = (event.selected * gamesPerPage) % games.length;
     console.log(
       `User requested page number ${event.selected}, which is offset ${newOffset}`,
@@ -54,22 +52,13 @@ const PaginatedGames = ({
                 if (completedGame && modeGame.gameId === completedGame.gameId) {
                   return (
                     <tr key={'modeGame-' + index}>
-                      <td
-                        className="rounded-sm bg-pink-500 py-2 pl-5 pr-10 font-bold text-white"
-                        // style={{ backgroundColor: bgLighter_5 }}
-                      >
+                      <td className="rounded-sm bg-pink-500 py-2 pl-5 pr-10 font-bold text-white">
                         {games.indexOf(modeGame) + 1}
                       </td>
-                      <td
-                        className="bg-pink-500 py-2 pr-5 font-bold text-white"
-                        // style={{ backgroundColor: bgLighter_5 }}
-                      >
+                      <td className="bg-pink-500 py-2 pr-5 font-bold text-white">
                         {modeGame.user.username}
                       </td>
-                      <td
-                        className="bg-pink-500 py-2 pr-10 font-bold text-white"
-                        // style={{ backgroundColor: bgLighter_5 }}
-                      >
+                      <td className="bg-pink-500 py-2 pr-10 font-bold text-white">
                         {modeGame.score}
                       </td>
                     </tr>
