@@ -16,7 +16,6 @@ const useDateRangeInput = (
   const [isValid, setIsValid] = useState(errorMessage === '');
 
   const handleStartDateInputChange = (date: Date) => {
-    // console.log('input date: ' + date);
     setStartDate({ date: new Date(date) });
   };
 
@@ -38,10 +37,6 @@ const useDateRangeInput = (
       const epoch_startDate = new Date(startDate_notime);
       const epoch_endDate = new Date(endDate_notime);
       const today = new Date();
-
-      // console.log('today: ' + today);
-      // console.log('epoch_startDate: ' + epoch_startDate);
-      // console.log('epoch_endDate: ' + epoch_endDate);
 
       if (epoch_startDate <= today) {
         errMsg += ' Event dates must be future dates.';

@@ -1,6 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { SwatchesPicker } from 'react-color';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { getUserByToken, updateUser, UserResource } from '../services/userApi';
 import { useAtom } from 'jotai/index';
@@ -16,26 +16,6 @@ const UserProfile = () => {
 
   const [bgColor, setBackgroundColor] = useState(currentUser.backgroundColor);
   const [fgColor, setForegroundColor] = useState(currentUser.foregroundColor);
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-
-  const changeUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(event.target.value);
-  };
-
-  const changeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
-  };
-
-  const changeFirstName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFirstName(event.target.value);
-  };
-
-  const changeLastName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLastName(event.target.value);
-  };
 
   const handleBackgroundChangeComplete = (event: any) => {
     setBackgroundColor(event.hex);
@@ -68,12 +48,7 @@ const UserProfile = () => {
   /**
    * updateUserMutation --> updateUser(userResource)
    */
-  const {
-    data: resultsFromUpdateUser,
-    mutate: updateUserMutation,
-    error: updateUserError,
-    isLoading: loadingUpdateUser,
-  } = useMutation({
+  const { isLoading: loadingUpdateUser } = useMutation({
     mutationFn: (userResourceInput: UserResource) =>
       updateUser(userResourceInput),
     onMutate: () => console.log('UserProfile: Mutate: updateUserMutation'),
@@ -84,7 +59,7 @@ const UserProfile = () => {
   });
 
   /**
-   *
+   * Get user data if there is a user logged in.
    */
   useEffect(() => {
     if (isAuthenticated && user?.sub != null) {
@@ -144,8 +119,6 @@ const UserProfile = () => {
               }}
             >
               <div className="m-3 p-3">
-                {/*<p>User token: {user?.sub}</p>*/}
-                {/*<p>User id: {userResource?.userId}</p>*/}
                 <p>
                   <span
                     style={{
