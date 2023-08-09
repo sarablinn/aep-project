@@ -4,13 +4,13 @@ namespace App\Controller;
 
 use App\Dto\incoming\AddEventGameDto;
 use App\Dto\incoming\CreateGameDto;
+use App\Exception\DateFormatException;
 use App\Exception\EntityNotFoundException;
 use App\Exception\InvalidRequestDataException;
 use App\Serialization\SerializationService;
 use App\Service\EventService;
 use App\Service\GameService;
 use App\Service\ModeService;
-use Exception;
 use JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -113,11 +113,10 @@ class GameController extends ApiController
             $createGameDto = $this->getValidatedDto($request, CreateGameDto::class);
             $game = $this->gameService->createGame($createGameDto);
             $gameDto = $this->gameService->mapToDto($game);
-        } catch (EntityNotFoundException $entityNotFoundException) {
-            return $this->json($entityNotFoundException->getMessage());
+            return $this->json($gameDto);
+        } catch (EntityNotFoundException | DateFormatException $exception) {
+            return $this->json($exception->getMessage());
         }
-
-        return $this->json($gameDto);
     }
 
     /**
@@ -142,8 +141,8 @@ class GameController extends ApiController
 
             $gameDto = $this->gameService->mapToDto($game);
             return $this->json($gameDto);
-        } catch (EntityNotFoundException $entityNotFoundException) {
-            return $this->json($entityNotFoundException->getMessage());
+        } catch (EntityNotFoundException | DateFormatException $exception) {
+            return $this->json($exception->getMessage());
         }
     }
 
