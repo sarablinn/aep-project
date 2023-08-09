@@ -4,14 +4,13 @@ namespace App\Controller;
 
 use App\Dto\incoming\AddEventGameDto;
 use App\Dto\incoming\CreateEventDto;
-use App\Dto\incoming\GetEventModeGamesDto;
 use App\Dto\incoming\UpdateEventDto;
+use App\Exception\DateFormatException;
 use App\Exception\EntityNotFoundException;
 use App\Exception\InvalidRequestDataException;
 use App\Serialization\SerializationService;
 use App\Service\EventService;
 use App\Service\GameService;
-use Exception;
 use JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -142,20 +141,17 @@ class EventController extends ApiController
             $createEventDto = $this->getValidatedDto($request, CreateEventDto::class);
             $event = $this->eventService->createEvent($createEventDto);
             $eventDto = $this->eventService->mapToDto($event);
-        } catch (EntityNotFoundException $entityNotFoundException) {
-            return $this->json($entityNotFoundException->getMessage());
+
+            return $this->json($eventDto);
+        } catch (EntityNotFoundException
+                    | DateFormatException
+                    | JsonException $exception) {
+            return $this->json($exception->getMessage());
         } catch (InvalidRequestDataException $invalidRequestDataException) {
             return $this->json($invalidRequestDataException->getMessage()
                 . ' VALIDATION ERRORS: '
                 . $invalidRequestDataException->getValidationErrors());
-        } catch (JsonException $jsonException) {
-            return $this->json($jsonException->getMessage());
-        } catch (Exception $e) {
-            return $this->json($e->getMessage()
-                . ' Check DateTime conversions.');
         }
-
-        return $this->json($eventDto);
     }
 
     /**
@@ -173,11 +169,11 @@ class EventController extends ApiController
             $updateEventDto = $this->getValidatedDto($request, UpdateEventDto::class);
             $event = $this->eventService->updateEvent($event_id, $updateEventDto);
             $eventDto = $this->eventService->mapToDto($event);
+
+            return $this->json($eventDto);
         } catch (EntityNotFoundException $entityNotFoundException) {
             return $this->json($entityNotFoundException->getMessage());
         }
-
-        return $this->json($eventDto);
     }
 
     /**
@@ -199,18 +195,17 @@ class EventController extends ApiController
     {
         try {
             /** @var AddEventGameDto $addEventGameDto */
-            $addEventGameDto = $this->getValidatedDto($request, AddEventGameDto::class);
+            $addEventGameDto = $this->getValidatedDto($request,
+                AddEventGameDto::class);
             $event = $this->eventService->addGameToEvent($addEventGameDto);
             $eventDto = $this->eventService->mapToDto($event);
-        } catch (EntityNotFoundException $entityNotFoundException) {
-            return $this->json($entityNotFoundException->getMessage());
-        } catch (InvalidRequestDataException $invalidRequestDataException) {
-            return $this->json($invalidRequestDataException->getMessage());
-        } catch (JsonException $jsonException) {
-            return $this->json($jsonException->getMessage());
-        }
 
-        return $this->json($eventDto);
+            return $this->json($eventDto);
+        } catch (EntityNotFoundException
+                | InvalidRequestDataException
+                | JsonException $exception) {
+            return $this->json($exception->getMessage());
+        }
     }
 
 }
