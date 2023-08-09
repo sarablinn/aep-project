@@ -66,12 +66,7 @@ const UserEndGameResults = ({ game, event }: UserEndGameResultsProps) => {
         <ErrorMessage errorMessage={'An error has occurred.'} />
       </div>
     );
-  }
-  // else if (
-  //   (gamesData && event && eventGamesData) ||
-  //   (gamesData && !event && !eventGamesData)
-  // ) {
-  else if (gamesData && hasEvent && eventGamesData) {
+  } else if (gamesData && hasEvent && eventGamesData) {
     console.log('EVENT GAMES DATA: ', eventGamesData);
     return (
       <div>
