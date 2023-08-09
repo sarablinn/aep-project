@@ -115,10 +115,6 @@ class EventController extends ApiController
             return $this->json($eventModeGamesDto);
         } catch (EntityNotFoundException $entityNotFoundException) {
             return $this->json($entityNotFoundException->getMessage());
-        } catch (InvalidRequestDataException $invalidRequestDataException) {
-            return $this->json($invalidRequestDataException->getMessage());
-        } catch (JsonException $jsonException) {
-            return $this->json($jsonException->getMessage());
         }
     }
 
