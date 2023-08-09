@@ -8,7 +8,7 @@ import { selectedUser } from '../services/Atoms';
 import { LightenColor } from '../services/colorChanger';
 
 const Login = () => {
-  const { user, isLoading, isAuthenticated, error, loginWithRedirect, logout } =
+  const { user, isAuthenticated, error, loginWithRedirect, logout } =
     useAuth0();
 
   const [currentUser, setCurrentUser] = useAtom(selectedUser);
@@ -33,8 +33,6 @@ const Login = () => {
     data: resultsFromGetUser,
     mutate: getUserMutation,
     isLoading: loadingUser,
-    error: getUserError,
-    isSuccess: getUserIsSuccess,
   } = useMutation({
     mutationFn: (userToken: string) => getUserByToken(userToken),
     onMutate: () => console.log('Login: Mutate: getUserMutation'),
@@ -61,25 +59,22 @@ const Login = () => {
   /**
    * createUserMutation --> createUser(userDto)
    */
-  const {
-    data: resultsFromCreateUser,
-    mutate: createUserMutation,
-    isLoading: loadingCreateUser,
-  } = useMutation({
-    mutationFn: (userDto: UserDto) => createUser(userDto),
-    onMutate: () => console.log('Login: Mutate: createUserMutation'),
-    onError: (err, variables, context) => {
-      console.log(err, variables, context);
-    },
-    onSettled: () => {
-      console.log('Login: Settled: createUserMutation');
-    },
-    onSuccess: data => {
-      if (data) {
-        setCurrentUser(data);
-      }
-    },
-  });
+  const { mutate: createUserMutation, isLoading: loadingCreateUser } =
+    useMutation({
+      mutationFn: (userDto: UserDto) => createUser(userDto),
+      onMutate: () => console.log('Login: Mutate: createUserMutation'),
+      onError: (err, variables, context) => {
+        console.log(err, variables, context);
+      },
+      onSettled: () => {
+        console.log('Login: Settled: createUserMutation');
+      },
+      onSuccess: data => {
+        if (data) {
+          setCurrentUser(data);
+        }
+      },
+    });
 
   /**
    * Creates a UserDto, setting username to be the new user's email without the domain.

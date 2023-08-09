@@ -1,10 +1,8 @@
 import { GameResource, GuestGameDto } from '../../services/gameApi';
-import { selectedUser } from '../../services/Atoms';
 import { useEffect, useState } from 'react';
 import ReactPaginate from 'react-paginate';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons';
-import { useAtom } from 'jotai';
 
 export type PaginatedGamesProps = {
   tableTitle: string;

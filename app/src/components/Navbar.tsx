@@ -62,11 +62,10 @@ const Navbar = () => {
             }}
           >
             <Link
+              className="h-fit font-bold"
               style={{
                 color: isHoverHome ? fgLighter_5 : currentUser.foregroundColor,
-                fontWeight: 'bold',
                 fontSize: '1.5vw',
-                height: 'fit-content',
               }}
               to={routes.BASE}
               search={{}}
@@ -77,13 +76,12 @@ const Navbar = () => {
               home
             </Link>
             <Link
+              className="h-fit font-bold"
               style={{
                 color: isHoverEvents
                   ? fgLighter_5
                   : currentUser.foregroundColor,
-                fontWeight: 'bold',
                 fontSize: '1.5vw',
-                height: 'fit-content',
               }}
               to={routes.EVENTS}
               search={{}}
@@ -94,13 +92,12 @@ const Navbar = () => {
               events
             </Link>
             <Link
+              className="h-fit font-bold"
               style={{
                 color: isHoverLBoard
                   ? fgLighter_5
                   : currentUser.foregroundColor,
-                fontWeight: 'bold',
                 fontSize: '1.5vw',
-                height: 'fit-content',
               }}
               to={routes.LEADERSHIP_BOARD}
               search={{}}
@@ -111,13 +108,12 @@ const Navbar = () => {
               leadership board
             </Link>
             <Link
+              className="h-fit font-bold"
               style={{
                 color: isHoverProfile
                   ? fgLighter_5
                   : currentUser.foregroundColor,
-                fontWeight: 'bold',
                 fontSize: '1.5vw',
-                height: 'fit-content',
               }}
               to={routes.PROFILE}
               search={{}}
@@ -143,11 +139,10 @@ const Navbar = () => {
             }}
           >
             <Link
+              className="h-fit font-bold"
               style={{
                 color: isHoverHome ? fgLighter_5 : currentUser.foregroundColor,
-                fontWeight: 'bold',
                 fontSize: '1.5vw',
-                height: 'fit-content',
               }}
               to={routes.BASE}
               search={{}}
@@ -158,13 +153,12 @@ const Navbar = () => {
               home
             </Link>
             <Link
+              className="h-fit font-bold"
               style={{
                 color: isHoverLBoard
                   ? fgLighter_5
                   : currentUser.foregroundColor,
-                fontWeight: 'bold',
                 fontSize: '1.5vw',
-                height: 'fit-content',
               }}
               to={routes.LEADERSHIP_BOARD}
               search={{}}
@@ -176,13 +170,12 @@ const Navbar = () => {
             </Link>
             {isAuthenticated ? (
               <Link
+                className="h-fit font-bold"
                 style={{
                   color: isHoverProfile
                     ? fgLighter_5
                     : currentUser.foregroundColor,
-                  fontWeight: 'bold',
                   fontSize: '1.5vw',
-                  height: 'fit-content',
                 }}
                 to={routes.PROFILE}
                 search={{}}

@@ -8,13 +8,11 @@ import { useState } from 'react';
 const Homepage = () => {
   const [currentUser] = useAtom(selectedUser);
 
-  // const darken_bg_10 = changeColor(currentUser.backgroundColor, -10);
   const darken_fg_10 = changeColor(currentUser.foregroundColor, -10);
 
   const lighten_bg_5 = LightenColor(currentUser.backgroundColor, 5);
   const lighten_fg_5 = LightenColor(currentUser.foregroundColor, 5);
 
-  // const [bgDarker_10] = useState(darken_bg_10);
   const [fgDarker_10] = useState(darken_fg_10);
   const [bgLighter_5] = useState(lighten_bg_5);
   const [fgLighter_5] = useState(lighten_fg_5);
@@ -31,7 +29,6 @@ const Homepage = () => {
           minWidth: '100%',
           minHeight: '30%',
           height: '30vh',
-          // backgroundColor: 'whitesmoke',
           zIndex: '1',
         }}
       >

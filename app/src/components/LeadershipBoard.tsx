@@ -47,9 +47,6 @@ const LeadershipBoard = () => {
     setShowCurrentEventsOptions(false);
   };
 
-  // const lighten_bg_5 = LightenColor(currentUser.backgroundColor, 5);
-  // const [bgLighter_5] = useState(lighten_bg_5);
-
   const {
     isLoading: isLoadingModes,
     error: modesError,
@@ -68,14 +65,11 @@ const LeadershipBoard = () => {
     queryFn: () => getAllGamesByModes(),
   });
 
-  const {
-    isLoading: isLoadingCurrentEvents,
-    error: currentEventsError,
-    data: currentEventsData,
-  } = useQuery({
-    queryKey: [`currentEvents`],
-    queryFn: () => getCurrentEvents(),
-  });
+  const { isLoading: isLoadingCurrentEvents, data: currentEventsData } =
+    useQuery({
+      queryKey: [`currentEvents`],
+      queryFn: () => getCurrentEvents(),
+    });
 
   // const {
   //   isLoading: isLoadingPriorWeekEvents,
@@ -89,9 +83,7 @@ const LeadershipBoard = () => {
   const {
     data: resultsFromGetAllEventModeGames,
     mutate: getAllEventModeGamesMutation,
-    error: getAllEventModeGamesError,
     isLoading: isLoadingGetAllEventModeGames,
-    onSuccess: isSuccessGetAllEventModeGames,
   } = useMutation({
     mutationFn: (eventId: number) => getAllEventModeGames(eventId),
     onMutate: () =>
@@ -112,14 +104,10 @@ const LeadershipBoard = () => {
   }, [selectedEvent, modesData]);
 
   useEffect(() => {
-    console.log('SELECTEDEVENT: ', selectedEvent);
     if (resultsFromGetAllEventModeGames && eventModeGames != undefined) {
       setShowEventGames(true);
       setShowAllScores(false);
     }
-
-    console.log('SHOWEVENTGAMES: ', showEventGames);
-    console.log('EVENTMODEGAMES: ', eventModeGames);
   }, [eventModeGames]);
 
   if (
@@ -127,7 +115,6 @@ const LeadershipBoard = () => {
     isLoadingGames ||
     isLoadingCurrentEvents ||
     isLoadingGetAllEventModeGames
-    // isLoadingPriorWeekEvents
   ) {
     return (
       <div>
@@ -229,7 +216,8 @@ const LeadershipBoard = () => {
                   }}
                 >
                   <PaginatedGames
-                    tableTitle={modesData?.at(mode_id)?.modeName}
+                    tableTitle={modesData?.at(mode_id)?.modeName || ''}
+                    completedGame={null}
                     games={games}
                     gamesPerPage={10}
                   />
