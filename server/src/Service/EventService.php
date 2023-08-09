@@ -10,6 +10,7 @@ use App\Dto\outgoing\EventModeGamesDto;
 use App\Dto\outgoing\ModeDto;
 use App\Entity\Event;
 use App\Entity\Game;
+use App\Exception\DateFormatException;
 use App\Exception\EntityNotFoundException;
 use App\Repository\EventRepository;
 use App\Repository\GameRepository;
@@ -24,9 +25,7 @@ class EventService implements ObjectMapperInterface
 {
     private EntityManagerInterface $entityManager;
     private EventRepository $eventRepository;
-    private UserRepository $userRepository;
-    private GameRepository $gameRepository;
-    private ModeRepository $modeRepository;
+    private UserService $userService;
     private GameService $gameService;
     private ModeService $modeService;
     private LoggerInterface $logger;
@@ -34,18 +33,14 @@ class EventService implements ObjectMapperInterface
 
     function __construct(EntityManagerInterface $entityManager,
                         EventRepository $eventRepository,
-                        UserRepository $userRepository,
-                        GameRepository $gameRepository,
-                        ModeRepository $modeRepository,
+                        UserService $userService,
                         GameService $gameService,
                         ModeService $modeService,
                         LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
         $this->eventRepository = $eventRepository;
-        $this->userRepository = $userRepository;
-        $this->gameRepository = $gameRepository;
-        $this->modeRepository = $modeRepository;
+        $this->userService = $userService;
         $this->gameService = $gameService;
         $this->modeService = $modeService;
         $this->logger = $logger;
@@ -108,18 +103,17 @@ class EventService implements ObjectMapperInterface
     public function getGamesByEventMode(int $event_id, int $mode_id): iterable {
         $games_by_event_mode = [];
 
-        $mode = $this->modeRepository->find($mode_id);
-        $event = $this->eventRepository->find($event_id);
+        $mode = $this->modeService->getMode($mode_id);
+        $event = $this->getEventById($event_id);
         $event_games = $event->getEventGames();
 
         if (!$mode) {
-            throw new EntityNotFoundException('ERROR: No mode by id ' . $mode_id);
+            throw new EntityNotFoundException(
+                'ERROR: No mode by id ' . $mode_id);
         }
 
         if ($event_games->count() > 0) {
-            $modeGames = $this->gameRepository->findBy(
-                ['mode' => $mode_id],
-                ['score' => 'DESC']);
+            $modeGames = $this->gameService->getGamesByMode($mode_id);
 
             foreach ($event_games as $event_game) {
                 foreach ($modeGames as $mode_game) {
@@ -128,9 +122,8 @@ class EventService implements ObjectMapperInterface
                     }
                 }
             }
-
-//            $games_by_event_mode = $this->mapToDtos($games_by_event_mode);
         }
+
         return $games_by_event_mode;
     }
 
@@ -162,11 +155,24 @@ class EventService implements ObjectMapperInterface
         return $all_games_by_event_mode;
     }
 
+    public function getEventWithoutId(DateTime $start_date,
+                                      DateTime $end_date,
+                                      string $event_name): ?Event
+    {
+        return $this->eventRepository->findOneBy(
+            [
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+                'event_name' => $event_name
+            ]
+        );
+    }
+
     /**
      * @param CreateEventDto $createEventDto
      * @return Event|null
      * @throws EntityNotFoundException
-     * @throws Exception caused by DateTime conversion
+     * @throws DateFormatException
      */
     public function createEvent(CreateEventDto $createEventDto): ?Event
     {
@@ -176,16 +182,23 @@ class EventService implements ObjectMapperInterface
         $newEvent->setEventName($createEventDto->getEventName());
 
         # convert unix time string to DateTime
-        $unix_start_date = $createEventDto->getStartDate() /1000;
-        $unix_end_date = $createEventDto->getEndDate() /1000;
-        $start_date = new DateTime("@{$unix_start_date}");
-        $end_date = new DateTime("@{$unix_end_date}");
-        $newEvent->setStartDate($start_date);
-        $newEvent->setEndDate($end_date);
+        try {
+            $unix_start_date = $createEventDto->getStartDate() / 1000;
+            $unix_end_date = $createEventDto->getEndDate() / 1000;
+            $start_date = new DateTime("@{$unix_start_date}");
+            $end_date = new DateTime("@{$unix_end_date}");
+            $newEvent->setStartDate($start_date);
+            $newEvent->setEndDate($end_date);
+        } catch (Exception $exception) {
+            throw new DateFormatException('ERROR: Unable to '
+                . 'create new event, invalid date format.');
+        }
 
-        $event_creator = $this->userRepository->find($createEventDto->getEventCreatorUserId());
+        $event_creator = $this->userService->getUserById(
+            $createEventDto->getEventCreatorUserId());
         if (!$event_creator) {
-            throw new EntityNotFoundException('ERROR: Unable to create event, '
+            throw new EntityNotFoundException(
+                'ERROR: Unable to create event, '
                 . 'unable to find event creator.');
         }
 
@@ -193,16 +206,10 @@ class EventService implements ObjectMapperInterface
 
         $this->eventRepository->save($newEvent, true);
 
-        $created_event = $this->eventRepository->findOneBy([
-            'start_date' => $start_date,
-            'event_name' => $createEventDto->getEventName()]
+        // retrieve and return
+        return $this->getEventWithoutId($start_date,
+                    $end_date, $createEventDto->getEventName()
         );
-
-        if ($created_event) {
-            return $created_event;
-        }
-
-        return null;
     }
 
     /**
