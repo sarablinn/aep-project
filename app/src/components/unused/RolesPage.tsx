@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { createRole, getRoles } from './../services/roleApi';
-import Loading from './../utilities/Loading';
-import ErrorMessage from '../utilities/ErrorMessage';
-import { selectedRole } from './../services/Atoms';
+import { createRole, getRoles } from '../../services/roleApi';
+import Loading from '../../utilities/Loading';
+import ErrorMessage from '../../utilities/ErrorMessage';
+import { selectedRole } from '../../services/Atoms';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useAtom } from 'jotai';
 

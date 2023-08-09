@@ -1,12 +1,12 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
-import { deleteUser, getUserById, getUsers } from './../services/userApi';
-import Loading from './../utilities/Loading';
-import ErrorMessage from '../utilities/ErrorMessage';
-import { selectedUser } from './../services/Atoms';
+import { deleteUser, getUserById, getUsers } from '../../services/userApi';
+import Loading from '../../utilities/Loading';
+import ErrorMessage from '../../utilities/ErrorMessage';
+import { selectedUser } from '../../services/Atoms';
 import { useAtom } from 'jotai';
 import { PhotoshopPicker } from 'react-color';
-import { getRoles } from '../services/roleApi';
+import { getRoles } from '../../services/roleApi';
 
 const UserPage = () => {
   const [bgColor, setBackgroundColor] = useState('FFFFFF');
