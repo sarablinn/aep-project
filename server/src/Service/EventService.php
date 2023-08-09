@@ -231,7 +231,7 @@ class EventService implements ObjectMapperInterface
         $end_date = $updateEventDto->getEndDate();
 
         $event_creator_id = $updateEventDto->getEventCreatorUserId();
-        $event_creator = $this->userRepository->find($event_creator_id);
+        $event_creator = $this->userService->getUserById($event_creator_id);
 
         if ($event_name) {
             $existing_event->setEventName($event_name);
@@ -282,14 +282,16 @@ class EventService implements ObjectMapperInterface
         $event_id = $addEventGameDto->getEventId();
         $game_id = $addEventGameDto->getGameId();
 
-        $existing_event = $this->eventRepository->find($event_id);
+        $existing_event = $this->getEventById($event_id);
         if (!$existing_event) {
-            throw new EntityNotFoundException('ERROR: No event by id ' . $event_id);
+            throw new EntityNotFoundException(
+                'ERROR: No event by id ' . $event_id);
         }
 
-        $existing_game = $this->gameRepository->find($game_id);
+        $existing_game = $this->gameService->getGame($game_id);
         if (!$existing_game) {
-            throw new EntityNotFoundException('ERROR: No game by id ' . $game_id);
+            throw new EntityNotFoundException(
+                'ERROR: No game by id ' . $game_id);
         }
 
         if (!$existing_event->getEventGames()->contains($existing_game)) {
@@ -297,7 +299,7 @@ class EventService implements ObjectMapperInterface
             $this->eventRepository->save($existing_event, true);
         }
 
-        return $this->eventRepository->find($event_id);
+        return $this->getEventById($event_id);
     }
 
 
