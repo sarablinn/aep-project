@@ -8,6 +8,7 @@ use App\Dto\outgoing\EventDto;
 use App\Dto\outgoing\GameDto;
 use App\Dto\outgoing\ModeGamesDto;
 use App\Entity\Game;
+use App\Exception\DateFormatException;
 use App\Exception\EntityNotFoundException;
 use App\Repository\EventRepository;
 use App\Repository\GameRepository;
@@ -22,27 +23,18 @@ class GameService implements ObjectMapperInterface
 {
     private EntityManagerInterface $entityManager;
     private GameRepository $gameRepository;
-    private UserRepository $userRepository;
-    private ModeRepository $modeRepository;
-    private EventRepository $eventRepository;
     private UserService $userService;
     private ModeService $modeService;
     private LoggerInterface $logger;
 
     function __construct(EntityManagerInterface $entityManager,
                          GameRepository $gameRepository,
-                         UserRepository $userRepository,
-                         ModeRepository $modeRepository,
-                         EventRepository $eventRepository,
                          UserService $userService,
                          ModeService $modeService,
                          LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
         $this->gameRepository = $gameRepository;
-        $this->userRepository = $userRepository;
-        $this->modeRepository = $modeRepository;
-        $this->eventRepository = $eventRepository;
         $this->userService = $userService;
         $this->modeService = $modeService;
         $this->logger = $logger;
@@ -75,25 +67,47 @@ class GameService implements ObjectMapperInterface
     }
 
     /**
+     * @param DateTime $datetime
+     * @param int $score
+     * @param int $user_player_id
+     * @param int $mode_id
+     * @return Game|null
+     */
+    public function findGameWithoutId(DateTime $datetime, int $score,
+                    int $user_player_id, int $mode_id): ?Game
+    {
+        return $this->gameRepository->findOneBy(
+            [
+                'timestamp' => $datetime,
+                'score' => $score,
+                'user' => $user_player_id,
+                'mode' => $mode_id
+            ]
+        );
+    }
+
+    /**
      * @param CreateGameDto $createGameDto
      * @return Game|null
      * @throws EntityNotFoundException
+     * @throws DateFormatException
      */
     public function createGame(CreateGameDto $createGameDto): ?Game
     {
         $newGame = new Game();
 
-        $user_player = $this->userRepository->findOneBy(['user_token' => $createGameDto->getUserToken()]);
+        $user_player = $this->userService->getUserByToken($createGameDto->getUserToken());
         if (!$user_player) {
-            throw new EntityNotFoundException('ERROR: Unable to '
+            throw new EntityNotFoundException('ERROR: Unable to create '
                 . 'new Game. Player token #' . $createGameDto->getUserToken()
                 . ' does not yet exist.');
         }
 
-        $game_mode = $this->modeRepository->find($createGameDto->getModeId());
+        $game_mode = $this->modeService->getMode($createGameDto->getModeId());
         if (!$game_mode) {
-            throw new EntityNotFoundException('ERROR: Unable to '
-                . 'new Game. Mode id #' . $createGameDto->getModeId());
+            throw new EntityNotFoundException('ERROR: Unable to create'
+                . 'new Game. Mode id #' . $createGameDto->getModeId()
+                . ' does not exist.');
         }
 
         $newGame->setUser($user_player);
@@ -106,25 +120,27 @@ class GameService implements ObjectMapperInterface
             $date = new DateTime("@{$unix_timestamp}");
             $newGame->setTimestamp($date);
         } catch (Exception $exception) {
-            return null;
+            throw new DateFormatException("ERROR: Cannot create game "
+                    . "using invalid date format.");
         }
 
-        // check that the game doesn't already exist, if not, add it, retrieve it and return it
-        $existing_game = $this->gameRepository->findOneBy([
-                'timestamp' => $date,
-                'score' => $createGameDto->getScore(),
-                'user' => $user_player->getUserId(),
-                'mode' => $createGameDto->getModeId()]
-        );
+        // check that the game doesn't already exist,
+        // if not, add, retrieve and return it
+        $existing_game = $this->findGameWithoutId(
+                    $date,
+                    $createGameDto->getScore(),
+                    $user_player->getUserId(),
+                    $createGameDto->getModeId() );
 
         if ($existing_game) {
             return $existing_game;
         } else {
             $this->gameRepository->save($newGame, true);
-
-            return $this->gameRepository->findOneBy([
-                    'user' => $user_player->getUserId(),
-                    'timestamp' => $date]
+            return $this->findGameWithoutId(
+                    $date,
+                    $createGameDto->getScore(),
+                    $user_player->getUserId(),
+                    $createGameDto->getModeId()
             );
         }
     }
@@ -142,8 +158,8 @@ class GameService implements ObjectMapperInterface
                 . 'No existing game to update.');
         }
 
-        $user_player = $this->userRepository->find($updateGameDto->getUserId());
-        $game_mode = $this->modeRepository->find($updateGameDto->getModeId());
+        $user_player = $this->userService->getUserById($updateGameDto->getUserId());
+        $game_mode = $this->modeService->getMode($updateGameDto->getModeId());
         $timestamp = $updateGameDto->getTimestamp();
         $score = $updateGameDto->getScore();
 
@@ -168,6 +184,8 @@ class GameService implements ObjectMapperInterface
     }
 
     /**
+     * Deletes game from database and returns true, or false if
+     * unsuccessful due to invalid game id.
      * @param int $game_id
      * @return bool
      */
@@ -183,6 +201,7 @@ class GameService implements ObjectMapperInterface
     }
 
     /**
+     * Returns all games in descending order by score.
      * @return Game[]
      */
     public function getGamesOrderedByScore(): iterable {
@@ -197,7 +216,9 @@ class GameService implements ObjectMapperInterface
      */
     public function getGamesByMode(int $mode_id): iterable {
         return $this->gameRepository->findBy(
-            ['mode' => $mode_id], ['score' => 'DESC']);
+            ['mode' => $mode_id],
+            ['score' => 'DESC']
+        );
     }
 
     /**
@@ -208,13 +229,11 @@ class GameService implements ObjectMapperInterface
     public function getAllGamesByModes(): ModeGamesDto {
         $dto_games_by_mode = new ModeGamesDto();
 
-
-        $modes = $this->modeRepository->findAll();
+        $modes = $this->modeService->getModes();
         if ($modes) {
             foreach ($modes as $mode) {
                 $mode_id = $mode->getModeId();
-                $modeGames = $this->gameRepository->findBy(
-                    ['mode' => $mode_id], ['score' => 'DESC']);
+                $modeGames = $this->getGamesByMode($mode_id);
 
                 $dtoModeGames = $this->mapToDtos($modeGames);
                 $dto_games_by_mode->addGames($dtoModeGames);
