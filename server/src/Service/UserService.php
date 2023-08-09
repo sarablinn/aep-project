@@ -18,18 +18,19 @@ class UserService implements ObjectMapperInterface
 {
     private EntityManagerInterface $entityManager;
     private UserRepository $userRepository;
-    private RoleRepository $roleRepository;
+    private RoleService $roleService;
+
     private LoggerInterface $logger;
 
 
     function __construct(EntityManagerInterface $entityManager,
                          UserRepository $userRepository,
-                         RoleRepository $roleRepository,
+                         RoleService $roleService,
                          LoggerInterface $logger) {
 
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
-        $this->roleRepository = $roleRepository;
+        $this->roleService = $roleService;
         $this->logger = $logger;
     }
 
@@ -47,7 +48,7 @@ class UserService implements ObjectMapperInterface
         $newUser->setFirstName($createUserDto->getFirstName());
         $newUser->setLastName($createUserDto->getLastName());
         $newUser->setEmail($createUserDto->getEmail());
-        $newUser->setRole($this->roleRepository->find($createUserDto->getRoleId()));
+        $newUser->setRole($this->roleService->getRole($createUserDto->getRoleId()));
         $newUser->setBackgroundColor($createUserDto->getBackgroundColor());
         $newUser->setForegroundColor($createUserDto->getForegroundColor());
 
@@ -66,37 +67,32 @@ class UserService implements ObjectMapperInterface
         $this->userRepository->save($newUser, true);
 
         #retrieve the user, which should now have a userID value
-        $newUser = $this->userRepository->findOneBy(['email' => $createUserDto->getEmail()]);
-        if ($newUser != null) {
-            return $newUser;
-        }
-        #TODO should I just return $newuser, would it return null if it can't find it?
-        return null;
+        return $this->getUserByEmail($createUserDto->getEmail());
     }
 
     /**
      * @param int $user_id
-     * @return User
+     * @return User | null
      */
-    public function getUserById(int $user_id): User
+    public function getUserById(int $user_id): ?User
     {
         return $this->userRepository->find($user_id);
     }
 
     /**
      * @param string $username
-     * @return User
+     * @return User | null
      */
-    public function getUserByUsername(string $username): User
+    public function getUserByUsername(string $username): ?User
     {
         return $this->userRepository->findOneBy(['username' => $username]);
     }
 
     /**
      * @param string $email
-     * @return User
+     * @return User | null
      */
-    public function getUserByEmail(string $email): User
+    public function getUserByEmail(string $email): ?User
     {
         return $this->userRepository->findOneBy(['email' => $email]);
     }
@@ -118,8 +114,6 @@ class UserService implements ObjectMapperInterface
         return $this->userRepository->findAll();
     }
 
-    #TODO what to return when error encountered
-
     /**
      * Updates a user, returns null if no user exists with the provided id.
      *
@@ -139,14 +133,14 @@ class UserService implements ObjectMapperInterface
         $backgroundColor = $updateUserDto->getBackgroundColor() ?? null;
         $foregroundColor = $updateUserDto->getForegroundColor() ?? null;
 
-        $existing_user = $this->userRepository->find($user_id);
+        $existing_user = $this->getUserById($user_id);
         if (!$existing_user) {
             throw new EntityNotFoundException(
                 "ERROR: Unable to update user. User id #"
                 . $user_id . " does not exist.");
         }
 
-        $role = $this->roleRepository->find($updateUserDto->getRoleId());
+        $role = $this->roleService->getRole($role_id);
 
         if ($email) {
             $existing_user->setEmail($email);
@@ -197,7 +191,7 @@ class UserService implements ObjectMapperInterface
         $backgroundColor = $updateUserDto->getBackgroundColor() ?? null;
         $foregroundColor = $updateUserDto->getForegroundColor() ?? null;
 
-        $existing_user = $this->userRepository->findOneBy(['user_token' => $userToken]);
+        $existing_user = $this->getUserByToken($userToken);
         if (!$existing_user) {
             throw new EntityNotFoundException(
                 "ERROR: Unable to update user. User token #"
@@ -217,7 +211,7 @@ class UserService implements ObjectMapperInterface
             $existing_user->setLastName($lastName);
         }
         if ($role_id) {
-            $role = $this->roleRepository->find($updateUserDto->getRoleId());
+            $role = $this->roleService->getRole($updateUserDto->getRoleId());
             $existing_user->setRole($role);
         }
         if ($backgroundColor) {
@@ -238,7 +232,7 @@ class UserService implements ObjectMapperInterface
      */
     public function deleteUser(int $user_id): bool
     {
-        $user = $this->userRepository->find($user_id);
+        $user = $this->getUserById($user_id);
         if (!$user) {
             return false;
         }
@@ -253,7 +247,7 @@ class UserService implements ObjectMapperInterface
      * @return bool
      */
     public function isAvailableUsername(string $username): bool {
-        $user = $this->userRepository->findOneBy(['username' => $username]);
+        $user = $this->getUserByUsername($username);
 
         if ($user) {
             return false;
