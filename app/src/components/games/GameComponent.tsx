@@ -81,7 +81,6 @@ const GameComponent = ({
 
   useEffect(() => {
     if (isComplete) {
-      console.log('final score: ' + score);
       saveCompletedGame();
     }
   }, [isComplete]);
@@ -108,14 +107,8 @@ const GameComponent = ({
           gameDto: gameDto,
           eventResource: selected_event,
         });
-        console.log(
-          'GAME SHOULD BE SAVED & ADDED TO EVENT: ',
-          createGameWithEventResults,
-          selected_event,
-        );
       } else if (!selected_event) {
         createGameMutate(gameDto);
-        console.log('GAME SHOULD BE SAVED: ', gameDto);
       }
     }
   }

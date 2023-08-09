@@ -19,33 +19,8 @@ declare module '@tanstack/react-router' {
 const AppContent = () => {
   const [currentUser, setCurrentUser] = useAtom(selectedUser);
   const { user, isAuthenticated } = useAuth0();
-  // const [userInitials, setUserInitials] = useState('');
-  // const [isVisible, setIsVisible] = useState('VISIBLE');
-  //
-  // useEffect(() => {
-  //   if (
-  //     isAuthenticated &&
-  //     currentUser.firstName != '' &&
-  //     currentUser.lastName != ''
-  //   ) {
-  //     const firstInitial = currentUser.firstName.substring(0, 1);
-  //     const lastInitial = currentUser.lastName.substring(0, 1);
-  //     setUserInitials((firstInitial + lastInitial).toUpperCase());
-  //   } else {
-  //     setUserInitials(currentUser.email.substring(0, 1).toUpperCase());
-  //   }
-  //   if (currentUser.firstName == '' || currentUser.lastName == '') {
-  //     setIsVisible('VISIBLE');
-  //   } else {
-  //     setIsVisible('INVISIBLE');
-  //   }
-  // }, [isAuthenticated, currentUser, user]);
 
-  const {
-    // data: resultsFromGetUser,
-    mutate: getUserMutation,
-    isLoading: loadingUser,
-  } = useMutation({
+  const { mutate: getUserMutation, isLoading: loadingUser } = useMutation({
     mutationFn: (userToken: string) => getUserByToken(userToken),
     onMutate: () => console.log('AppContent: Mutate: getUserMutation'),
     onError: (err, variables, context) => {
@@ -84,45 +59,6 @@ const AppContent = () => {
           style={{ backgroundColor: currentUser.backgroundColor }}
         >
           <RouterProvider router={router} />
-
-          {/*<nav*/}
-          {/*  id="navbar-main"*/}
-          {/*  className="container"*/}
-          {/*  style={{ backgroundColor: currentUser.foregroundColor }}*/}
-          {/*>*/}
-          {/*<div className="container-fluid">*/}
-          {/*<div className="container p-6">*/}
-          {/*<div className="">*/}
-          {/*  <h1 className="title-text text-3xl font-bold">NUMBERS</h1>*/}
-          {/*</div>*/}
-          {/*<div className="">*/}
-          {/*  <div className="flex flex-col items-end px-4 pt-4">*/}
-          {/*    <div className="flex flex-col place-items-center">*/}
-          {/*      <button*/}
-          {/*        id="user-icon"*/}
-          {/*        className="text-center"*/}
-          {/*        style={{*/}
-          {/*          backgroundColor: currentUser.backgroundColor,*/}
-          {/*          color: currentUser.foregroundColor,*/}
-          {/*        }}*/}
-          {/*        onClick={() => window.location.replace(routes.PROFILE)}*/}
-          {/*      >*/}
-          {/*        {userInitials}*/}
-          {/*      </button>*/}
-          {/*      <Login />*/}
-          {/*    </div>*/}
-          {/*  </div>*/}
-          {/*</div>*/}
-          {/*</div>*/}
-
-          {/*<div className="">*/}
-          {/*  <h1 className="title-text text-3xl font-bold">NUMBERS</h1>*/}
-          {/*</div>*/}
-          {/*</div>*/}
-          {/*<div className="flex flex-row justify-center">*/}
-          {/*  <UserInfoPopup userResource={currentUser} isVisible={isVisible} />*/}
-          {/*</div>*/}
-          {/*</nav>*/}
 
           <ReactQueryDevtools />
         </div>
