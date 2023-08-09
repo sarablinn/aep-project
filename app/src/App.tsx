@@ -10,7 +10,7 @@ import AppContent from './components/AppContent';
 const queryClient = new QueryClient();
 
 export default function App() {
-  const HydrateAtoms = ({ children }) => {
+  const HydrateAtoms = ({ children }: any) => {
     useHydrateAtoms([[queryClientAtom, queryClient]]);
     return children;
   };

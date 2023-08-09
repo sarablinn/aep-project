@@ -3,20 +3,7 @@ export const changeColor = (hexColor: string, magnitude: number) => {
 
   if (hexColor.length <= 6) {
     const decimalColor = parseInt(hexColor, 16);
-    // console.log('r: ', decimalColor >> 16);
-    // console.log('g: ', decimalColor & 0x0000ff);
-    // console.log('b: ', (decimalColor >> 8) & 0x00ff);
     const maxChange = magnitude;
-
-    // if (magnitude <= 0) {
-    //   let smallestValue = decimalColor >> 16;
-    //   if (smallestValue > (decimalColor & 0x0000ff))
-    //     smallestValue = decimalColor & 0x0000ff;
-    //   if (smallestValue > ((decimalColor >> 8) & 0x00ff))
-    //     smallestValue = (decimalColor >> 8) & 0x00ff;
-    //
-    //   if (magnitude > smallestValue) maxChange = smallestValue;
-    // }
 
     let r = (decimalColor >> 16) + maxChange;
     r > 255 && (r = 255);
@@ -30,10 +17,6 @@ export const changeColor = (hexColor: string, magnitude: number) => {
     b > 255 && (b = 255);
     b < 0 && (b = 0o0);
 
-    console.log('r: ', r);
-    console.log('g: ', g);
-    console.log('b: ', b);
-    console.log('hexcode: ', `#${(g | (b << 8) | (r << 16)).toString(16)}`);
     return `#${(g | (b << 8) | (r << 16)).toString(16)}`;
   } else {
     return hexColor;
@@ -74,18 +57,7 @@ export const LightenColor = (color: string, percent: number) => {
     R = (num >> 16) + amt,
     B = ((num >> 8) & 0x00ff) + amt,
     G = (num & 0x0000ff) + amt;
-  console.log(
-    'lightenColor hexcode: ',
-    '#' +
-      (
-        0x1000000 +
-        (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
-        (B < 255 ? (B < 1 ? 0 : B) : 255) * 0x100 +
-        (G < 255 ? (G < 1 ? 0 : G) : 255)
-      )
-        .toString(16)
-        .slice(1),
-  );
+
   return (
     '#' +
     (
