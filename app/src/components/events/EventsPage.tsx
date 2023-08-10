@@ -38,7 +38,6 @@ const EventsPage = () => {
   };
 
   const handleEditEventPopup = (eventResource: EventResource) => {
-    console.log(eventResource.eventCreatorUserId);
     setSelectedEvent(eventResource);
     showEditEventPopup
       ? setShowEditEventPopup(false)
