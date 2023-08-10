@@ -47,7 +47,11 @@ const PaginatedGames = ({
             </caption>
             <tbody>
               {currentItems.map((modeGame, index) => {
-                if (completedGame && modeGame.gameId === completedGame.gameId) {
+                if (
+                  completedGame &&
+                  'gameId' in completedGame &&
+                  modeGame.gameId === completedGame.gameId
+                ) {
                   return (
                     <tr key={'modeGame-' + index}>
                       <td className="rounded-sm bg-pink-500 py-2 pl-5 pr-10 font-bold text-white">
