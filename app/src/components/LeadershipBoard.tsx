@@ -127,12 +127,7 @@ const LeadershipBoard = () => {
         <ErrorMessage errorMessage={'An error has occurred.'} />
       </div>
     );
-  } else if (
-    modesData &&
-    gamesData &&
-    gamesData.modeGames &&
-    currentEventsData
-  ) {
+  } else if (modesData && gamesData && gamesData.games && currentEventsData) {
     return (
       <div className="container-fluid p-5">
         <div className="">
@@ -211,7 +206,7 @@ const LeadershipBoard = () => {
 
         {showAllScores ? (
           <div className="container-fluid flex flex-wrap justify-center self-stretch px-10 py-5">
-            {gamesData.modeGames.map((games, mode_id) => {
+            {gamesData.games.map((gamesForMode, mode_id) => {
               return (
                 <div
                   key={'modeId-' + mode_id}
@@ -225,7 +220,7 @@ const LeadershipBoard = () => {
                   <PaginatedGames
                     tableTitle={modesData?.at(mode_id)?.modeName || ''}
                     completedGame={null}
-                    games={games}
+                    games={gamesForMode}
                     gamesPerPage={10}
                   />
                 </div>
