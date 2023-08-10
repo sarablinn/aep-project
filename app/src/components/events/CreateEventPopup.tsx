@@ -18,10 +18,10 @@ const CreateEventPopup = ({ showPopup }: CreateEventPopupProps) => {
 
   const [eventName, setEventName] = useState<string | null>(null);
 
-  // 86400 seconds in a day
+  // 86400 seconds in a day, 172800 sec in two days
   // set the initial dates for new events
-  const startUnixTime = Math.floor(+new Date().getTime() / 1000 + 86400);
-  const endUnixTime = Math.floor(+new Date().getTime() / 1000 + 172800);
+  const startUnixTime = Math.floor(+new Date().getTime() / 1000);
+  const endUnixTime = Math.floor(+new Date().getTime() / 1000 + 86400);
 
   const [startDate] = useState<EventDate>({
     date: new Date(startUnixTime * 1000),
