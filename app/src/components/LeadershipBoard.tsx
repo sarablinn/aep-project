@@ -160,13 +160,20 @@ const LeadershipBoard = () => {
                   className={
                     selectedEvent
                       ? 'm-1 rounded bg-pink-600 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600'
-                      : 'm-1 rounded bg-pink-500 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600'
+                      : 'm-1 rounded bg-pink-500 p-3 font-bold text-white shadow outline-none hover:shadow-lg focus:outline-none active:bg-pink-600 disabled:bg-gray-500 disabled:text-gray-400 disabled:hover:shadow'
                   }
                   onClick={handleShowCurrentEventsOptions}
+                  disabled={
+                    currentEventsData.length === 0 || !currentEventsData
+                  }
                 >
                   {showAllScores ? 'EVENT SCORES' : 'EVENTS'}
                   <FontAwesomeIcon
-                    className="fa-beat-fade fa-xl pl-5 text-white"
+                    className={
+                      currentEventsData.length === 0 || !currentEventsData
+                        ? 'fa-xl pl-5 text-gray-400'
+                        : 'fa-beat-fade fa-xl pl-5 text-white'
+                    }
                     icon={faCaretDown}
                   />
                 </button>
