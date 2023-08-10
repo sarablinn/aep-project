@@ -1,5 +1,5 @@
 import { GameResource, getGamesByMode } from '../../services/gameApi';
-import { EventResource, getModeEventGames } from '../../services/eventApi';
+import { EventResource, getEventModeGames } from '../../services/eventApi';
 import { useQuery } from '@tanstack/react-query';
 import Loading from '../../utilities/Loading';
 import ErrorMessage from '../../utilities/ErrorMessage';
@@ -38,7 +38,7 @@ const UserEndGameResults = ({ game, event }: UserEndGameResultsProps) => {
     queryKey: [`eventGamesByModes`],
     enabled: !!event,
     queryFn: () =>
-      getModeEventGames({
+      getEventModeGames({
         eventId: event!.eventId,
         modeId: game.mode.modeId,
       }),

@@ -29,6 +29,9 @@ export interface UpdateEventDto {
   eventCreatorUserId: number;
 }
 
+/**
+ * For adding a game to an event.
+ */
 export interface EventGameDto {
   eventId: number;
   gameId: number;
@@ -127,7 +130,7 @@ export async function getFutureEvents(): Promise<EventResource[]> {
     });
 }
 
-export async function getModeEventGames(
+export async function getEventModeGames(
   eventModeDto: EventModeDto,
 ): Promise<GameResource[]> {
   const url =
