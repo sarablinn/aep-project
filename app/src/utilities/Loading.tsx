@@ -1,3 +1,8 @@
+/**
+ * Block Component for a spinning loader that can be placed on another component/page.
+ *
+ * @constructor
+ */
 const Loading = () => {
   return (
     <div className="flex items-center justify-center p-3 text-stone-50">
