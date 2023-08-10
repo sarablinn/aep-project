@@ -29,21 +29,6 @@ export interface ModeGames {
   games: GameResource[];
 }
 
-// export interface GameResource {
-//   gameId: number;
-//   userId: number;
-//   modeId: number;
-//   timestamp: Date;
-//   score: number;
-// }
-
-// export interface GameDto {
-//   userId: number;
-//   modeId: number;
-//   timestamp: any;
-//   score: number;
-// }
-
 export interface GameDto {
   userToken: string;
   modeId: number;
