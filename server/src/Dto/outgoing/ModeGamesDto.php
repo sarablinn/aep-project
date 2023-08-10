@@ -6,7 +6,7 @@ namespace App\Dto\outgoing;
  * Data Transfer Object for use in expressing Games by Mode, especially
  * when there is need to sort games by mode for Events.
  */
-class EventModeGamesDto
+class ModeGamesDto
 {
     private ModeDto $mode;
     private array $modeGames;

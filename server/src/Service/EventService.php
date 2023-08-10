@@ -6,16 +6,12 @@ use App\Dto\incoming\AddEventGameDto;
 use App\Dto\incoming\CreateEventDto;
 use App\Dto\incoming\UpdateEventDto;
 use App\Dto\outgoing\EventDto;
-use App\Dto\outgoing\EventModeGamesDto;
-use App\Dto\outgoing\ModeDto;
+use App\Dto\outgoing\ModeGamesDto;
 use App\Entity\Event;
 use App\Entity\Game;
 use App\Exception\DateFormatException;
 use App\Exception\EntityNotFoundException;
 use App\Repository\EventRepository;
-use App\Repository\GameRepository;
-use App\Repository\ModeRepository;
-use App\Repository\UserRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -132,7 +128,7 @@ class EventService implements ObjectMapperInterface
      * Return an array of games from a given event, indexed by mode and in
      * descending score order, for a given event.
      * @param int $event_id
-     * @return EventModeGamesDto[]
+     * @return ModeGamesDto[]
      * @throws EntityNotFoundException
      */
     public function getAllGamesByEventModes(int $event_id): iterable {
@@ -145,7 +141,7 @@ class EventService implements ObjectMapperInterface
             $modeGames = $this->gameService->mapToDtos(
                 $this->getGamesByEventMode($event_id, $modeDto->getModeId()));
 
-            $eventModeGamesDto = new EventModeGamesDto();
+            $eventModeGamesDto = new ModeGamesDto();
             $eventModeGamesDto->setMode($modeDto);
             $eventModeGamesDto->setModeGames($modeGames);
 
