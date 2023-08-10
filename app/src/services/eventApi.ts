@@ -130,6 +130,10 @@ export async function getFutureEvents(): Promise<EventResource[]> {
     });
 }
 
+/**
+ * Retrieves a sorted array of GameResources for one Event and one Mode.
+ * @param eventModeDto
+ */
 export async function getEventModeGames(
   eventModeDto: EventModeDto,
 ): Promise<GameResource[]> {
@@ -155,6 +159,11 @@ export async function getEventModeGames(
     });
 }
 
+/**
+ * Retrieves an associative array of GameResource arrays by Mode key for a
+ * specific Event.
+ * @param eventId
+ */
 export async function getAllEventModeGames(
   eventId: number,
 ): Promise<ModeGamesDto[]> {
