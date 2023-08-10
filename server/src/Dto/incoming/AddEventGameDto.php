@@ -6,6 +6,9 @@ use App\Entity\Game;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Type;
 
+/**
+ * Data Transfer Object for use in adding completed Game to Event.
+ */
 class AddEventGameDto
 {
     #[NotNull]
