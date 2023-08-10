@@ -6,7 +6,7 @@ use App\Dto\incoming\CreateGameDto;
 use App\Dto\incoming\UpdateGameDto;
 use App\Dto\outgoing\EventDto;
 use App\Dto\outgoing\GameDto;
-use App\Dto\outgoing\ModeGamesDto;
+use App\Dto\outgoing\GamesDto;
 use App\Entity\Game;
 use App\Exception\DateFormatException;
 use App\Exception\EntityNotFoundException;
@@ -224,10 +224,10 @@ class GameService implements ObjectMapperInterface
     /**
      * Returns an associative array containing arrays of GameDtos,
      * indexed by mode ids, and ordered by score in descending order.
-     * @return ModeGamesDto
+     * @return GamesDto
      */
-    public function getAllGamesByModes(): ModeGamesDto {
-        $dto_games_by_mode = new ModeGamesDto();
+    public function getAllGamesByModes(): GamesDto {
+        $dto_games_by_mode = new GamesDto();
 
         $modes = $this->modeService->getModes();
         if ($modes) {
