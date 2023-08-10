@@ -39,14 +39,6 @@ export interface EventModeDto {
   modeId: number;
 }
 
-/**
- * Event and array of all modes.
- */
-export interface EventModesDto {
-  event: EventResource;
-  modes: ModeResource[];
-}
-
 export interface EventDate {
   date: Date;
 }
