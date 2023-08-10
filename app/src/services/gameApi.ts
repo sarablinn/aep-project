@@ -21,7 +21,7 @@ export interface GameResource {
 }
 
 export interface GamesByMode {
-  modeGames: Array<Array<GameResource>>;
+  games: Array<Array<GameResource>>;
 }
 
 export interface ModeGames {
