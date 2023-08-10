@@ -20,7 +20,7 @@ class GamesDto
     /**
      * @return array
      */
-    public function getModeGames(): array
+    public function getGames(): array
     {
         return $this->games;
     }
