@@ -30,13 +30,15 @@ const useDateRangeInput = (
   const validateDateRange = () => {
     let errMsg = '';
     if (startDate && endDate) {
-      // remove time from start and end date
+      // remove time from start and end date <--- note: this did not work
       const startDate_notime = new Date(startDate.date).toDateString();
       const endDate_notime = new Date(endDate.date).toDateString();
 
       const epoch_startDate = new Date(startDate_notime);
       const epoch_endDate = new Date(endDate_notime);
-      const today = new Date();
+      const today = new Date(
+        Math.floor(+new Date().getTime() / 1000 - 86400) * 1000,
+      );
 
       if (epoch_startDate <= today) {
         errMsg += ' Event dates must be future dates.';
